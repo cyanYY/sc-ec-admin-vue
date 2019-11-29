@@ -11,7 +11,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <span v-if="name">{{ name || 未登录 }}</span>
+          <span v-if="name">{{ name || '未登录' }}</span>
           <img v-else :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
