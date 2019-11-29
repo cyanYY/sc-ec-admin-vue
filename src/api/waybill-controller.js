@@ -65,3 +65,21 @@ export function listReceivables(params) {
   const url = '/wayBillException/listReceivables'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 异常运单认领
+export function claim(params) {
+  const url = '/wayBillException/claim?wayBillNo=' + params.wayBillNo
+  return axios.get(url).then(res => res.data)
+}
+
+// 分页查询用户待处理运单列表
+export function listUserTodo(params) {
+  const url = '/wayBillException/listUserTodo'
+  return axios.post(url, params).then(res => res.data)
+}
+
+// 分页查询用户已处理运单列表
+export function listUserFinish(params) {
+  const url = '/wayBillException/listUserFinish'
+  return axios.post(url, params).then(res => res.data)
+}

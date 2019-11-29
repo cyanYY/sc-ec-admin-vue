@@ -57,6 +57,25 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/exception',
+    component: Layout,
+    meta: { title: '异常运单处理', icon: 'form' },
+    children: [
+      {
+        path: '',
+        name: 'todo',
+        component: () => import('@/views/waybill/todo'),
+        meta: { title: '待处理', icon: 'form' }
+      },
+      {
+        path: 'finish',
+        name: 'finish',
+        component: () => import('@/views/waybill/finish'),
+        meta: { title: '已处理', icon: 'form' }
+      }
+    ]
+  },
+  {
     path: '/order',
     component: Layout,
     children: [
@@ -92,6 +111,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/succReport',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'succReport',
+        component: () => import('@/views/waybill/succReport'),
+        meta: { title: '成功率统计', icon: 'form' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -99,6 +130,7 @@ export const constantRoutes = [
 
 const createRouter = () =>
   new Router({
+    base: process.env.VUE_APP_ROUTE_PATH,
     mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes

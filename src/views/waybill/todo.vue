@@ -30,9 +30,6 @@
           <el-input v-model="queryForm.goodsName" placeholder="物品名"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-input v-model="queryForm.operator" placeholder="处理人员"></el-input>
-        </el-form-item>
-        <el-form-item label="">
           <el-input v-model="queryForm.receiverMobile" placeholder="收件人手机号"></el-input>
         </el-form-item>
         <el-form-item label="">
@@ -59,32 +56,48 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="">
-          <el-select v-model="queryForm.isException" placeholder="是否异常">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="是" value="true"></el-option>
-            <el-option label="否" value="false"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
           <el-select v-model="queryForm.processStatus" placeholder="处理状态">
             <el-option label="全部" value="-1"></el-option>
             <el-option label="未处理" value="未处理"></el-option>
             <el-option label="未处理|挂起" value="未处理|挂起"></el-option>
             <el-option label="已处理|未提交" value="已处理|未提交"></el-option>
             <el-option label="已处理|已提交" value="已处理|已提交"></el-option>
-            <el-option label="待办理" value="待办理"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
           <el-input v-model="queryForm.deliveryMobile" placeholder="快递员手机号"></el-input>
         </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.intentionLevel" placeholder="用户签收意向">
+            <el-option label="全部" value="-1"></el-option>
+            <el-option label="高" value="高"></el-option>
+            <el-option label="中" value="中"></el-option>
+            <el-option label="低" value="低"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.hangReason" placeholder="挂起原因">
+            <el-option label="全部" value="-1"></el-option>
+            <el-option label="客户联系不上" value="客户联系不上"></el-option>
+            <el-option label="客户要求自提" value="客户要求自提"></el-option>
+            <el-option
+              label="客户要求快递员再次配送，已经与快递沟通"
+              value="客户要求快递员再次配送，已经与快递沟通"
+            ></el-option>
+            <el-option
+              label="客户同意签收，快递联系不上"
+              value="客户同意签收，快递联系不上"
+            ></el-option>
+            <el-option
+              label="快递未配送，客户要求再次配送"
+              value="快递未配送，客户要求再次配送"
+            ></el-option>
+            <el-option label="客户要求延期配送" value="客户要求延期配送"></el-option>
+            <el-option label="其他原因" value="其他原因"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
-          <el-button size="small" type="primary" @click="wayBillUploadHandle">运单导入</el-button>
-          <el-button size="small" type="primary" @click="wayBillExceptionUploadHandle"
-            >异常单导入</el-button
-          >
-          <el-button size="small" type="primary" @click="auditExportHandle">批量审核</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -98,6 +111,7 @@
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
+        :row-class-name="tableRowClassName"
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
@@ -118,6 +132,8 @@
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
         <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
+        <el-table-column prop="intentionLevel" label="用户签收意向" align="center">
+        </el-table-column>
         <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
         </el-table-column>
         <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
@@ -133,19 +149,27 @@
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
+
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
             <el-button
               v-if="
-                !scope.row.operatorId &&
-                  (scope.row.processStatus === '未处理' ||
-                    scope.row.processStatus === '未处理|挂起')
+                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
               "
-              @click="claimException(scope.row)"
+              @click="handleException(scope.row)"
               type="text"
               size="small"
-              >办理</el-button
+              >处理</el-button
+            >
+            <el-button
+              v-if="
+                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
+              "
+              @click="hangException(scope.row)"
+              type="text"
+              size="small"
+              >挂起</el-button
             >
           </template>
         </el-table-column>
@@ -162,66 +186,6 @@
         @currentPage="getCurrentPage"
       ></Pagination>
     </div>
-
-    <el-dialog
-      @close="() => this.$refs['wayBillUpload'].clearFiles()"
-      size="small"
-      title=""
-      :close-on-click-modal="false"
-      :visible.sync="waybillUploadVisible"
-    >
-      <el-form label-width="80px">
-        <el-form-item label="选择文件">
-          <el-upload
-            ref="wayBillUpload"
-            class="upload-demo"
-            :action="this.baseURL + '/file/upload'"
-            :on-success="waybillUploadSuccess"
-          >
-            <el-button size="small">上传运单</el-button>
-          </el-upload>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            :loading="waybillUploadLoading"
-            size="small"
-            type="primary"
-            @click="waybillUploadHandle"
-            >确认导入</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog
-      @close="() => this.$refs['wayBillExceptionUpload'].clearFiles()"
-      size="small"
-      title=""
-      :close-on-click-modal="false"
-      :visible.sync="waybillExceptionUploadVisible"
-    >
-      <el-form label-width="80px">
-        <el-form-item label="选择文件">
-          <el-upload
-            ref="wayBillExceptionUpload"
-            class="upload-demo"
-            :action="this.baseURL + '/file/upload'"
-            :on-success="waybillExceptionUploadSuccess"
-          >
-            <el-button size="small">上传异常运单</el-button>
-          </el-upload>
-          <el-form-item>
-            <el-button
-              :loading="waybillExceptionUploadLoading"
-              size="small"
-              type="primary"
-              @click="waybillExceptionUploadHandle"
-              >确认导入</el-button
-            >
-          </el-form-item>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
 
     <el-dialog
       size="small"
@@ -305,11 +269,11 @@
             <el-option label="其他原因" value="其他原因"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="原因备注">
-          <el-input v-model="hangForm.hangReasonOther" placeholder=""></el-input>
-        </el-form-item>
         <el-form-item label="改价金额">
           <el-input v-model="hangForm.hangReasonPrice" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="原因备注">
+          <el-input v-model="hangForm.hangReasonOther" placeholder=""></el-input>
         </el-form-item>
         <el-form-item label="用户签收意向">
           <el-select v-model="hangForm.intentionLevel" placeholder="">
@@ -332,127 +296,21 @@
     >
       <div v-html="traceHtml"></div>
     </el-dialog>
-
-    <el-dialog
-      size="small"
-      width="70%"
-      title="异常运单办理"
-      :close-on-click-modal="false"
-      :visible.sync="wayClaimVisible"
-    >
-      <el-row :gutter="10">
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">运单号：</label>
-            <div class="el-form-item__content">{{ claimForm.wayBillNo }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">物品名：</label>
-            <div class="el-form-item__content">{{ claimForm.goodsName }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">代收货款：</label>
-            <div class="el-form-item__content">{{ claimForm.collectionFee }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">收件人：</label>
-            <div class="el-form-item__content">{{ claimForm.receiver }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">收件人手机号：</label>
-            <div class="el-form-item__content">{{ claimForm.receiverMobile }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">渠道：</label>
-            <div class="el-form-item__content">{{ claimForm.channel }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">下单时间：</label>
-            <div class="el-form-item__content">{{ claimForm.orderTime }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">状态更新时间：</label>
-            <div class="el-form-item__content">{{ claimForm.statusUpdateTime }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">运单状态：</label>
-            <div class="el-form-item__content">{{ claimForm.wayBillStatus }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">处理状态：</label>
-            <div class="el-form-item__content">{{ claimForm.processStatus }}</div>
-          </div></el-col
-        >
-        <el-col :span="8"
-          ><div>
-            <label class="el-form-item__label">处理时间：</label>
-            <div class="el-form-item__content">{{ claimForm.processTime }}</div>
-          </div></el-col
-        >
-        <el-col :span="12"
-          ><div>
-            <label class="el-form-item__label">收件人地址：</label>
-            <div class="el-form-item__content">{{ claimForm.receiverAddress }}</div>
-          </div></el-col
-        >
-        <el-col :span="12"
-          ><div>
-            <label class="el-form-item__label">挂起原因：</label>
-            <div v-if="claimForm.hangReason" class="el-form-item__content">
-              <span :key="index" v-for="(item, index) in claimForm.hangReason.split(',')">
-                {{ index + 1 + '. ' + item }}<br />
-              </span>
-            </div></div
-        ></el-col>
-      </el-row>
-      <div v-if="claimForm.claimed" style="margin-top: 10px; text-align: right;">
-        <el-button size="small" type="warning" @click="wayTrace(claimForm)">轨迹</el-button>
-        <el-button size="small" type="success" @click="handleException(claimForm)">处理</el-button>
-        <el-button size="small" type="primary" @click="hangException(claimForm)">挂起</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import {
-  listPage,
-  uploadWaybill,
-  uploadWaybillException,
-  handle,
-  hang,
-  trace,
-  claim
-} from '@/api/waybill-controller.js'
-import axios from 'axios'
+import { listUserTodo, handle, hang, trace } from '@/api/waybill-controller.js'
+import { parseTime } from '@/utils/index'
 
 export default {
-  name: 'Waybill',
+  name: 'Exception',
   components: {
     Pagination
   },
   data() {
     return {
-      baseURL: process.env.VUE_APP_BASE_API,
       tableDataSearch: [],
       currentPage: 1,
       perpageNumber: 20,
@@ -461,10 +319,6 @@ export default {
         orderTimeRange: [],
         processTimeRange: []
       },
-      waybillUploadVisible: false,
-      waybillExceptionUploadVisible: false,
-      waybillFileName: '',
-      waybillExceptionFileName: '',
       waybillHandleVisible: false,
       handleForm: {
         auditStatus: '再次投递',
@@ -473,8 +327,6 @@ export default {
         auditOpinionOther: '',
         userSigned: false
       },
-      waybillUploadLoading: false,
-      waybillExceptionUploadLoading: false,
       waybillHangVisible: false,
       hangForm: {
         hangReason: '',
@@ -483,11 +335,7 @@ export default {
         hangReasonPrice: ''
       },
       wayTraceVisible: false,
-      traceHtml: '',
-      wayClaimVisible: false,
-      claimForm: {
-        claimed: false
-      }
+      traceHtml: ''
     }
   },
   methods: {
@@ -524,82 +372,28 @@ export default {
         wayBillNo: this.queryForm.wayBillNo,
         wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
         goodsName: this.queryForm.goodsName,
-        operator: this.queryForm.operator,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd,
         processTimeStart: processTimeStart,
         processTimeEnd: processTimeEnd,
         receiverMobile: this.queryForm.receiverMobile,
-        isException: this.queryForm.isException === '-1' ? '' : this.queryForm.isException,
         processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
-        deliveryMobile: this.queryForm.deliveryMobile
+        deliveryMobile: this.queryForm.deliveryMobile,
+        intentionLevel: this.queryForm.intentionLevel === '-1' ? '' : this.queryForm.intentionLevel,
+        hangReason: this.queryForm.hangReason === '-1' ? '' : this.queryForm.hangReason
       }
-      listPage(param).then(res => {
+      listUserTodo(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
     },
-    wayBillUploadHandle() {
-      this.waybillUploadVisible = true
-    },
-    wayBillExceptionUploadHandle() {
-      this.waybillExceptionUploadVisible = true
-    },
-    waybillUploadSuccess(res) {
-      this.waybillFileName = res.data.fileName
-    },
-    waybillExceptionUploadSuccess(res) {
-      this.waybillExceptionFileName = res.data.fileName
-    },
-    waybillUploadHandle() {
-      if (!this.waybillFileName) {
-        this.$message({
-          message: '请先上传数据文件',
-          type: 'error'
-        })
+    tableRowClassName({ row }) {
+      const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
+      const processDate = row.processTime && row.processTime.substr(0, 10)
+      if (currentDate === processDate) {
+        return 'success-row'
       }
-      var param = {
-        fileName: this.waybillFileName
-      }
-      this.waybillUploadLoading = true
-      uploadWaybill(param)
-        .then(res => {
-          this.waybillUploadLoading = false
-          this.waybillUploadVisible = false
-          this.$message({
-            message: res.msg || '数据导入成功',
-            type: 'success'
-          })
-          this.queryHandle()
-        })
-        .catch(() => {
-          this.waybillUploadLoading = false
-        })
-    },
-    waybillExceptionUploadHandle() {
-      if (!this.waybillExceptionFileName) {
-        this.$message({
-          message: '请先上传数据文件',
-          type: 'error'
-        })
-      }
-      var param = {
-        fileName: this.waybillExceptionFileName
-      }
-      this.waybillExceptionUploadLoading = true
-      uploadWaybillException(param)
-        .then(res => {
-          this.waybillExceptionUploadLoading = false
-          this.waybillExceptionUploadVisible = false
-          this.$message({
-            message: res.msg || '数据导入成功',
-            type: 'success'
-          })
-          this.queryHandle()
-        })
-        .catch(() => {
-          this.waybillExceptionUploadLoading = false
-        })
+      return ''
     },
     handleException(row) {
       this.waybillHandleVisible = true
@@ -622,7 +416,6 @@ export default {
       }
       handle(param).then(res => {
         this.waybillHandleVisible = false
-        this.wayClaimVisible = false
         this.$message({
           message: res.msg,
           type: 'success'
@@ -636,7 +429,7 @@ export default {
       this.hangForm.hangReasonOther = ''
       this.hangForm.hangReasonPrice = ''
       this.hangForm.wayBillNo = row.wayBillNo
-      this.hangForm.intentionLevel = ''
+      this.hangForm.intentionLevel = row.intentionLevel
     },
     hangExceptionCommit() {
       let reason = this.hangForm.hangReason
@@ -652,36 +445,11 @@ export default {
       }
       hang(param).then(res => {
         this.waybillHangVisible = false
-        this.wayClaimVisible = false
         this.$message({
           message: res.msg,
           type: 'success'
         })
         this.queryHandle()
-      })
-    },
-    auditExportHandle() {
-      this.$confirm('确认生成批量审核运单?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        axios({
-          method: 'post',
-          url: this.baseURL + '/wayBillException/exportAudit',
-          responseType: 'blob'
-        }).then(res => {
-          const fileName = '运单审核.xls'
-          const blob = new Blob([res.data], { type: 'application/xls' })
-          if (window.navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(blob, fileName)
-          } else {
-            var link = document.createElement('a')
-            link.href = window.URL.createObjectURL(blob)
-            link.download = fileName
-            link.click()
-            window.URL.revokeObjectURL(link.href)
-          }
-        })
       })
     },
     wayTrace(row) {
@@ -692,30 +460,6 @@ export default {
       }
       trace(param).then(res => {
         this.traceHtml = res.data ? res.data : '未查询到运单轨迹'
-      })
-    },
-    claimException(row) {
-      this.wayClaimVisible = true
-      this.claimForm.wayBillNo = row.wayBillNo
-      this.claimForm.goodsName = row.goodsName
-      this.claimForm.collectionFee = row.collectionFee
-      this.claimForm.receiver = row.receiver
-      this.claimForm.receiverMobile = row.receiverMobile
-      this.claimForm.receiverAddress = row.receiverAddress
-      this.claimForm.channel = row.channel
-      this.claimForm.orderTime = row.orderTime
-      this.claimForm.statusUpdateTime = row.statusUpdateTime
-      this.claimForm.wayBillStatus = row.wayBillStatus
-      this.claimForm.processStatus = row.processStatus
-      this.claimForm.processTime = row.processTime
-      this.claimForm.hangReason = row.hangReason
-      this.claimForm.claimed = false
-
-      const param = {
-        wayBillNo: this.claimForm.wayBillNo
-      }
-      claim(param).then(() => {
-        this.claimForm.claimed = true
       })
     }
   },
@@ -728,16 +472,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.logWork-cont {
-  .logWork-tables {
-    margin-top: 20px;
-  }
-  .logWork-pages {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
-  }
+.el-table >>> .success-row {
+  background: #f0f9eb;
 }
 </style>
