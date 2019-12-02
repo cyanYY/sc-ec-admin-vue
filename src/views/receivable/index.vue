@@ -44,60 +44,8 @@
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="">
-          <el-date-picker
-            v-model="queryForm.processTimeRange"
-            type="daterange"
-            value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="处理开始日期"
-            end-placeholder="处理结束日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="">
-          <el-select v-model="queryForm.processStatus" placeholder="处理状态">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="未处理" value="未处理"></el-option>
-            <el-option label="未处理|挂起" value="未处理|挂起"></el-option>
-            <el-option label="已处理|未提交" value="已处理|未提交"></el-option>
-            <el-option label="已处理|已提交" value="已处理|已提交"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="queryForm.deliveryMobile" placeholder="快递员手机号"></el-input>
-        </el-form-item>
-        <el-form-item label="">
-          <el-select v-model="queryForm.intentionLevel" placeholder="用户签收意向">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="高" value="高"></el-option>
-            <el-option label="中" value="中"></el-option>
-            <el-option label="低" value="低"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
-          <el-select v-model="queryForm.hangReason" placeholder="挂起原因">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="客户联系不上" value="客户联系不上"></el-option>
-            <el-option label="客户要求自提" value="客户要求自提"></el-option>
-            <el-option
-              label="客户要求快递员再次配送，已经与快递沟通"
-              value="客户要求快递员再次配送，已经与快递沟通"
-            ></el-option>
-            <el-option
-              label="客户同意签收，快递联系不上"
-              value="客户同意签收，快递联系不上"
-            ></el-option>
-            <el-option
-              label="快递未配送，客户要求再次配送"
-              value="快递未配送，客户要求再次配送"
-            ></el-option>
-            <el-option label="客户要求延期配送" value="客户要求延期配送"></el-option>
-            <el-option label="其他原因" value="其他原因"></el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
+          <el-button size="small" type="primary" @click="queryHandle">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -105,51 +53,46 @@
     <div class="waybill-tables">
       <el-table
         height="600"
-        :header-cell-style="{ background: '#eef1f6', textAlign: 'center', fontSize: '14px' }"
         :data="tableDataSearch"
         border
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
-        :row-class-name="tableRowClassName"
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
-        <el-table-column prop="hangReason" label="挂起原因" width="250" align="left">
-          <template slot-scope="scope">
-            <ol v-if="scope.row.hangReason">
-              <li :key="item.index" v-for="item in scope.row.hangReason.split(',')">
-                <span>{{ item }}</span>
-              </li>
-            </ol>
-          </template>
-        </el-table-column>
-        <el-table-column prop="goodsName" label="物品名" width="120" align="center">
-        </el-table-column>
+        <el-table-column prop="changeWayBillNo" label="换单号" align="center"> </el-table-column>
+        <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
+        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
         </el-table-column>
-        <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
-        </el-table-column>
-        <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
-        <el-table-column prop="intentionLevel" label="用户签收意向" align="center">
-        </el-table-column>
-        <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
+        <el-table-column prop="receiverAddress" label="收件人地址" width="200" align="center">
         </el-table-column>
         <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
         </el-table-column>
-        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
-        <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
-        <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
+        <el-table-column prop="goodsName" label="物品名" width="120" align="center">
         </el-table-column>
-        <el-table-column prop="processTime" label="处理时间" width="90" align="center">
-        </el-table-column>
-        <el-table-column prop="changeWayBillNo" label="换单号" align="center"> </el-table-column>
+        <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
         <el-table-column prop="isReject" label="是否拒收" align="center"> </el-table-column>
+        <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
+        </el-table-column>
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
-
+        <el-table-column prop="processTime" label="处理时间" width="90" align="center">
+        </el-table-column>
+        <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
+        </el-table-column>
+        <el-table-column prop="hangReason" label="挂起原因" width="300" align="left">
+          <template slot-scope="scope">
+            <ul v-if="scope.row.hangReason">
+              <li :key="item.index" v-for="item in scope.row.hangReason.split(',')">
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </template>
+        </el-table-column>
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
@@ -182,11 +125,11 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listUserFinish, trace } from '@/api/waybill-controller.js'
-import { parseTime } from '@/utils/index'
+import { listReceivables, trace } from '@/api/waybill-controller.js'
+
 
 export default {
-  name: 'Exception',
+  name: 'Receivable',
   components: {
     Pagination
   },
@@ -205,10 +148,7 @@ export default {
     }
   },
   methods: {
-    queryHandle(page) {
-      if (page) {
-        this.currentPage = page
-      }
+    queryHandle() {
       this.getListByPage(this.perpageNumber, this.currentPage)
     },
     // 页码发生变化
@@ -221,15 +161,9 @@ export default {
     getListByPage(numPerPage, pageNum) {
       let orderTimeStart = ''
       let orderTimeEnd = ''
-      let processTimeStart = ''
-      let processTimeEnd = ''
       if (this.queryForm.orderTimeRange) {
         orderTimeStart = this.queryForm.orderTimeRange[0]
         orderTimeEnd = this.queryForm.orderTimeRange[1]
-      }
-      if (this.queryForm.processTimeRange) {
-        processTimeStart = this.queryForm.processTimeRange[0]
-        processTimeEnd = this.queryForm.processTimeRange[1]
       }
       var param = {
         numPerPage: numPerPage,
@@ -240,26 +174,12 @@ export default {
         goodsName: this.queryForm.goodsName,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd,
-        processTimeStart: processTimeStart,
-        processTimeEnd: processTimeEnd,
-        receiverMobile: this.queryForm.receiverMobile,
-        processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
-        deliveryMobile: this.queryForm.deliveryMobile,
-        intentionLevel: this.queryForm.intentionLevel === '-1' ? '' : this.queryForm.intentionLevel,
-        hangReason: this.queryForm.hangReason === '-1' ? '' : this.queryForm.hangReason
+        receiverMobile: this.queryForm.receiverMobile
       }
-      listUserFinish(param).then(res => {
-        this.tableDataSearch = res.data.recordList
-        this.total = res.data.totalCount
+      listReceivables(param).then(res => {
+          this.tableDataSearch = res.data.recordList
+          this.total = res.data.totalCount
       })
-    },
-    tableRowClassName({ row }) {
-      const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
-      const processDate = row.processTime && row.processTime.substr(0, 10)
-      if (currentDate === processDate) {
-        return 'success-row'
-      }
-      return ''
     },
     wayTrace(row) {
       this.wayTraceVisible = true
@@ -272,7 +192,9 @@ export default {
       })
     }
   },
-  create() {},
+  create() {
+
+  },
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
@@ -281,7 +203,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-table >>> .success-row {
-  background: #f0f9eb;
+.logWork-cont {
+  .logWork-tables {
+    margin-top: 20px;
+  }
+  .logWork-pages {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+  }
 }
 </style>

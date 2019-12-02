@@ -46,13 +46,25 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: 'waybill',
     children: [
       {
-        path: 'waybill',
+        path: '',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '首页', icon: 'dashboard' }
+      }
+    ]
+  },
+
+  {
+    path: '/waybill',
+    component: Layout,
+    children: [
+      {
+        path: '',
         name: 'waybill',
         component: () => import('@/views/waybill/index'),
-        meta: { title: '运单管理', icon: 'dashboard' }
+        meta: { title: '运单管理', icon: 'table' }
       }
     ]
   },
@@ -64,14 +76,14 @@ export const constantRoutes = [
       {
         path: '',
         name: 'todo',
-        component: () => import('@/views/waybill/todo'),
+        component: () => import('@/views/exception/todo'),
         meta: { title: '待处理', icon: 'form' }
       },
       {
         path: 'finish',
         name: 'finish',
-        component: () => import('@/views/waybill/finish'),
-        meta: { title: '已处理', icon: 'form' }
+        component: () => import('@/views/exception/finish'),
+        meta: { title: '已处理', icon: 'table' }
       }
     ]
   },
@@ -81,8 +93,8 @@ export const constantRoutes = [
     children: [
       {
         path: '',
-        name: 'waybill_order',
-        component: () => import('@/views/waybill/order'),
+        name: 'order',
+        component: () => import('@/views/order/index'),
         meta: { title: '订单管理', icon: 'form' }
       }
     ]
@@ -94,7 +106,7 @@ export const constantRoutes = [
       {
         path: '',
         name: 'receivable',
-        component: () => import('@/views/waybill/receivable'),
+        component: () => import('@/views/receivable/index'),
         meta: { title: '应收款运单', icon: 'table' }
       }
     ]
@@ -106,20 +118,20 @@ export const constantRoutes = [
       {
         path: '',
         name: 'bill',
-        component: () => import('@/views/waybill/bill'),
+        component: () => import('@/views/bill/index'),
         meta: { title: '京东账单', icon: 'table' }
       }
     ]
   },
   {
-    path: '/succReport',
+    path: '/succreport',
     component: Layout,
     children: [
       {
         path: '',
-        name: 'succReport',
-        component: () => import('@/views/waybill/succReport'),
-        meta: { title: '成功率统计', icon: 'form' }
+        name: 'succreport',
+        component: () => import('@/views/succreport/index'),
+        meta: { title: '成功率统计', icon: 'table' }
       }
     ]
   },

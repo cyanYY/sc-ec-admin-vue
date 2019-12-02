@@ -34,7 +34,6 @@
     <div class="waybill-tables">
       <el-table
         height="600"
-        :header-cell-style="{ background: '#eef1f6', textAlign: 'center', fontSize: '14px' }"
         :data="tableDataSearch"
         border
         size="mini"

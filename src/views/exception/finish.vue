@@ -105,7 +105,6 @@
     <div class="waybill-tables">
       <el-table
         height="600"
-        :header-cell-style="{ background: '#eef1f6', textAlign: 'center', fontSize: '14px' }"
         :data="tableDataSearch"
         border
         size="mini"
@@ -153,24 +152,6 @@
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
-            <el-button
-              v-if="
-                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
-              "
-              @click="handleException(scope.row)"
-              type="text"
-              size="small"
-              >处理</el-button
-            >
-            <el-button
-              v-if="
-                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
-              "
-              @click="hangException(scope.row)"
-              type="text"
-              size="small"
-              >挂起</el-button
-            >
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -189,107 +170,6 @@
 
     <el-dialog
       size="small"
-      title=""
-      :close-on-click-modal="false"
-      :visible.sync="waybillHandleVisible"
-    >
-      <el-form :model="handleForm" label-width="160px">
-        <el-form-item label="订单号">
-          <el-input v-model="handleForm.orderNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="运单号">
-          <el-input v-model="handleForm.wayBillNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="审核状态">
-          <el-select v-model="handleForm.auditStatus" placeholder="">
-            <el-option label="再次投递" value="再次投递"></el-option>
-            <el-option label="拒收退回" value="拒收退回"></el-option>
-            <el-option label="报废处理" value="报废处理"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="审核意见">
-          <el-select style="width: 100%;" v-model="handleForm.auditOpinion" placeholder="">
-            <el-option label="请退回处理" value="请退回处理"></el-option>
-            <el-option label="客户要签收，辛苦再配送" value="客户要签收，辛苦再配送"></el-option>
-            <el-option
-              label="已妥投，辛苦尽快更新运单状态"
-              value="已妥投，辛苦尽快更新运单状态"
-            ></el-option>
-            <el-option
-              label="代收金额已改成0，请妥投，千万别退回，谢谢大哥"
-              value="代收金额已改成0，请妥投，千万别退回，谢谢大哥"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="意见备注">
-          <el-input v-model="handleForm.auditOpinionOther" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="最后一次处理结果">
-          <el-select v-model="handleForm.lastResult" placeholder="">
-            <el-option label="拒收退回" value="拒收退回"></el-option>
-            <el-option label="报废处理" value="报废处理"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="用户是否已签收">
-          <el-switch v-model="handleForm.userSigned" />
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="handleExceptionCommit">确定</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog
-      size="small"
-      title=""
-      :close-on-click-modal="false"
-      :visible.sync="waybillHangVisible"
-    >
-      <el-form :model="hangForm" label-width="160px">
-        <el-form-item label="运单号">
-          <el-input v-model="hangForm.wayBillNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="挂起原因">
-          <el-select style="width: 100%;" v-model="hangForm.hangReason" placeholder="">
-            <el-option label="客户联系不上" value="客户联系不上"></el-option>
-            <el-option label="客户要求自提" value="客户要求自提"></el-option>
-            <el-option
-              label="客户要求快递员再次配送，已经与快递沟通"
-              value="客户要求快递员再次配送，已经与快递沟通"
-            ></el-option>
-            <el-option
-              label="客户同意签收，快递联系不上"
-              value="客户同意签收，快递联系不上"
-            ></el-option>
-            <el-option
-              label="快递未配送，客户要求再次配送"
-              value="快递未配送，客户要求再次配送"
-            ></el-option>
-            <el-option label="客户要求延期配送" value="客户要求延期配送"></el-option>
-            <el-option label="其他原因" value="其他原因"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="改价金额">
-          <el-input v-model="hangForm.hangReasonPrice" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="原因备注">
-          <el-input v-model="hangForm.hangReasonOther" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="用户签收意向">
-          <el-select v-model="hangForm.intentionLevel" placeholder="">
-            <el-option label="高" value="高"></el-option>
-            <el-option label="中" value="中"></el-option>
-            <el-option label="低" value="低"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="hangExceptionCommit">确定</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog
-      size="small"
       title="运单轨迹"
       :close-on-click-modal="false"
       :visible.sync="wayTraceVisible"
@@ -301,7 +181,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listUserTodo, handle, hang, trace } from '@/api/waybill-controller.js'
+import { listUserFinish, trace } from '@/api/waybill-controller.js'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -318,21 +198,6 @@ export default {
       queryForm: {
         orderTimeRange: [],
         processTimeRange: []
-      },
-      waybillHandleVisible: false,
-      handleForm: {
-        auditStatus: '再次投递',
-        lastResult: '拒收退回',
-        auditOpinion: '',
-        auditOpinionOther: '',
-        userSigned: false
-      },
-      waybillHangVisible: false,
-      hangForm: {
-        hangReason: '',
-        hangReasonOther: '',
-        intentionLevel: '',
-        hangReasonPrice: ''
       },
       wayTraceVisible: false,
       traceHtml: ''
@@ -382,7 +247,7 @@ export default {
         intentionLevel: this.queryForm.intentionLevel === '-1' ? '' : this.queryForm.intentionLevel,
         hangReason: this.queryForm.hangReason === '-1' ? '' : this.queryForm.hangReason
       }
-      listUserTodo(param).then(res => {
+      listUserFinish(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
@@ -394,63 +259,6 @@ export default {
         return 'success-row'
       }
       return ''
-    },
-    handleException(row) {
-      this.waybillHandleVisible = true
-      this.handleForm.orderNo = row.orderNo
-      this.handleForm.wayBillNo = row.wayBillNo
-      this.handleForm.auditStatus = '再次投递'
-      this.handleForm.lastResult = '拒收退回'
-      this.handleForm.auditOpinion = ''
-      this.handleForm.auditOpinionOther = ''
-      this.handleForm.opinionDisabled = true
-      this.handleForm.userSigned = false
-    },
-    handleExceptionCommit() {
-      var param = {
-        wayBillNo: this.handleForm.wayBillNo,
-        auditStatus: this.handleForm.auditStatus,
-        auditOpinion: this.handleForm.auditOpinion + this.handleForm.auditOpinionOther,
-        lastResult: this.handleForm.lastResult,
-        userSigned: this.handleForm.userSigned
-      }
-      handle(param).then(res => {
-        this.waybillHandleVisible = false
-        this.$message({
-          message: res.msg,
-          type: 'success'
-        })
-        this.queryHandle()
-      })
-    },
-    hangException(row) {
-      this.waybillHangVisible = true
-      this.hangForm.hangReason = ''
-      this.hangForm.hangReasonOther = ''
-      this.hangForm.hangReasonPrice = ''
-      this.hangForm.wayBillNo = row.wayBillNo
-      this.hangForm.intentionLevel = row.intentionLevel
-    },
-    hangExceptionCommit() {
-      let reason = this.hangForm.hangReason
-      const reasonOther = this.hangForm.hangReasonOther ? '|' + this.hangForm.hangReasonOther : ''
-      const reasonPrice = this.hangForm.hangReasonPrice
-        ? '|改价' + this.hangForm.hangReasonPrice
-        : ''
-      reason = reason + reasonOther + reasonPrice
-      var param = {
-        wayBillNo: this.hangForm.wayBillNo,
-        hangReason: reason,
-        intentionLevel: this.hangForm.intentionLevel
-      }
-      hang(param).then(res => {
-        this.waybillHangVisible = false
-        this.$message({
-          message: res.msg,
-          type: 'success'
-        })
-        this.queryHandle()
-      })
     },
     wayTrace(row) {
       this.wayTraceVisible = true
