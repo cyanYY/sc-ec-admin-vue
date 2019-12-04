@@ -36,11 +36,12 @@
         <el-form-item label="">
           <el-select v-model="queryForm.merchantId" placeholder="商户">
             <el-option label="全部" value="-1"></el-option>
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -177,11 +178,12 @@
       <el-form :model="uploadForm" label-width="120px">
         <el-form-item label="选择商户">
           <el-select v-model="uploadForm.merchantId" placeholder="">
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -228,11 +230,12 @@
         </el-form-item>
         <el-form-item label="选择商户">
           <el-select v-model="addForm.merchantId" placeholder="">
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="收件人">
@@ -277,11 +280,12 @@
         </el-form-item>
         <el-form-item label="选择商户">
           <el-select v-model="updateForm.merchantId" placeholder="">
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -300,11 +304,12 @@
       <el-form :model="offOrderUploadForm" label-width="120px">
         <el-form-item label="选择商户">
           <el-select v-model="offOrderUploadForm.merchantId" placeholder="">
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -339,11 +344,12 @@
       <el-form :model="exrOrderUploadForm" label-width="120px">
         <el-form-item label="选择商户">
           <el-select v-model="exrOrderUploadForm.merchantId" placeholder="">
-            <el-option label="神创未来" value="1"></el-option>
-            <el-option label="佰福莱家居" value="2"></el-option>
-            <el-option label="深圳泽泽好物" value="3"></el-option>
-            <el-option label="武汉翠泽商行" value="4"></el-option>
-            <el-option label="小优起飞" value="5"></el-option>
+            <el-option
+              v-for="item in merchantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -372,7 +378,14 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPage, uploadOrder, addOrder, updateOrder, uploadOffOrder, uploadExrOrder } from '@/api/waybill-order-controller.js'
+import {
+  listPage,
+  uploadOrder,
+  addOrder,
+  updateOrder,
+  uploadOffOrder,
+  uploadExrOrder
+} from '@/api/waybill-order-controller.js'
 import axios from 'axios'
 
 export default {
@@ -412,7 +425,37 @@ export default {
       exrOrderUploadVisible: false,
       exrOrderFileName: '',
       exrOrderUploadLoading: false,
-      exrOrderUploadForm: {}
+      exrOrderUploadForm: {},
+      merchantList: [
+        {
+          label: '神创未来',
+          value: '1'
+        },
+        {
+          label: '佰福莱家居',
+          value: '2'
+        },
+        {
+          label: '深圳泽泽好物',
+          value: '3'
+        },
+        {
+          label: '武汉翠泽商行',
+          value: '4'
+        },
+        {
+          label: '小优起飞',
+          value: '5'
+        },
+        {
+          label: '武汉娟娟好物',
+          value: '6'
+        },
+        {
+          label: '武汉清华好物',
+          value: '7'
+        }
+      ]
     }
   },
   methods: {
@@ -447,7 +490,8 @@ export default {
         orderStatus: this.queryForm.orderStatus === '-1' ? '' : this.queryForm.orderStatus,
         wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
         noOrderStatus: this.queryForm.noOrderStatus === '-1' ? '' : this.queryForm.noOrderStatus,
-        noWayBillStatus: this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
+        noWayBillStatus:
+          this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
         orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType
       }
       listPage(param).then(res => {
@@ -476,17 +520,19 @@ export default {
         merchantId: this.uploadForm.merchantId
       }
       this.orderUploadLoading = true
-      uploadOrder(param).then(res => {
-        this.orderUploadLoading = false
-        this.orderUploadVisible = false
-        this.$message({
-          message: res.msg || '数据导入成功',
-          type: 'success'
+      uploadOrder(param)
+        .then(res => {
+          this.orderUploadLoading = false
+          this.orderUploadVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryBtnHandle()
         })
-        this.queryBtnHandle()
-      }).catch(() => {
-        this.orderUploadLoading = false
-      })
+        .catch(() => {
+          this.orderUploadLoading = false
+        })
     },
     /** 订单导入结束 */
 
@@ -513,7 +559,8 @@ export default {
           orderStatus: this.queryForm.orderStatus === '-1' ? '' : this.queryForm.orderStatus,
           wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
           noOrderStatus: this.queryForm.noOrderStatus === '-1' ? '' : this.queryForm.noOrderStatus,
-          noWayBillStatus: this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
+          noWayBillStatus:
+            this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
           orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType
         }
         axios({
@@ -613,17 +660,19 @@ export default {
         merchantId: this.offOrderUploadForm.merchantId
       }
       this.offOrderUploadLoading = true
-      uploadOffOrder(param).then(res => {
-        this.offOrderUploadLoading = false
-        this.offOrderUploadVisible = false
-        this.$message({
-          message: res.msg || '数据导入成功',
-          type: 'success'
+      uploadOffOrder(param)
+        .then(res => {
+          this.offOrderUploadLoading = false
+          this.offOrderUploadVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryBtnHandle()
         })
-        this.queryBtnHandle()
-      }).catch(() => {
-        this.offOrderUploadLoading = false
-      })
+        .catch(() => {
+          this.offOrderUploadLoading = false
+        })
     },
     /** 线下订单导入结束 */
 
@@ -646,24 +695,23 @@ export default {
         merchantId: this.exrOrderUploadForm.merchantId
       }
       this.exrOrderUploadLoading = true
-      uploadExrOrder(param).then(res => {
-        this.exrOrderUploadLoading = false
-        this.exrOrderUploadVisible = false
-        this.$message({
-          message: res.msg || '数据导入成功',
-          type: 'success'
+      uploadExrOrder(param)
+        .then(res => {
+          this.exrOrderUploadLoading = false
+          this.exrOrderUploadVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryBtnHandle()
         })
-        this.queryBtnHandle()
-      }).catch(() => {
-        this.exrOrderUploadLoading = false
-      })
+        .catch(() => {
+          this.exrOrderUploadLoading = false
+        })
     }
     /** 超区订单导入结束 */
-
   },
-  create() {
-
-  },
+  create() {},
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
