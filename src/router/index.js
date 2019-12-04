@@ -8,7 +8,7 @@ import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
+ * Detail see: https://panjiachen.github.io/vue-element-STAFF-site/guide/essentials/router-and-nav.html
  *
  * hidden: true                   if set true, item will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu
@@ -17,7 +17,7 @@ import Layout from '@/layout'
  * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
  * name:'router-name'             the name is used by <keep-alive> (must set!!!)
  * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
+    roles: ['STAFF','editor']    control the page roles (you can set multiple roles)
     title: 'title'               the name show in sidebar and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar
     breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
@@ -54,88 +54,100 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard' }
       }
     ]
-  },
+  }
+]
 
+export const asyncRoutes = [
   {
     path: '/waybill',
     component: Layout,
+    meta: { title: '运单管理', icon: 'table', roles: ['STAFF'] },
     children: [
       {
         path: '',
         name: 'waybill',
         component: () => import('@/views/waybill/index'),
-        meta: { title: '运单管理', icon: 'table' }
+        meta: { title: '运单管理', icon: 'table', roles: ['STAFF'] }
       }
     ]
   },
   {
     path: '/exception',
     component: Layout,
-    meta: { title: '异常运单处理', icon: 'form' },
+    meta: { title: '异常运单处理', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] },
     children: [
       {
         path: '',
+        name: 'exception',
+        component: () => import('@/views/exception/index'),
+        meta: { title: '异常运单', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] }
+      },
+      {
+        path: 'todo',
         name: 'todo',
         component: () => import('@/views/exception/todo'),
-        meta: { title: '待处理', icon: 'form' }
+        meta: { title: '待处理', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] }
       },
       {
         path: 'finish',
         name: 'finish',
         component: () => import('@/views/exception/finish'),
-        meta: { title: '已处理', icon: 'table' }
+        meta: { title: '已处理', icon: 'table', roles: ['STAFF', 'OUTER_STAFF'] }
       }
     ]
   },
   {
     path: '/order',
     component: Layout,
+    meta: { title: '订单管理', icon: 'form', roles: ['STAFF'] },
     children: [
       {
         path: '',
         name: 'order',
         component: () => import('@/views/order/index'),
-        meta: { title: '订单管理', icon: 'form' }
+        meta: { title: '订单管理', icon: 'form', roles: ['STAFF'] }
       }
     ]
   },
   {
     path: '/receivable',
     component: Layout,
+    meta: { title: '应收款运单', icon: 'table', roles: ['STAFF'] },
     children: [
       {
         path: '',
         name: 'receivable',
         component: () => import('@/views/receivable/index'),
-        meta: { title: '应收款运单', icon: 'table' }
+        meta: { title: '应收款运单', icon: 'table', roles: ['STAFF'] }
       }
     ]
   },
   {
     path: '/bill',
     component: Layout,
+    meta: { title: '京东账单', icon: 'table', roles: ['STAFF'] },
     children: [
       {
         path: '',
         name: 'bill',
         component: () => import('@/views/bill/index'),
-        meta: { title: '京东账单', icon: 'table' }
+        meta: { title: '京东账单', icon: 'table', roles: ['STAFF'] }
       }
     ]
   },
   {
     path: '/succreport',
     component: Layout,
+    meta: { title: '成功率统计', icon: 'table', roles: ['STAFF'] },
     children: [
       {
         path: '',
         name: 'succreport',
         component: () => import('@/views/succreport/index'),
-        meta: { title: '成功率统计', icon: 'table' }
+        meta: { title: '成功率统计', icon: 'table', roles: ['STAFF'] }
       }
     ]
   },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

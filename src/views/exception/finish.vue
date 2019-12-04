@@ -131,13 +131,13 @@
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
         <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
-        <el-table-column prop="intentionLevel" label="用户签收意向" align="center">
-        </el-table-column>
+        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
         </el-table-column>
         <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
         </el-table-column>
-        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
+        <el-table-column prop="intentionLevel" label="用户签收意向" align="center">
+        </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
@@ -150,7 +150,6 @@
         </el-table-column>
         <el-table-column prop="auditOpinion" label="审核意见" width="120" align="center">
         </el-table-column>
-
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
@@ -187,7 +186,7 @@ import { listUserFinish, trace } from '@/api/waybill-controller.js'
 import { parseTime } from '@/utils/index'
 
 export default {
-  name: 'Exception',
+  name: 'ExceptionFinish',
   components: {
     Pagination
   },

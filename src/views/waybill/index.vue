@@ -100,7 +100,7 @@
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
-        <el-table-column prop="hangReason" label="挂起原因" width="250" align="left">
+        <el-table-column prop="hangReason" label="挂起原因" width="250" align="center">
           <template slot-scope="scope">
             <ol v-if="scope.row.hangReason">
               <li :key="item.index" v-for="item in scope.row.hangReason.split(',')">
@@ -117,12 +117,11 @@
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
         <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
-        <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
+        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
         </el-table-column>
         <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
         </el-table-column>
-        <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
@@ -133,6 +132,7 @@
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
+        <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
@@ -230,9 +230,6 @@
       :visible.sync="waybillHandleVisible"
     >
       <el-form :model="handleForm" label-width="160px">
-        <el-form-item label="订单号">
-          <el-input v-model="handleForm.orderNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
         <el-form-item label="运单号">
           <el-input v-model="handleForm.wayBillNo" :disabled="true" placeholder=""></el-input>
         </el-form-item>
@@ -601,7 +598,6 @@ export default {
     },
     handleException(row) {
       this.waybillHandleVisible = true
-      this.handleForm.orderNo = row.orderNo
       this.handleForm.wayBillNo = row.wayBillNo
       this.handleForm.auditStatus = '再次投递'
       this.handleForm.lastResult = '拒收退回'

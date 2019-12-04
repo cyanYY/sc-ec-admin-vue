@@ -1,4 +1,4 @@
-import { login, logout } from '@/api/user'
+import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import avatar from '@/assets/avatar.gif'
@@ -8,7 +8,8 @@ const token = getToken()
 const state = {
   token: token,
   name: token && JSON.parse(token).name,
-  avatar: avatar
+  avatar: avatar,
+  roles: []
 }
 
 const mutations = {
@@ -20,6 +21,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
@@ -31,10 +35,37 @@ const actions = {
       login({ username: username.trim(), password: password })
         .then(res => {
           const data = res.data.data
-          commit('SET_NAME', data.name)
           commit('SET_TOKEN', data)
           setToken(data)
           resolve()
+        })
+        .catch(error => {
+          reject(error)
+        })
+    })
+  },
+
+  // get user info
+  getInfo({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getInfo(state.token)
+        .then(res => {
+          const { data } = res.data
+
+          if (!data) {
+            reject('Verification failed, please Login again.')
+          }
+
+          const { roles, name } = data
+
+          // roles must be a non-empty array
+          if (!roles || roles.length <= 0) {
+            reject('用户角色不能为空')
+          }
+
+          commit('SET_ROLES', roles)
+          commit('SET_NAME', name)
+          resolve(data)
         })
         .catch(error => {
           reject(error)
@@ -48,6 +79,7 @@ const actions = {
       logout(state.token)
         .then(() => {
           commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
           removeToken()
           resetRouter()
           resolve()
@@ -62,6 +94,7 @@ const actions = {
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
       removeToken()
       resolve()
     })
