@@ -78,7 +78,7 @@
     <el-row :gutter="8">
       <el-col :span="24">
         <el-card>
-          <span style="padding-right:8px;">统计日期：</span>
+          <span>统计日期：</span>
           <el-date-picker
             v-model="queryForm.dateRange"
             size="small"
@@ -90,30 +90,12 @@
             @change="datechange"
           >
           </el-date-picker>
-          <el-table :data="userDatas" show-summary :summary-method="getSummaries">
+          <el-table :data="userDatas" show-summary>
             <el-table-column label="操作员" align="center" prop="operator" />
-            <el-table-column label="挂起数" align="center" prop="hangNum" />
-            <el-table-column label="挂起妥投数" align="center" prop="hangFinishNum" />
-            <el-table-column label="挂起妥投率" align="center">
-              <template slot-scope="scope">
-                <span>{{
-                  scope.row.hangNum === 0
-                    ? '-'
-                    : ((scope.row.hangFinishNum * 100) / scope.row.hangNum).toFixed(2) + '%'
-                }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="直接处理数" align="center" prop="handleNum" />
-            <el-table-column label="直接处理妥投数" align="center" prop="handleFinishNum" />
-            <el-table-column label="直接处理妥投率" align="center">
-              <template slot-scope="scope">
-                <span>{{
-                  scope.row.handleNum === 0
-                    ? '-'
-                    : ((scope.row.handleFinishNum * 100) / scope.row.handleNum).toFixed(2) + '%'
-                }}</span>
-              </template>
-            </el-table-column>
+            <el-table-column label="总办理数" align="center" prop="totalHandle" />
+            <el-table-column label="新单办理数" align="center" prop="newHandle" />
+            <el-table-column label="老单办理数" align="center" prop="oldHandle" />
+            <el-table-column label="妥投数" align="center" prop="totalFinish" />
           </el-table>
         </el-card>
       </el-col>
@@ -169,37 +151,6 @@ export default {
     },
     datechange() {
       this.userHandle()
-    },
-    getSummaries(param) {
-      const { columns, data } = param
-      const sums = []
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = '合计'
-          return
-        }
-        if (index !== 3 && index !== 6) {
-          const values = data.map(item => Number(item[column.property]))
-          if (!values.every(value => isNaN(value))) {
-            sums[index] = values.reduce((prev, curr) => {
-              const value = Number(curr)
-              if (!isNaN(value)) {
-                return prev + curr
-              } else {
-                return prev
-              }
-            }, 0)
-          } else {
-            sums[index] = 'N/A'
-          }
-        } else if (index === 3) {
-          sums[3] = sums[1] === 0 ? '-' : ((sums[2] * 100) / sums[1]).toFixed(2) + '%'
-        } else if (index === 6) {
-          sums[6] = sums[4] === 0 ? '-' : ((sums[5] * 100) / sums[4]).toFixed(2) + '%'
-        }
-      })
-
-      return sums
     }
   },
   create() {},

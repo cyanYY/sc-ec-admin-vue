@@ -83,3 +83,9 @@ export function listUserFinish(params) {
   const url = '/wayBillException/listUserFinish'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 退回已签收
+export function returnSigned(params) {
+  const url = '/wayBillException/returnSigned?wayBillNo=' + params.wayBillNo
+  return axios.get(url).then(res => res.data)
+}

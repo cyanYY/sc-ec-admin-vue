@@ -423,7 +423,7 @@
             </div></div
         ></el-col>
       </el-row>
-      <div v-if="claimForm.claimed" style="margin-top: 10px; text-align: right;">
+      <div style="margin-top: 10px; text-align: right;">
         <el-button size="small" type="warning" @click="wayTrace(claimForm)">轨迹</el-button>
         <el-button size="small" type="success" @click="handleException(claimForm)">处理</el-button>
         <el-button size="small" type="primary" @click="hangException(claimForm)">挂起</el-button>
@@ -485,9 +485,7 @@ export default {
       wayTraceVisible: false,
       traceHtml: '',
       wayClaimVisible: false,
-      claimForm: {
-        claimed: false
-      }
+      claimForm: {}
     }
   },
   methods: {
@@ -613,10 +611,15 @@ export default {
       this.handleForm.userSigned = false
     },
     handleExceptionCommit() {
+      this.claim(this.handleForm.wayBillNo)
+
+      const auditOpinionOther = this.handleForm.auditOpinionOther
+        ? '|' + this.handleForm.auditOpinionOther
+        : ''
       var param = {
         wayBillNo: this.handleForm.wayBillNo,
         auditStatus: this.handleForm.auditStatus,
-        auditOpinion: this.handleForm.auditOpinion + this.handleForm.auditOpinionOther,
+        auditOpinion: this.handleForm.auditOpinion + auditOpinionOther,
         lastResult: this.handleForm.lastResult,
         userSigned: this.handleForm.userSigned
       }
@@ -639,6 +642,8 @@ export default {
       this.hangForm.intentionLevel = ''
     },
     hangExceptionCommit() {
+      this.claim(this.hangForm.wayBillNo)
+
       let reason = this.hangForm.hangReason
       const reasonOther = this.hangForm.hangReasonOther ? '|' + this.hangForm.hangReasonOther : ''
       const reasonPrice = this.hangForm.hangReasonPrice
@@ -709,14 +714,12 @@ export default {
       this.claimForm.processStatus = row.processStatus
       this.claimForm.processTime = row.processTime
       this.claimForm.hangReason = row.hangReason
-      this.claimForm.claimed = false
-
+    },
+    claim(wayBillNo) {
       const param = {
-        wayBillNo: this.claimForm.wayBillNo
+        wayBillNo: wayBillNo
       }
-      claim(param).then(() => {
-        this.claimForm.claimed = true
-      })
+      claim(param)
     }
   },
   create() {},

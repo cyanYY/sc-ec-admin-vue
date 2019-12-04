@@ -96,6 +96,9 @@
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
+            <el-button @click="returnSignedClick(scope.row)" type="text" size="small"
+              >退回</el-button
+            >
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -125,8 +128,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listReceivables, trace } from '@/api/waybill-controller.js'
-
+import { listReceivables, trace, returnSigned } from '@/api/waybill-controller.js'
 
 export default {
   name: 'Receivable',
@@ -177,8 +179,8 @@ export default {
         receiverMobile: this.queryForm.receiverMobile
       }
       listReceivables(param).then(res => {
-          this.tableDataSearch = res.data.recordList
-          this.total = res.data.totalCount
+        this.tableDataSearch = res.data.recordList
+        this.total = res.data.totalCount
       })
     },
     wayTrace(row) {
@@ -190,11 +192,26 @@ export default {
       trace(param).then(res => {
         this.traceHtml = res.data ? res.data : '未查询到运单轨迹'
       })
+    },
+    returnSignedClick(row) {
+      this.$confirm('确认退回?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = {
+          wayBillNo: row.wayBillNo
+        }
+        returnSigned(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryHandle()
+        })
+      })
     }
   },
-  create() {
-
-  },
+  create() {},
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)

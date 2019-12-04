@@ -148,6 +148,8 @@
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
+        <el-table-column prop="auditOpinion" label="审核意见" width="120" align="center">
+        </el-table-column>
 
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">

@@ -406,10 +406,11 @@ export default {
       this.handleForm.userSigned = false
     },
     handleExceptionCommit() {
+      const auditOpinionOther = this.handleForm.auditOpinionOther ? '|' + this.handleForm.auditOpinionOther : ''
       var param = {
         wayBillNo: this.handleForm.wayBillNo,
         auditStatus: this.handleForm.auditStatus,
-        auditOpinion: this.handleForm.auditOpinion + this.handleForm.auditOpinionOther,
+        auditOpinion: this.handleForm.auditOpinion + auditOpinionOther,
         lastResult: this.handleForm.lastResult,
         userSigned: this.handleForm.userSigned
       }
