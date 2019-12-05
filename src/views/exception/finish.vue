@@ -182,7 +182,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listUserFinish, trace } from '@/api/waybill-controller.js'
+import { listUserFinish, trace } from '@/api/waybill.js'
 import { parseTime } from '@/utils/index'
 
 export default {

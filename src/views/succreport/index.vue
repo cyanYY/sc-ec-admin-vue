@@ -68,7 +68,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { successRate } from '@/api/waybill-order-controller.js'
+import { successRate } from '@/api/order.js'
 
 export default {
   name: 'SuccReport',

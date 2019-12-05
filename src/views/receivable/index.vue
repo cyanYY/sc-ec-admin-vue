@@ -128,7 +128,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listReceivables, trace, returnSigned } from '@/api/waybill-controller.js'
+import { listReceivables, trace, returnSigned } from '@/api/waybill.js'
 
 export default {
   name: 'Receivable',

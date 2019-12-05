@@ -385,7 +385,7 @@ import {
   updateOrder,
   uploadOffOrder,
   uploadExrOrder
-} from '@/api/waybill-order-controller.js'
+} from '@/api/order.js'
 import axios from 'axios'
 
 export default {

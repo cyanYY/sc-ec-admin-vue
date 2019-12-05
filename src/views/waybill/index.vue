@@ -336,6 +336,7 @@
       title="异常运单办理"
       :close-on-click-modal="false"
       :visible.sync="wayClaimVisible"
+      @close="queryHandle()"
     >
       <el-row :gutter="10">
         <el-col :span="8"
@@ -439,7 +440,7 @@ import {
   hang,
   trace,
   claim
-} from '@/api/waybill-controller.js'
+} from '@/api/waybill.js'
 import axios from 'axios'
 
 export default {
@@ -606,13 +607,13 @@ export default {
       this.handleForm.opinionDisabled = true
       this.handleForm.userSigned = false
     },
-    handleExceptionCommit() {
-      this.claim(this.handleForm.wayBillNo)
+    async handleExceptionCommit() {
+      await claim({ wayBillNo: this.handleForm.wayBillNo })
 
       const auditOpinionOther = this.handleForm.auditOpinionOther
         ? '|' + this.handleForm.auditOpinionOther
         : ''
-      var param = {
+      const param = {
         wayBillNo: this.handleForm.wayBillNo,
         auditStatus: this.handleForm.auditStatus,
         auditOpinion: this.handleForm.auditOpinion + auditOpinionOther,
@@ -637,8 +638,8 @@ export default {
       this.hangForm.wayBillNo = row.wayBillNo
       this.hangForm.intentionLevel = ''
     },
-    hangExceptionCommit() {
-      this.claim(this.hangForm.wayBillNo)
+    async hangExceptionCommit() {
+      await claim({ wayBillNo: this.hangForm.wayBillNo })
 
       let reason = this.hangForm.hangReason
       const reasonOther = this.hangForm.hangReasonOther ? '|' + this.hangForm.hangReasonOther : ''
@@ -646,7 +647,7 @@ export default {
         ? '|改价' + this.hangForm.hangReasonPrice
         : ''
       reason = reason + reasonOther + reasonPrice
-      var param = {
+      const param = {
         wayBillNo: this.hangForm.wayBillNo,
         hangReason: reason,
         intentionLevel: this.hangForm.intentionLevel
@@ -710,12 +711,6 @@ export default {
       this.claimForm.processStatus = row.processStatus
       this.claimForm.processTime = row.processTime
       this.claimForm.hangReason = row.hangReason
-    },
-    claim(wayBillNo) {
-      const param = {
-        wayBillNo: wayBillNo
-      }
-      claim(param)
     }
   },
   create() {},

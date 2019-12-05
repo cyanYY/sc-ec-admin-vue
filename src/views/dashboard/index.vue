@@ -105,7 +105,7 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { getGroupPanelInfo, listUserHandle } from '@/api/dashboard-controller.js'
+import { getGroupPanelInfo, listUserHandle } from '@/api/dashboard.js'
 import { parseTime } from '@/utils'
 
 const currentDate = parseTime(new Date(), '{y}-{m}-{d}}')

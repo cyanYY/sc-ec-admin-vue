@@ -147,9 +147,7 @@ export const asyncRoutes = [
         meta: { title: '成功率统计', icon: 'table', roles: ['STAFF'] }
       }
     ]
-  },
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 const createRouter = () =>

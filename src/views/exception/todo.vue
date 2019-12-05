@@ -296,7 +296,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listUserTodo, handle, hang, trace } from '@/api/waybill-controller.js'
+import { listUserTodo, handle, hang, trace } from '@/api/waybill.js'
 import { parseTime } from '@/utils/index'
 
 export default {

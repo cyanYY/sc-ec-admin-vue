@@ -232,6 +232,7 @@
       title="异常运单办理"
       :close-on-click-modal="false"
       :visible.sync="wayClaimVisible"
+      @close="queryHandle()"
     >
       <el-row :gutter="10">
         <el-col :span="8"
@@ -327,7 +328,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPage, handle, hang, trace, claim } from '@/api/waybill-controller.js'
+import { listPage, handle, hang, trace, claim } from '@/api/waybill.js'
 
 export default {
   name: 'Exception',
@@ -501,7 +502,6 @@ export default {
       }
       claim(param).then(() => {
         this.claimForm.claimed = true
-        this.queryHandle()
       })
     }
   },

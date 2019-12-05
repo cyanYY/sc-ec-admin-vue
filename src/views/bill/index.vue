@@ -100,7 +100,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageBill, uploadBill } from '@/api/waybill-order-controller.js'
+import { listPageBill, uploadBill } from '@/api/order.js'
 
 export default {
   name: 'Bill',
@@ -174,24 +174,23 @@ export default {
         merchantId: this.uploadForm.merchantId
       }
       this.billUploadLoading = true
-      uploadBill(param).then(res => {
-        this.billUploadLoading = false
-        this.billUploadVisible = false
-        this.$message({
-          message: res.msg || '数据导入成功',
-          type: 'success'
+      uploadBill(param)
+        .then(res => {
+          this.billUploadLoading = false
+          this.billUploadVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryBtnHandle()
         })
-        this.queryBtnHandle()
-      }).catch(() => {
-        this.billUploadLoading = false
-      })
+        .catch(() => {
+          this.billUploadLoading = false
+        })
     }
     /** 账单导入结束 */
-
   },
-  create() {
-
-  },
+  create() {},
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)

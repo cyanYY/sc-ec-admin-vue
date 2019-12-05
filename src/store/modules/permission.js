@@ -55,8 +55,6 @@ const actions = {
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
-      // 修复404路由丢失的BUG
-      accessedRoutes.push(asyncRoutes[asyncRoutes.length - 1])
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
