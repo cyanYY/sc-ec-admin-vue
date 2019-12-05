@@ -25,3 +25,8 @@ export function getInfo() {
     method: 'post'
   })
 }
+
+export function updatePwd(params) {
+  const url = '/user/updatePwd'
+  return request.post(url, params).then(res => res.data)
+}

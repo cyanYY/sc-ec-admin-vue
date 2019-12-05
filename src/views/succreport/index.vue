@@ -40,6 +40,7 @@
         center
         style="width: 100%;font-size: 13px;"
       >
+        <el-table-column prop="orderDate" label="日期" align="center"> </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" align="center"> </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" align="center"> </el-table-column>
         <el-table-column prop="total" label="总数" align="center"> </el-table-column>

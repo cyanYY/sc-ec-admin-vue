@@ -16,17 +16,32 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              首页
-            </el-dropdown-item>
-          </router-link>
+          <el-dropdown-item>
+            <span style="display:block;" @click="updatePwd">修改密码</span>
+          </el-dropdown-item>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">注销</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <el-dialog title="修改密码" :close-on-click-modal="false" :visible.sync="updatePwdVisible">
+      <el-form ref="updatePwdForm" :model="updatePwdForm" :rules="updatePwdRules">
+        <el-form-item label="原密码" prop="password" required>
+          <el-input v-model="updatePwdForm.password" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword" required>
+          <el-input v-model="updatePwdForm.newPassword" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword" required>
+          <el-input v-model="updatePwdForm.confirmPassword" type="password"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="updatePwdCommit">确定</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -34,6 +49,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { updatePwd } from '@/api/user.js'
 
 export default {
   components: {
@@ -43,6 +59,31 @@ export default {
   computed: {
     ...mapGetters(['sidebar', 'avatar', 'name'])
   },
+  data() {
+    const validatePasswordConfirm = (rule, value, callback) => {
+      if (this.updatePwdForm.newPassword !== this.updatePwdForm.confirmPassword) {
+        callback(new Error('两次输入密码不一致'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      updatePwdVisible: false,
+      updatePwdForm: {
+        password: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
+      updatePwdRules: {
+        password: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+        newPassword: [{ required: true, message: '请输入新密码', trigger: 'blur' }],
+        confirmPassword: [
+          { required: true, message: '请输入确认密码', trigger: 'blur' },
+          { trigger: 'blur', validator: validatePasswordConfirm }
+        ]
+      }
+    }
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -50,6 +91,31 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    updatePwd() {
+      this.updatePwdVisible = true
+
+      this.$refs['updatePwdForm'].resetFields()
+    },
+    updatePwdCommit() {
+      this.$refs['updatePwdForm'].validate(valid => {
+        if (valid) {
+          const param = {
+            password: this.updatePwdForm.password,
+            newPassword: this.updatePwdForm.newPassword,
+            confirmPassword: this.updatePwdForm.confirmPassword
+          }
+          updatePwd(param).then(res => {
+            this.updatePwdVisible = false
+            this.$message({
+              message: res.msg,
+              type: 'success'
+            })
+          })
+        } else {
+          return false
+        }
+      })
     }
   }
 }
