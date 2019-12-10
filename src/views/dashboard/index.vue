@@ -108,13 +108,13 @@ import CountTo from 'vue-count-to'
 import { getGroupPanelInfo, listUserHandle } from '@/api/dashboard.js'
 import { parseTime } from '@/utils'
 
-const currentDate = parseTime(new Date(), '{y}-{m}-{d}}')
-
 export default {
   components: {
     CountTo
   },
   data() {
+    const currentDate = parseTime(new Date(), '{y}-{m}-{d}}')
+
     return {
       queryForm: {
         dateRange: [currentDate, currentDate]

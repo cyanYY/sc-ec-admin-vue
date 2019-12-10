@@ -33,21 +33,37 @@
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
+        :summary-method="getSummaries"
+        show-summary
       >
         <el-table-column prop="orderDate" label="日期" align="center"> </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" align="center"> </el-table-column>
-        <el-table-column prop="goodsName" label="商品名称" align="center"> </el-table-column>
+        <el-table-column prop="goodsName" label="商品名称" width="200" align="center">
+        </el-table-column>
         <el-table-column prop="total" label="总数" align="center"> </el-table-column>
         <el-table-column prop="totalSuc" label="已完成" align="center"> </el-table-column>
         <el-table-column label="成功率" align="center">
           <template slot-scope="scope">
-            <span>{{ ((scope.row.totalSuc * 100) / scope.row.total).toFixed(2) + '%' }}</span>
+            <span>{{
+              scope.row.total === 0
+                ? '-'
+                : ((scope.row.totalSuc * 100) / scope.row.total).toFixed(2) + '%'
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="totalException" label="异常数" align="center"> </el-table-column>
+        <el-table-column label="异常率" align="center">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.total === 0
+                ? '-'
+                : ((scope.row.totalException * 100) / scope.row.total).toFixed(2) + '%'
+            }}</span>
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -69,6 +85,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { successRate } from '@/api/order.js'
+import { parseTime } from '@/utils'
 
 export default {
   name: 'SuccReport',
@@ -76,13 +93,23 @@ export default {
     Pagination
   },
   data() {
+    const date = new Date()
+    const endDate = parseTime(date, '{y}-{m}-{d}}')
+    date.setDate(date.getDate() - 14)
+    const startDate = parseTime(date, '{y}-{m}-{d}}')
+
     return {
       tableDataSearch: [],
       currentPage: 1,
       perpageNumber: 20,
       total: 0,
       queryForm: {
-        orderTimeRange: []
+        orderTimeRange: [startDate, endDate]
+      },
+      sums: {
+        total: 0,
+        totalSuc: 0,
+        totalExc: 0
       }
     }
   },
@@ -115,9 +142,35 @@ export default {
         orderTimeEnd: orderTimeEnd
       }
       successRate(param).then(res => {
-        this.tableDataSearch = res.data.recordList
-        this.total = res.data.totalCount
+        this.sums.total = res.data.total
+        this.sums.totalSuc = res.data.totalSuc
+        this.sums.totalExc = res.data.totalExc
+        this.tableDataSearch = res.data.result.recordList
+        this.total = res.data.result.totalCount
       })
+    },
+    getSummaries(param) {
+      const { columns } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        sums[3] = this.sums.total
+        sums[4] = this.sums.totalSuc
+        sums[5] =
+          this.sums.total === 0
+            ? '-'
+            : ((this.sums.totalSuc * 100) / this.sums.total).toFixed(2) + '%'
+        sums[6] = this.sums.totalExc
+        sums[7] =
+          this.sums.total === 0
+            ? '-'
+            : ((this.sums.totalExc * 100) / this.sums.total).toFixed(2) + '%'
+      })
+
+      return sums
     }
     /** 分页查询订单结束 */
   },
@@ -128,18 +181,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.logWork-cont {
-  .logWork-tables {
-    margin-top: 20px;
-  }
-  .logWork-pages {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
-  }
-}
-</style>

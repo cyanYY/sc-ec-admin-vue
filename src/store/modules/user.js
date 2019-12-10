@@ -6,7 +6,7 @@ const state = {
   token: getToken(),
   name: '',
   avatar: avatar,
-  roles: []
+  resources: []
 }
 
 const mutations = {
@@ -19,8 +19,8 @@ const mutations = {
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles
+  SET_RESOURCES: (state, resources) => {
+    state.resources = resources
   }
 }
 
@@ -53,14 +53,9 @@ const actions = {
             reject('Verification failed, please Login again.')
           }
 
-          const { roles, name } = data
+          const { resources, name } = data
 
-          // roles must be a non-empty array
-          if (!roles || roles.length <= 0) {
-            reject('用户角色不能为空')
-          }
-
-          commit('SET_ROLES', roles)
+          commit('SET_RESOURCES', resources)
           commit('SET_NAME', name)
           resolve(data)
         })
@@ -76,7 +71,7 @@ const actions = {
       logout(state.token)
         .then(() => {
           commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
+          commit('SET_RESOURCES', [])
           removeToken()
           resetRouter()
           resolve()

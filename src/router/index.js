@@ -61,90 +61,115 @@ export const asyncRoutes = [
   {
     path: '/waybill',
     component: Layout,
-    meta: { title: '运单管理', icon: 'table', roles: ['STAFF'] },
+    meta: { title: '运单管理', icon: 'table', key: 'waybill' },
     children: [
       {
         path: '',
         name: 'waybill',
         component: () => import('@/views/waybill/index'),
-        meta: { title: '运单管理', icon: 'table', roles: ['STAFF'] }
+        meta: { title: '运单管理', icon: 'table', key: 'waybill' }
       }
     ]
   },
   {
     path: '/exception',
     component: Layout,
-    meta: { title: '异常运单处理', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] },
+    meta: { title: '异常运单处理', icon: 'form', key: 'exception' },
     children: [
       {
         path: '',
         name: 'exception',
         component: () => import('@/views/exception/index'),
-        meta: { title: '异常运单', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] }
+        meta: { title: '异常运单', icon: 'form', key: 'exception' }
       },
       {
         path: 'todo',
         name: 'todo',
         component: () => import('@/views/exception/todo'),
-        meta: { title: '待处理', icon: 'form', roles: ['STAFF', 'OUTER_STAFF'] }
+        meta: { title: '待处理', icon: 'form', key: 'exception:todo' }
       },
       {
         path: 'finish',
         name: 'finish',
         component: () => import('@/views/exception/finish'),
-        meta: { title: '已处理', icon: 'table', roles: ['STAFF', 'OUTER_STAFF'] }
+        meta: { title: '已处理', icon: 'table', key: 'exception:finish' }
       }
     ]
   },
   {
     path: '/order',
     component: Layout,
-    meta: { title: '订单管理', icon: 'form', roles: ['STAFF'] },
+    meta: { title: '订单管理', icon: 'form', key: 'order' },
     children: [
       {
         path: '',
         name: 'order',
         component: () => import('@/views/order/index'),
-        meta: { title: '订单管理', icon: 'form', roles: ['STAFF'] }
+        meta: { title: '订单管理', icon: 'form', key: 'order' }
       }
     ]
   },
   {
     path: '/receivable',
     component: Layout,
-    meta: { title: '应收款运单', icon: 'table', roles: ['STAFF'] },
+    meta: { title: '应收款运单', icon: 'table', key: 'receivable' },
     children: [
       {
         path: '',
         name: 'receivable',
         component: () => import('@/views/receivable/index'),
-        meta: { title: '应收款运单', icon: 'table', roles: ['STAFF'] }
+        meta: { title: '应收款运单', icon: 'table', key: 'receivable' }
       }
     ]
   },
-  {
-    path: '/bill',
-    component: Layout,
-    meta: { title: '京东账单', icon: 'table', roles: ['STAFF'] },
-    children: [
-      {
-        path: '',
-        name: 'bill',
-        component: () => import('@/views/bill/index'),
-        meta: { title: '京东账单', icon: 'table', roles: ['STAFF'] }
-      }
-    ]
-  },
+  // {
+  //   path: '/bill',
+  //   component: Layout,
+  //   meta: { title: '京东账单', icon: 'table', key: 'bill' },
+  //   children: [
+  //     {
+  //       path: '',
+  //       name: 'bill',
+  //       component: () => import('@/views/bill/index'),
+  //       meta: { title: '京东账单', icon: 'table', key: 'bill' }
+  //     }
+  //   ]
+  // },
   {
     path: '/succreport',
     component: Layout,
-    meta: { title: '成功率统计', icon: 'table', roles: ['STAFF'] },
+    meta: { title: '成功率统计', icon: 'table', key: 'succreport' },
     children: [
       {
         path: '',
         name: 'succreport',
         component: () => import('@/views/succreport/index'),
-        meta: { title: '成功率统计', icon: 'table', roles: ['STAFF'] }
+        meta: { title: '成功率统计', icon: 'table', key: 'succreport' }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    meta: { title: '系统管理', icon: 'table', key: 'system' },
+    children: [
+      {
+        path: '',
+        name: 'system',
+        component: () => import('@/views/system/index'),
+        meta: { title: '用户管理', icon: 'form', key: 'system' }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('@/views/system/role'),
+        meta: { title: '角色管理', icon: 'form', key: 'system:role' }
+      },
+      {
+        path: 'resource',
+        name: 'resource',
+        component: () => import('@/views/system/resource'),
+        meta: { title: '资源管理', icon: 'form', key: 'system:resource' }
       }
     ]
   }

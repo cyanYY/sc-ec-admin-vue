@@ -49,6 +49,7 @@
         </el-form-item>
         <el-form-item label="">
           <el-select v-model="queryForm.processStatus" placeholder="处理状态">
+            <el-option label="全部" value="-1"></el-option>
             <el-option label="待办理" value="待办理"></el-option>
           </el-select>
         </el-form-item>
