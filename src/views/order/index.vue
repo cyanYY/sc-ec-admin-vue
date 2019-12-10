@@ -454,6 +454,10 @@ export default {
         {
           label: '武汉清华好物',
           value: '7'
+        },
+        {
+          label: '勇哥商行',
+          value: '8'
         }
       ]
     }

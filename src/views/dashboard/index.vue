@@ -113,7 +113,7 @@ export default {
     CountTo
   },
   data() {
-    const currentDate = parseTime(new Date(), '{y}-{m}-{d}}')
+    const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
 
     return {
       queryForm: {

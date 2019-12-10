@@ -94,9 +94,9 @@ export default {
   },
   data() {
     const date = new Date()
-    const endDate = parseTime(date, '{y}-{m}-{d}}')
+    const endDate = parseTime(date, '{y}-{m}-{d}')
     date.setDate(date.getDate() - 14)
-    const startDate = parseTime(date, '{y}-{m}-{d}}')
+    const startDate = parseTime(date, '{y}-{m}-{d}')
 
     return {
       tableDataSearch: [],
