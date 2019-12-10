@@ -6,7 +6,8 @@ const state = {
   token: getToken(),
   name: '',
   avatar: avatar,
-  resources: []
+  resources: [],
+  roles: []
 }
 
 const mutations = {
@@ -21,6 +22,9 @@ const mutations = {
   },
   SET_RESOURCES: (state, resources) => {
     state.resources = resources
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
@@ -53,9 +57,10 @@ const actions = {
             reject('Verification failed, please Login again.')
           }
 
-          const { resources, name } = data
+          const { resources, name, roles } = data
 
           commit('SET_RESOURCES', resources)
+          commit('SET_ROLES', roles)
           commit('SET_NAME', name)
           resolve(data)
         })
@@ -72,6 +77,7 @@ const actions = {
         .then(() => {
           commit('SET_TOKEN', '')
           commit('SET_RESOURCES', [])
+          commit('SET_ROLES', [])
           removeToken()
           resetRouter()
           resolve()
@@ -87,6 +93,7 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_RESOURCES', [])
       removeToken()
       resolve()
     })

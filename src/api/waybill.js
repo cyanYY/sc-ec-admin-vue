@@ -8,7 +8,7 @@ export function listPage(params) {
 
 // 导入运单
 export function uploadWaybill(params) {
-  const url = '/wayBill/upload?fileName=' + params.fileName
+  const url = '/wayBill/upload?fileName=' + params.fileName + '&agentId=' + params.agentId
   return axios.post(url, params).then(res => res.data)
 }
 
@@ -26,7 +26,7 @@ export function handle(params) {
 
 // 运单审核
 export function exportAudit(params) {
-  const url = '/wayBillException/exportAudit'
+  const url = '/wayBillException/exportAudit?agentId=' + params.agentId
   axios.post(url, params, { responseType: 'blob' }).then(res => {
     const fileName = '运单审核.xlsx'
     const blob = new Blob([res.data], { type: 'application/x-xls' })

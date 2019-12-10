@@ -73,7 +73,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="代理商：">
-          <el-select v-model="itemAdd.agentId" placeholder="" @change="listMerchants">
+          <el-select v-model="itemAdd.agentId" clearable @change="listMerchants">
             <el-option
               v-for="item in dropAgents"
               :key="item.agentId"
@@ -135,7 +135,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="代理商：">
-          <el-select v-model="itemEdit.agentId" placeholder="" @change="listMerchants">
+          <el-select v-model="itemEdit.agentId" clearable @change="listMerchants">
             <el-option
               v-for="item in dropAgents"
               :key="item.agentId"

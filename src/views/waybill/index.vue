@@ -80,11 +80,27 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
-          <el-button size="small" type="primary" @click="wayBillUploadHandle">运单导入</el-button>
-          <el-button size="small" type="primary" @click="wayBillExceptionUploadHandle"
+          <el-button
+            v-if="roles.indexOf('SYS_ADMIN') > -1"
+            size="small"
+            type="primary"
+            @click="wayBillUploadHandle"
+            >运单导入</el-button
+          >
+          <el-button
+            v-if="roles.indexOf('SYS_ADMIN') > -1"
+            size="small"
+            type="primary"
+            @click="wayBillExceptionUploadHandle"
             >异常单导入</el-button
           >
-          <el-button size="small" type="primary" @click="auditExportHandle">批量审核</el-button>
+          <el-button
+            v-if="roles.indexOf('SYS_ADMIN') > -1"
+            size="small"
+            type="primary"
+            @click="auditExportHandle"
+            >批量审核</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -171,6 +187,16 @@
       :visible.sync="waybillUploadVisible"
     >
       <el-form label-width="80px">
+        <el-form-item label="代理商：">
+          <el-select v-model="uploadAgentId" placeholder="">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="选择文件">
           <el-upload
             ref="wayBillUpload"
@@ -219,6 +245,29 @@
               >确认导入</el-button
             >
           </el-form-item>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog
+      size="small"
+      title=""
+      :close-on-click-modal="false"
+      :visible.sync="waybillAuditVisible"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="代理商：">
+          <el-select v-model="auditAgentId" placeholder="">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="waybillAuditHandle">确认导出</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -431,6 +480,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination/index'
 import {
   listPage,
@@ -441,12 +491,16 @@ import {
   trace,
   claim
 } from '@/api/waybill.js'
+import { listAgents } from '@/api/user.js'
 import axios from 'axios'
 
 export default {
   name: 'Waybill',
   components: {
     Pagination
+  },
+  computed: {
+    ...mapGetters(['roles'])
   },
   data() {
     return {
@@ -483,7 +537,11 @@ export default {
       wayTraceVisible: false,
       traceHtml: '',
       wayClaimVisible: false,
-      claimForm: {}
+      claimForm: {},
+      dropAgents: [],
+      uploadAgentId: '',
+      waybillAuditVisible: false,
+      auditAgentId: ''
     }
   },
   methods: {
@@ -555,6 +613,7 @@ export default {
         })
       }
       var param = {
+        agentId: this.uploadAgentId,
         fileName: this.waybillFileName
       }
       this.waybillUploadLoading = true
@@ -663,27 +722,26 @@ export default {
       })
     },
     auditExportHandle() {
-      this.$confirm('确认生成批量审核运单?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        axios({
-          method: 'post',
-          url: this.baseURL + '/wayBillException/exportAudit',
-          responseType: 'blob'
-        }).then(res => {
-          const fileName = '运单审核.xls'
-          const blob = new Blob([res.data], { type: 'application/xls' })
-          if (window.navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(blob, fileName)
-          } else {
-            var link = document.createElement('a')
-            link.href = window.URL.createObjectURL(blob)
-            link.download = fileName
-            link.click()
-            window.URL.revokeObjectURL(link.href)
-          }
-        })
+      this.waybillAuditVisible = true
+    },
+    waybillAuditHandle() {
+      axios({
+        method: 'post',
+        url: this.baseURL + '/wayBillException/exportAudit?agentId=' + this.auditAgentId,
+        responseType: 'blob'
+      }).then(res => {
+        this.waybillAuditVisible = false
+        const fileName = '运单审核.xls'
+        const blob = new Blob([res.data], { type: 'application/xls' })
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, fileName)
+        } else {
+          var link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = fileName
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
       })
     },
     wayTrace(row) {
@@ -711,12 +769,18 @@ export default {
       this.claimForm.processStatus = row.processStatus
       this.claimForm.processTime = row.processTime
       this.claimForm.hangReason = row.hangReason
+    },
+    listAgents() {
+      listAgents().then(res => {
+        this.dropAgents = res.data
+      })
     }
   },
   create() {},
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
+    this.listAgents()
   }
 }
 </script>

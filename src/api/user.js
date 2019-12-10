@@ -66,3 +66,8 @@ export function listMerchants(params) {
   const url = '/user/listMerchants?agentId=' + params.agentId
   return request.get(url).then(res => res.data)
 }
+
+export function listUserMerchants() {
+  const url = '/user/listUserMerchants'
+  return request.get(url).then(res => res.data)
+}
