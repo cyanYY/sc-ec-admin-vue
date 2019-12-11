@@ -67,7 +67,14 @@ export function listMerchants(params) {
   return request.get(url).then(res => res.data)
 }
 
+// 查询用户商户下拉列表
 export function listUserMerchants() {
   const url = '/user/listUserMerchants'
+  return request.get(url).then(res => res.data)
+}
+
+// 查询用户代理商下拉列表
+export function listUserAgents() {
+  const url = '/user/listUserAgents'
   return request.get(url).then(res => res.data)
 }

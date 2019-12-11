@@ -8,7 +8,7 @@ export function listPage(params) {
 
 // 导入运单
 export function uploadWaybill(params) {
-  const url = '/wayBill/upload?fileName=' + params.fileName + '&agentId=' + params.agentId
+  const url = '/wayBill/upload?fileName'
   return axios.post(url, params).then(res => res.data)
 }
 

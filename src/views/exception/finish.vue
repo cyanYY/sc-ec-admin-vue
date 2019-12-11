@@ -96,6 +96,16 @@
             <el-option label="其他原因" value="其他原因"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.agentId" clearable placeholder="代理商">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
         </el-form-item>
@@ -183,6 +193,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { listUserFinish, trace } from '@/api/waybill.js'
+import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -201,7 +212,8 @@ export default {
         processTimeRange: []
       },
       wayTraceVisible: false,
-      traceHtml: ''
+      traceHtml: '',
+      dropAgents: []
     }
   },
   methods: {
@@ -246,7 +258,8 @@ export default {
         processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
         deliveryMobile: this.queryForm.deliveryMobile,
         intentionLevel: this.queryForm.intentionLevel === '-1' ? '' : this.queryForm.intentionLevel,
-        hangReason: this.queryForm.hangReason === '-1' ? '' : this.queryForm.hangReason
+        hangReason: this.queryForm.hangReason === '-1' ? '' : this.queryForm.hangReason,
+        agentId: this.queryForm.agentId
       }
       listUserFinish(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -270,12 +283,18 @@ export default {
       trace(param).then(res => {
         this.traceHtml = res.data ? res.data : '未查询到运单轨迹'
       })
+    },
+    listUserAgents() {
+      listUserAgents().then(res => {
+        this.dropAgents = res.data
+      })
     }
   },
   create() {},
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
+    this.listUserAgents()
   }
 }
 </script>

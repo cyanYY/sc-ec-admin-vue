@@ -78,25 +78,47 @@
     <el-row :gutter="8">
       <el-col :span="24">
         <el-card>
-          <span>统计日期：</span>
-          <el-date-picker
-            v-model="queryForm.dateRange"
-            size="small"
-            type="daterange"
-            value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            @change="datechange"
-          >
-          </el-date-picker>
-          <el-table :data="userDatas" show-summary>
+          <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
+            <el-form-item label="代理商：">
+              <el-select v-model="queryForm.agentId" clearable placeholder="">
+                <el-option
+                  v-for="item in dropAgents"
+                  :key="item.agentId"
+                  :label="item.agentName"
+                  :value="item.agentId"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="统计日期：">
+              <el-date-picker
+                v-model="queryForm.dateRange"
+                size="small"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              >
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button size="small" type="primary" @click="queryHandle()">查询</el-button>
+            </el-form-item>
+          </el-form>
+          <el-table :data="userDatas" show-summary :summary-method="getSummaries">
+            <el-table-column label="处理日期" align="center" prop="processDate" />
             <el-table-column label="操作员" align="center" prop="operator" />
             <el-table-column label="总办理数" align="center" prop="totalHandle" />
             <el-table-column label="新单办理数" align="center" prop="newHandle" />
             <el-table-column label="老单办理数" align="center" prop="oldHandle" />
             <el-table-column label="妥投数" align="center" prop="totalFinish" />
           </el-table>
+          <Pagination
+            :total="total"
+            :perpages="perpageNumber"
+            :currentPage="currentPage"
+            @currentPage="getCurrentPage"
+          ></Pagination>
         </el-card>
       </el-col>
     </el-row>
@@ -105,12 +127,15 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import Pagination from '@/components/Pagination/index'
 import { getGroupPanelInfo, listUserHandle } from '@/api/dashboard.js'
+import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils'
 
 export default {
   components: {
-    CountTo
+    CountTo,
+    Pagination
   },
   data() {
     const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
@@ -125,16 +150,39 @@ export default {
         totalException: 0,
         totalFinish: 0
       },
-      userDatas: []
+      userDatas: [],
+      currentPage: 1,
+      perpageNumber: 20,
+      total: 0,
+      sums: {
+        totalHandle: 0,
+        newHandle: 0,
+        oldHandle: 0,
+        totalFinish: 0
+      },
+      dropAgents: []
     }
   },
   methods: {
+    queryHandle() {
+      this.groupPanelInfo()
+      this.userHandle(this.perpageNumber, this.currentPage)
+    },
+    // 页码发生变化
+    getCurrentPage(perPage, currPage) {
+      this.currentPage = currPage
+      this.perpageNumber = perPage
+      this.userHandle(perPage, currPage)
+    },
     groupPanelInfo() {
-      getGroupPanelInfo().then(res => {
+      const param = {
+        agentId: this.queryForm.agentId
+      }
+      getGroupPanelInfo(param).then(res => {
         this.stasticsData = res.data
       })
     },
-    userHandle() {
+    userHandle(numPerPage, pageNum) {
       let startDate = ''
       let endDate = ''
       if (this.queryForm.dateRange) {
@@ -143,20 +191,47 @@ export default {
       }
       const param = {
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
+        agentId: this.queryForm.agentId,
+        numPerPage: numPerPage,
+        pageNum: pageNum
       }
       listUserHandle(param).then(res => {
-        this.userDatas = res.data
+        this.userDatas = res.data.list.recordList
+        this.total = res.data.list.totalCount
+
+        this.sums.totalHandle = res.data.totalHandle
+        this.sums.newHandle = res.data.newHandle
+        this.sums.oldHandle = res.data.oldHandle
+        this.sums.totalFinish = res.data.totalFinish
       })
     },
-    datechange() {
-      this.userHandle()
+    listUserAgents() {
+      listUserAgents().then(res => {
+        this.dropAgents = res.data
+      })
+    },
+    getSummaries(param) {
+      const { columns } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        sums[2] = this.sums.totalHandle
+        sums[3] = this.sums.oldHandle
+        sums[4] = this.sums.newHandle
+        sums[5] = this.sums.totalFinish
+      })
+
+      return sums
     }
   },
   create() {},
   mounted() {
-    this.groupPanelInfo()
-    this.userHandle()
+    this.listUserAgents()
+    this.queryHandle()
   }
 }
 </script>

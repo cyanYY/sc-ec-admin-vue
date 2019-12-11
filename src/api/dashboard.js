@@ -1,9 +1,9 @@
 import axios from '@/utils/request'
 
 // 查询统计数据
-export function getGroupPanelInfo() {
+export function getGroupPanelInfo(params) {
   const url = '/dashboard/getGroupPanelInfo'
-  return axios.post(url).then(res => res.data)
+  return axios.post(url, params).then(res => res.data)
 }
 
 // 查询用户处理数据列表

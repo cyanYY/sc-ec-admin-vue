@@ -49,15 +49,28 @@ export const constantRoutes = [
     children: [
       {
         path: '',
-        name: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        meta: { title: '首页', icon: 'dashboard' }
+        name: 'index',
+        component: () => import('@/views/index/index'),
+        meta: { title: '欢迎页', icon: 'dashboard' }
       }
     ]
   }
 ]
 
 export const asyncRoutes = [
+  {
+    path: '/dashboard',
+    component: Layout,
+    meta: { title: '首页', icon: 'dashboard', key: 'dashboard' },
+    children: [
+      {
+        path: '',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '首页', icon: 'dashboard', key: 'dashboard' }
+      }
+    ]
+  },
   {
     path: '/waybill',
     component: Layout,

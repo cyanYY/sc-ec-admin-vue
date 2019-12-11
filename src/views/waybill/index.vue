@@ -78,6 +78,16 @@
         <el-form-item label="">
           <el-input v-model="queryForm.deliveryMobile" placeholder="快递员手机号"></el-input>
         </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.agentId" clearable placeholder="代理商">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
           <el-button
@@ -180,7 +190,7 @@
     </div>
 
     <el-dialog
-      @close="() => this.$refs['wayBillUpload'].clearFiles()"
+      @close="wayBillUploadClose"
       size="small"
       title=""
       :close-on-click-modal="false"
@@ -188,13 +198,19 @@
     >
       <el-form label-width="80px">
         <el-form-item label="代理商：">
-          <el-select v-model="uploadAgentId" placeholder="">
+          <el-select v-model="waybillUploadForm.agentId" placeholder="">
             <el-option
               v-for="item in dropAgents"
               :key="item.agentId"
               :label="item.agentName"
               :value="item.agentId"
             ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="快递类型：">
+          <el-select v-model="waybillUploadForm.expressType" placeholder="">
+            <el-option label="京东快递" value="京东快递"></el-option>
+            <el-option label="德邦快递" value="德邦快递"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -491,7 +507,7 @@ import {
   trace,
   claim
 } from '@/api/waybill.js'
-import { listAgents } from '@/api/user.js'
+import { listUserAgents } from '@/api/user.js'
 import axios from 'axios'
 
 export default {
@@ -539,7 +555,10 @@ export default {
       wayClaimVisible: false,
       claimForm: {},
       dropAgents: [],
-      uploadAgentId: '',
+      waybillUploadForm: {
+        agentId: '',
+        expressType: '京东快递'
+      },
       waybillAuditVisible: false,
       auditAgentId: ''
     }
@@ -586,7 +605,8 @@ export default {
         receiverMobile: this.queryForm.receiverMobile,
         isException: this.queryForm.isException === '-1' ? '' : this.queryForm.isException,
         processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
-        deliveryMobile: this.queryForm.deliveryMobile
+        deliveryMobile: this.queryForm.deliveryMobile,
+        agentId: this.queryForm.agentId
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -595,6 +615,11 @@ export default {
     },
     wayBillUploadHandle() {
       this.waybillUploadVisible = true
+    },
+    wayBillUploadClose() {
+      this.$refs['wayBillUpload'].clearFiles()
+      this.waybillUploadForm.agentId = ''
+      this.waybillUploadForm.expressType = '京东快递'
     },
     wayBillExceptionUploadHandle() {
       this.waybillExceptionUploadVisible = true
@@ -613,7 +638,8 @@ export default {
         })
       }
       var param = {
-        agentId: this.uploadAgentId,
+        agentId: this.waybillUploadForm.agentId,
+        expressType: this.waybillUploadForm.expressType,
         fileName: this.waybillFileName
       }
       this.waybillUploadLoading = true
@@ -770,8 +796,13 @@ export default {
       this.claimForm.processTime = row.processTime
       this.claimForm.hangReason = row.hangReason
     },
-    listAgents() {
-      listAgents().then(res => {
+    // listAgents() {
+    //   listAgents().then(res => {
+    //     this.dropAgents = res.data
+    //   })
+    // },
+    listUserAgents() {
+      listUserAgents().then(res => {
         this.dropAgents = res.data
       })
     }
@@ -780,7 +811,8 @@ export default {
   mounted() {
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
-    this.listAgents()
+    // this.listAgents()
+    this.listUserAgents()
   }
 }
 </script>
