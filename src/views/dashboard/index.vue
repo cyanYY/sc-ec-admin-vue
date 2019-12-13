@@ -220,8 +220,8 @@ export default {
           return
         }
         sums[2] = this.sums.totalHandle
-        sums[3] = this.sums.oldHandle
-        sums[4] = this.sums.newHandle
+        sums[3] = this.sums.newHandle
+        sums[4] = this.sums.oldHandle
         sums[5] = this.sums.totalFinish
       })
 

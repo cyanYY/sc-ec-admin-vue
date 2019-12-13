@@ -196,7 +196,7 @@
       :close-on-click-modal="false"
       :visible.sync="waybillUploadVisible"
     >
-      <el-form label-width="80px">
+      <el-form>
         <el-form-item label="代理商：">
           <el-select v-model="waybillUploadForm.agentId" placeholder="">
             <el-option

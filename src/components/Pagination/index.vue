@@ -47,6 +47,7 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
+      this.perPage = val
       this.$emit('currentPage', val, this.currPage)
     },
     handleCurrentChange(val) {
@@ -60,7 +61,6 @@ export default {
   watch: {
     currentPage(val) {
       this.currPage = val
-      console.log('pagination - watch :', this.currPage, val)
     }
   }
 }

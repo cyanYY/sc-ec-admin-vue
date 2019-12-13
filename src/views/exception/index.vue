@@ -6,7 +6,12 @@
           <el-input v-model="queryForm.orderNo" placeholder="订单号" :editable="false"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-input v-model="queryForm.wayBillNo" placeholder="运单号" :editable="false"></el-input>
+          <el-input
+            v-model="queryForm.wayBillNo"
+            placeholder="运单号"
+            :editable="false"
+            @keyup.enter.native="queryHandle(1)"
+          ></el-input>
         </el-form-item>
         <el-form-item label="">
           <el-select v-model="queryForm.wayBillStatus" placeholder="运单状态">
@@ -33,7 +38,11 @@
           <el-input v-model="queryForm.operator" placeholder="处理人员"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-input v-model="queryForm.receiverMobile" placeholder="收件人手机号"></el-input>
+          <el-input
+            v-model="queryForm.receiverMobile"
+            placeholder="收件人手机号"
+            @keyup.enter.native="queryHandle(1)"
+          ></el-input>
         </el-form-item>
         <el-form-item label="">
           <el-date-picker
