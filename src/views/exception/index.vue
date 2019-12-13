@@ -89,6 +89,7 @@
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
+        highlight-current-row
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
@@ -105,6 +106,11 @@
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
+          <template slot-scope="scope">
+            <el-button @click="copy(scope.row.receiverMobile)" type="text" size="small">{{
+              scope.row.receiverMobile
+            }}</el-button>
+          </template>
         </el-table-column>
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
@@ -430,6 +436,22 @@ export default {
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
+      })
+    },
+    copy(value) {
+      this.$copyText(value).then(() => {
+        this.$message({
+          message: '复制成功',
+          type: 'success',
+          duration: 1000
+        })
+      },
+      () => {
+        this.$message({
+          message: '复制失败，请手动复制',
+          type: 'error',
+          duration: 1000
+        })
       })
     },
     handleException(row) {

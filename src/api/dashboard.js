@@ -11,3 +11,9 @@ export function listUserHandle(params) {
   const url = '/dashboard/listUserHandle'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 查询处理数据列表
+export function listHandle(params) {
+  const url = '/dashboard/listHandle'
+  return axios.post(url, params).then(res => res.data)
+}

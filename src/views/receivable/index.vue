@@ -44,6 +44,9 @@
           >
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="queryForm.operator" placeholder="处理人员"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle">查询</el-button>
         </el-form-item>
@@ -84,7 +87,8 @@
         </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
-        <el-table-column prop="hangReason" label="挂起原因" width="300" align="left">
+        <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
+        <el-table-column prop="hangReason" label="挂起原因" width="250" align="center">
           <template slot-scope="scope">
             <ul v-if="scope.row.hangReason">
               <li :key="item.index" v-for="item in scope.row.hangReason.split(',')">
@@ -176,7 +180,8 @@ export default {
         goodsName: this.queryForm.goodsName,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd,
-        receiverMobile: this.queryForm.receiverMobile
+        receiverMobile: this.queryForm.receiverMobile,
+        operator: this.queryForm.operator
       }
       listReceivables(param).then(res => {
         this.tableDataSearch = res.data.recordList

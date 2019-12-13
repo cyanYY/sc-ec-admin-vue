@@ -66,6 +66,7 @@
             }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="exceptionSuc" label="异常妥投数" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -168,6 +169,7 @@ export default {
           this.sums.total === 0
             ? '-'
             : ((this.sums.totalExc * 100) / this.sums.total).toFixed(2) + '%'
+        sums[8] = this.sums.exceptionSuc
       })
 
       return sums

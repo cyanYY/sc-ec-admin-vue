@@ -61,20 +61,26 @@ export const asyncRoutes = [
   {
     path: '/dashboard',
     component: Layout,
-    meta: { title: '首页', icon: 'dashboard', key: 'dashboard' },
+    meta: { title: '首页', icon: 'dashboard' },
     children: [
       {
         path: '',
         name: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         meta: { title: '首页', icon: 'dashboard', key: 'dashboard' }
+      },
+      {
+        path: 'customer',
+        name: 'customer',
+        component: () => import('@/views/dashboard/customer'),
+        meta: { title: '首页', icon: 'dashboard', key: 'dashboard:customer' }
       }
     ]
   },
   {
     path: '/waybill',
     component: Layout,
-    meta: { title: '运单管理', icon: 'table', key: 'waybill' },
+    meta: { title: '运单管理', icon: 'table' },
     children: [
       {
         path: '',
@@ -87,7 +93,7 @@ export const asyncRoutes = [
   {
     path: '/exception',
     component: Layout,
-    meta: { title: '异常运单处理', icon: 'form', key: 'exception' },
+    meta: { title: '异常运单处理', icon: 'form' },
     children: [
       {
         path: '',
@@ -112,7 +118,7 @@ export const asyncRoutes = [
   {
     path: '/order',
     component: Layout,
-    meta: { title: '订单管理', icon: 'form', key: 'order' },
+    meta: { title: '订单管理', icon: 'form' },
     children: [
       {
         path: '',
@@ -125,7 +131,7 @@ export const asyncRoutes = [
   {
     path: '/receivable',
     component: Layout,
-    meta: { title: '应收款运单', icon: 'table', key: 'receivable' },
+    meta: { title: '应收款运单', icon: 'table' },
     children: [
       {
         path: '',
@@ -138,7 +144,7 @@ export const asyncRoutes = [
   // {
   //   path: '/bill',
   //   component: Layout,
-  //   meta: { title: '京东账单', icon: 'table', key: 'bill' },
+  //   meta: { title: '京东账单', icon: 'table' },
   //   children: [
   //     {
   //       path: '',
@@ -151,7 +157,7 @@ export const asyncRoutes = [
   {
     path: '/succreport',
     component: Layout,
-    meta: { title: '成功率统计', icon: 'table', key: 'succreport' },
+    meta: { title: '成功率统计', icon: 'table' },
     children: [
       {
         path: '',
@@ -164,7 +170,7 @@ export const asyncRoutes = [
   {
     path: '/system',
     component: Layout,
-    meta: { title: '系统管理', icon: 'table', key: 'system' },
+    meta: { title: '系统管理', icon: 'table' },
     children: [
       {
         path: '',

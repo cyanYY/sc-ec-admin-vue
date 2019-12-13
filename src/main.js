@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueClipboard from 'vue-clipboard2'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
@@ -17,6 +18,7 @@ import '@/permission' // permission control
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
+Vue.use(VueClipboard)
 
 Vue.config.productionTip = false
 
