@@ -78,19 +78,23 @@
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="batchClaim">批量认领</el-button>
+        </el-form-item>
       </el-form>
     </div>
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
         highlight-current-row
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
         <el-table-column prop="hangReason" label="挂起原因" width="250" align="center">
@@ -354,7 +358,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPage, handle, hang, trace, claim } from '@/api/waybill.js'
+import { listPage, handle, hang, trace, claim, batchClaim } from '@/api/waybill.js'
 import { listUserAgents } from '@/api/user.js'
 
 export default {
@@ -394,7 +398,8 @@ export default {
       claimForm: {
         claimed: false
       },
-      dropAgents: []
+      dropAgents: [],
+      selectedWayBillNos: []
     }
   },
   methods: {
@@ -439,20 +444,22 @@ export default {
       })
     },
     copy(value) {
-      this.$copyText(value).then(() => {
-        this.$message({
-          message: '复制成功',
-          type: 'success',
-          duration: 1000
-        })
-      },
-      () => {
-        this.$message({
-          message: '复制失败，请手动复制',
-          type: 'error',
-          duration: 1000
-        })
-      })
+      this.$copyText(value).then(
+        () => {
+          this.$message({
+            message: '复制成功',
+            type: 'success',
+            duration: 1000
+          })
+        },
+        () => {
+          this.$message({
+            message: '复制失败，请手动复制',
+            type: 'error',
+            duration: 1000
+          })
+        }
+      )
     },
     handleException(row) {
       this.waybillHandleVisible = true
@@ -553,6 +560,25 @@ export default {
       listUserAgents().then(res => {
         this.dropAgents = res.data
       })
+    },
+    batchClaim() {
+      if (this.selectedWayBillNos.length === 0) {
+        this.$message({
+          message: '请至少选中一条数据',
+          type: 'error'
+        })
+        return
+      }
+      batchClaim(this.selectedWayBillNos).then(res => {
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        })
+        this.queryHandle()
+      })
+    },
+    handleSelectionChange(rows) {
+      this.selectedWayBillNos = rows.map(row => row.wayBillNo)
     }
   },
   create() {},

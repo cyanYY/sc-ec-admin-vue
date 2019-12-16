@@ -8,13 +8,13 @@ export function listPage(params) {
 
 // 导入运单
 export function uploadWaybill(params) {
-  const url = '/wayBill/upload?fileName'
+  const url = '/wayBill/upload'
   return axios.post(url, params).then(res => res.data)
 }
 
 // 导入异常运单
 export function uploadWaybillException(params) {
-  const url = '/wayBillException/upload?fileName=' + params.fileName
+  const url = '/wayBillException/upload'
   return axios.post(url, params).then(res => res.data)
 }
 
@@ -88,4 +88,10 @@ export function listUserFinish(params) {
 export function returnSigned(params) {
   const url = '/wayBillException/returnSigned?wayBillNo=' + params.wayBillNo
   return axios.get(url).then(res => res.data)
+}
+
+// 异常运单批量认领
+export function batchClaim(params) {
+  const url = '/wayBillException/batchClaim'
+  return axios.post(url, params).then(res => res.data)
 }

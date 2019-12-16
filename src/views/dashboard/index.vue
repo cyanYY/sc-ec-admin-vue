@@ -101,6 +101,9 @@
               >
               </el-date-picker>
             </el-form-item>
+            <el-form-item label="操作员：">
+              <el-input v-model="queryForm.operator" placeholder=""></el-input>
+            </el-form-item>
             <el-form-item>
               <el-button size="small" type="primary" @click="queryHandle()">查询</el-button>
             </el-form-item>
@@ -193,6 +196,7 @@ export default {
         startDate: startDate,
         endDate: endDate,
         agentId: this.queryForm.agentId,
+        operator: this.queryForm.operator,
         numPerPage: numPerPage,
         pageNum: pageNum
       }

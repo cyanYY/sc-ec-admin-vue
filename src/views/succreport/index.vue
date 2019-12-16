@@ -67,6 +67,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="exceptionSuc" label="异常妥投数" align="center"> </el-table-column>
+        <el-table-column prop="totalCancel" label="超区数" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -146,6 +147,8 @@ export default {
         this.sums.total = res.data.total
         this.sums.totalSuc = res.data.totalSuc
         this.sums.totalExc = res.data.totalExc
+        this.sums.exceptionSuc = res.data.exceptionSuc
+        this.sums.totalCancel = res.data.totalCancel
         this.tableDataSearch = res.data.result.recordList
         this.total = res.data.result.totalCount
       })
@@ -170,6 +173,7 @@ export default {
             ? '-'
             : ((this.sums.totalExc * 100) / this.sums.total).toFixed(2) + '%'
         sums[8] = this.sums.exceptionSuc
+        sums[9] = this.sums.totalCancel
       })
 
       return sums

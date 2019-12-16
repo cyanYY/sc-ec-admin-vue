@@ -223,6 +223,7 @@
           <el-upload
             ref="wayBillUpload"
             class="upload-demo"
+            :multiple="false"
             :action="this.baseURL + '/file/upload'"
             :on-success="waybillUploadSuccess"
           >
@@ -242,17 +243,34 @@
     </el-dialog>
 
     <el-dialog
-      @close="() => this.$refs['wayBillExceptionUpload'].clearFiles()"
+      @close="wayBillExceptionUploadClose"
       size="small"
       title=""
       :close-on-click-modal="false"
       :visible.sync="waybillExceptionUploadVisible"
     >
-      <el-form label-width="80px">
+      <el-form>
+        <el-form-item label="代理商：">
+          <el-select v-model="waybillExceptionUploadForm.agentId" placeholder="">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="快递类型：">
+          <el-select v-model="waybillExceptionUploadForm.expressType" placeholder="">
+            <el-option label="京东快递" value="京东快递"></el-option>
+            <el-option label="德邦快递" value="德邦快递"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="选择文件">
           <el-upload
             ref="wayBillExceptionUpload"
             class="upload-demo"
+            :multiple="false"
             :action="this.baseURL + '/file/upload'"
             :on-success="waybillExceptionUploadSuccess"
           >
@@ -565,6 +583,10 @@ export default {
         agentId: '',
         expressType: '京东快递'
       },
+      waybillExceptionUploadForm: {
+        agentId: '',
+        expressType: '京东快递'
+      },
       waybillAuditVisible: false,
       auditAgentId: ''
     }
@@ -643,6 +665,11 @@ export default {
       this.waybillUploadForm.agentId = ''
       this.waybillUploadForm.expressType = '京东快递'
     },
+    wayBillExceptionUploadClose() {
+      this.$refs['wayBillExceptionUpload'].clearFiles()
+      this.waybillExceptionUploadForm.agentId = ''
+      this.waybillExceptionUploadForm.expressType = '京东快递'
+    },
     wayBillExceptionUploadHandle() {
       this.waybillExceptionUploadVisible = true
     },
@@ -686,7 +713,10 @@ export default {
           type: 'error'
         })
       }
+
       var param = {
+        agentId: this.waybillExceptionUploadForm.agentId,
+        expressType: this.waybillExceptionUploadForm.expressType,
         fileName: this.waybillExceptionFileName
       }
       this.waybillExceptionUploadLoading = true

@@ -122,7 +122,6 @@
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"

@@ -122,7 +122,6 @@
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"
@@ -418,20 +417,22 @@ export default {
       return ''
     },
     copy(value) {
-      this.$copyText(value).then(() => {
-        this.$message({
-          message: '复制成功',
-          type: 'success',
-          duration: 1000
-        })
-      },
-      () => {
-        this.$message({
-          message: '复制失败，请手动复制',
-          type: 'error',
-          duration: 1000
-        })
-      })
+      this.$copyText(value).then(
+        () => {
+          this.$message({
+            message: '复制成功',
+            type: 'success',
+            duration: 1000
+          })
+        },
+        () => {
+          this.$message({
+            message: '复制失败，请手动复制',
+            type: 'error',
+            duration: 1000
+          })
+        }
+      )
     },
     handleException(row) {
       this.waybillHandleVisible = true
