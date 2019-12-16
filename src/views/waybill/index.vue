@@ -222,7 +222,7 @@
         <el-form-item label="选择文件">
           <el-upload
             ref="wayBillUpload"
-            class="upload-demo"
+            :limit="1"
             :multiple="false"
             :action="this.baseURL + '/file/upload'"
             :on-success="waybillUploadSuccess"
@@ -269,7 +269,7 @@
         <el-form-item label="选择文件">
           <el-upload
             ref="wayBillExceptionUpload"
-            class="upload-demo"
+            :limit="1"
             :multiple="false"
             :action="this.baseURL + '/file/upload'"
             :on-success="waybillExceptionUploadSuccess"
