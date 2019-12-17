@@ -131,7 +131,13 @@ export const asyncRoutes = [
         path: '',
         name: 'order',
         component: () => import('@/views/order/index'),
-        meta: { title: '订单管理', icon: 'form', key: 'order' }
+        meta: { title: '订单管理', icon: 'form', key: 'order:index' }
+      },
+      {
+        path: 'repeat',
+        name: 'repeat',
+        component: () => import('@/views/order/repeat'),
+        meta: { title: '重复单', icon: 'form', key: 'order:repeat' }
       }
     ]
   },

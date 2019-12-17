@@ -102,7 +102,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" @click="queryBtnHandle">查询</el-button>
+          <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
           <el-button size="small" type="info" @click="addBtnHandle">新增订单</el-button>
           <el-button size="small" type="warning" @click="uplaodBtnHandle">订单导入</el-button>
           <el-button size="small" type="warning" @click="offUplaodBtnHandle"
@@ -118,12 +118,12 @@
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
+        highlight-current-row
       >
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
         </el-table-column>
@@ -458,13 +458,20 @@ export default {
         {
           label: '勇哥商行',
           value: '8'
+        },
+        {
+          label: '伟平商行',
+          value: '9'
         }
       ]
     }
   },
   methods: {
     /** 分页查询订单开始 */
-    queryBtnHandle() {
+    queryBtnHandle(page) {
+      if (page) {
+        this.currentPage = page
+      }
       this.getListByPage(this.perpageNumber, this.currentPage)
     },
     // 页码发生变化

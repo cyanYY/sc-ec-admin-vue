@@ -9,21 +9,24 @@
           <el-input v-model="queryForm.wayBillNo" placeholder="运单号" :editable="false"></el-input>
         </el-form-item>
         <el-form-item label="">
+          <el-select
+            v-model="queryForm.expressType"
+            placeholder="快递类型"
+            @change="expressTypeChange"
+          >
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
           <el-select v-model="queryForm.wayBillStatus" placeholder="运单状态">
             <el-option label="全部" value="-1"></el-option>
-            <el-option label="妥投" value="妥投"></el-option>
-            <el-option label="拒收" value="拒收"></el-option>
-            <el-option label="客户取消" value="客户取消"></el-option>
-            <el-option label="终止揽收" value="终止揽收"></el-option>
-            <el-option label="订单入站" value="订单入站"></el-option>
-            <el-option label="配送员收货" value="配送员收货"></el-option>
-            <el-option label="协商再投结果" value="协商再投结果"></el-option>
-            <el-option label="分拣中心发货" value="分拣中心发货"></el-option>
-            <el-option label="分拣中心验货" value="分拣中心验货"></el-option>
-            <el-option label="站点验货" value="站点验货"></el-option>
-            <el-option label="站点再投" value="站点再投"></el-option>
-            <el-option label="已取消" value="已取消"></el-option>
-            <el-option label="再投后退回" value="再投后退回"></el-option>
+            <el-option
+              v-for="item in wayBillStatus"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -117,7 +120,6 @@
 
     <div class="waybill-tables">
       <el-table
-        height="600"
         :data="tableDataSearch"
         border
         size="mini"
@@ -215,8 +217,8 @@
         </el-form-item>
         <el-form-item label="快递类型：">
           <el-select v-model="waybillUploadForm.expressType" placeholder="">
-            <el-option label="京东快递" value="京东快递"></el-option>
-            <el-option label="德邦快递" value="德邦快递"></el-option>
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -258,12 +260,6 @@
               :label="item.agentName"
               :value="item.agentId"
             ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="快递类型：">
-          <el-select v-model="waybillExceptionUploadForm.expressType" placeholder="">
-            <el-option label="京东快递" value="京东快递"></el-option>
-            <el-option label="德邦快递" value="德邦快递"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -551,7 +547,8 @@ export default {
       total: 0,
       queryForm: {
         orderTimeRange: [],
-        processTimeRange: []
+        processTimeRange: [],
+        expressType: '1'
       },
       waybillUploadVisible: false,
       waybillExceptionUploadVisible: false,
@@ -581,14 +578,28 @@ export default {
       dropAgents: [],
       waybillUploadForm: {
         agentId: '',
-        expressType: '京东快递'
+        expressType: '1'
       },
       waybillExceptionUploadForm: {
-        agentId: '',
-        expressType: '京东快递'
+        agentId: ''
       },
       waybillAuditVisible: false,
-      auditAgentId: ''
+      auditAgentId: '',
+      wayBillStatus: [
+        '妥投',
+        '拒收',
+        '客户取消',
+        '终止揽收',
+        '订单入站',
+        '配送员收货',
+        '协商再投结果',
+        '分拣中心发货',
+        '分拣中心验货',
+        '站点验货',
+        '站点再投',
+        '已取消',
+        '再投后退回'
+      ]
     }
   },
   methods: {
@@ -634,7 +645,8 @@ export default {
         isException: this.queryForm.isException === '-1' ? '' : this.queryForm.isException,
         processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
         deliveryMobile: this.queryForm.deliveryMobile,
-        agentId: this.queryForm.agentId
+        agentId: this.queryForm.agentId,
+        expressType: this.queryForm.expressType
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -642,20 +654,22 @@ export default {
       })
     },
     copy(value) {
-      this.$copyText(value).then(() => {
-        this.$message({
-          message: '复制成功',
-          type: 'success',
-          duration: 1000
-        })
-      },
-      () => {
-        this.$message({
-          message: '复制失败，请手动复制',
-          type: 'error',
-          duration: 1000
-        })
-      })
+      this.$copyText(value).then(
+        () => {
+          this.$message({
+            message: '复制成功',
+            type: 'success',
+            duration: 1000
+          })
+        },
+        () => {
+          this.$message({
+            message: '复制失败，请手动复制',
+            type: 'error',
+            duration: 1000
+          })
+        }
+      )
     },
     wayBillUploadHandle() {
       this.waybillUploadVisible = true
@@ -857,6 +871,29 @@ export default {
       listUserAgents().then(res => {
         this.dropAgents = res.data
       })
+    },
+    expressTypeChange(val) {
+      const jdWayBillStatus = [
+        '妥投',
+        '拒收',
+        '客户取消',
+        '终止揽收',
+        '订单入站',
+        '配送员收货',
+        '协商再投结果',
+        '分拣中心发货',
+        '分拣中心验货',
+        '站点验货',
+        '站点再投',
+        '已取消',
+        '再投后退回'
+      ]
+      const dbWayBillStatus = ['妥投', '已开单', '运输中', '派送中', '已滞留', '反签收']
+      if (val === '1') {
+        this.wayBillStatus = jdWayBillStatus
+      } else if (val === '2') {
+        this.wayBillStatus = dbWayBillStatus
+      }
     }
   },
   create() {},

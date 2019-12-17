@@ -9,9 +9,10 @@
           <el-input v-model="queryForm.goodsName" placeholder="商品名称"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-select v-model="queryForm.expressCompany" placeholder="快递公司">
+          <el-select v-model="queryForm.expressType" placeholder="快递类型">
             <el-option label="全部" value="-1"></el-option>
-            <el-option label="京东快递(常用)" value="京东快递(常用)"></el-option>
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -139,7 +140,7 @@ export default {
         pageNum: pageNum,
         merchantName: this.queryForm.merchantName,
         goodsName: this.queryForm.goodsName,
-        expressCompany: this.queryForm.expressCompany === '-1' ? '' : this.queryForm.expressCompany,
+        expressType: this.queryForm.expressType === '-1' ? '' : this.queryForm.expressType,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd
       }
