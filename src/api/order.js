@@ -56,3 +56,9 @@ export function successRate(params) {
   const url = '/wayBill/successRate'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 分页查询重复订单列表
+export function orderRepeatListPage(params) {
+  const url = '/order/orderRepeatListPage'
+  return axios.post(url, params).then(res => res.data)
+}

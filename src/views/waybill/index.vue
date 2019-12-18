@@ -677,12 +677,12 @@ export default {
     wayBillUploadClose() {
       this.$refs['wayBillUpload'].clearFiles()
       this.waybillUploadForm.agentId = ''
-      this.waybillUploadForm.expressType = '京东快递'
+      this.waybillUploadForm.expressType = '1'
     },
     wayBillExceptionUploadClose() {
       this.$refs['wayBillExceptionUpload'].clearFiles()
       this.waybillExceptionUploadForm.agentId = ''
-      this.waybillExceptionUploadForm.expressType = '京东快递'
+      this.waybillExceptionUploadForm.expressType = '1'
     },
     wayBillExceptionUploadHandle() {
       this.waybillExceptionUploadVisible = true

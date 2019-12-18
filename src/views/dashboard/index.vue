@@ -62,7 +62,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              累计异常妥投数
+              异常妥投数
             </div>
             <count-to
               :start-val="0"
@@ -79,8 +79,18 @@
       <el-col :span="24">
         <el-card>
           <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
-            <el-form-item label="代理商：">
-              <el-select v-model="queryForm.agentId" clearable placeholder="">
+            <el-form-item v-if="roles.indexOf('SYS_ADMIN') > -1">
+              <el-select
+                v-model="queryForm.dimension"
+                placeholder="统计维度"
+                @change="dimensionChange"
+              >
+                <el-option label="按用户" value="1"></el-option>
+                <el-option label="按日期" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="queryForm.agentId" clearable placeholder="代理商">
                 <el-option
                   v-for="item in dropAgents"
                   :key="item.agentId"
@@ -89,7 +99,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="统计日期：">
+            <el-form-item>
               <el-date-picker
                 v-model="queryForm.dateRange"
                 size="small"
@@ -101,8 +111,12 @@
               >
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="操作员：">
-              <el-input v-model="queryForm.operator" placeholder=""></el-input>
+            <el-form-item label="">
+              <el-input
+                v-if="queryForm.dimension === '1'"
+                v-model="queryForm.operator"
+                placeholder="操作员"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-button size="small" type="primary" @click="queryHandle()">查询</el-button>
@@ -110,7 +124,12 @@
           </el-form>
           <el-table :data="userDatas" show-summary :summary-method="getSummaries">
             <el-table-column label="处理日期" align="center" prop="processDate" />
-            <el-table-column label="操作员" align="center" prop="operator" />
+            <el-table-column
+              v-if="queryForm.dimension === '1'"
+              label="操作员"
+              align="center"
+              prop="operator"
+            />
             <el-table-column label="总办理数" align="center" prop="totalHandle" />
             <el-table-column label="新单办理数" align="center" prop="newHandle" />
             <el-table-column label="老单办理数" align="center" prop="oldHandle" />
@@ -129,9 +148,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import CountTo from 'vue-count-to'
 import Pagination from '@/components/Pagination/index'
-import { getGroupPanelInfo, listUserHandle } from '@/api/dashboard.js'
+import { getGroupPanelInfo, listUserHandle, listHandle } from '@/api/dashboard.js'
 import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils'
 
@@ -140,12 +160,16 @@ export default {
     CountTo,
     Pagination
   },
+  computed: {
+    ...mapGetters(['roles'])
+  },
   data() {
     const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
 
     return {
       queryForm: {
-        dateRange: [currentDate, currentDate]
+        dateRange: [currentDate, currentDate],
+        dimension: '1'
       },
       stasticsData: {
         currentException: 0,
@@ -200,15 +224,27 @@ export default {
         numPerPage: numPerPage,
         pageNum: pageNum
       }
-      listUserHandle(param).then(res => {
-        this.userDatas = res.data.list.recordList
-        this.total = res.data.list.totalCount
+      if (this.queryForm.dimension === '1') {
+        listUserHandle(param).then(res => {
+          this.userDatas = res.data.list.recordList
+          this.total = res.data.list.totalCount
 
-        this.sums.totalHandle = res.data.totalHandle
-        this.sums.newHandle = res.data.newHandle
-        this.sums.oldHandle = res.data.oldHandle
-        this.sums.totalFinish = res.data.totalFinish
-      })
+          this.sums.totalHandle = res.data.totalHandle
+          this.sums.newHandle = res.data.newHandle
+          this.sums.oldHandle = res.data.oldHandle
+          this.sums.totalFinish = res.data.totalFinish
+        })
+      } else {
+        listHandle(param).then(res => {
+          this.userDatas = res.data.list.recordList
+          this.total = res.data.list.totalCount
+
+          this.sums.totalHandle = res.data.totalHandle
+          this.sums.newHandle = res.data.newHandle
+          this.sums.oldHandle = res.data.oldHandle
+          this.sums.totalFinish = res.data.totalFinish
+        })
+      }
     },
     listUserAgents() {
       listUserAgents().then(res => {
@@ -223,17 +259,33 @@ export default {
           sums[index] = '合计'
           return
         }
-        sums[2] = this.sums.totalHandle
-        sums[3] = this.sums.newHandle
-        sums[4] = this.sums.oldHandle
-        sums[5] = this.sums.totalFinish
+
+        if (this.queryForm.dimension === '1') {
+          sums[2] = this.sums.totalHandle
+          sums[3] = this.sums.newHandle
+          sums[4] = this.sums.oldHandle
+          sums[5] = this.sums.totalFinish
+        } else {
+          sums[1] = this.sums.totalHandle
+          sums[2] = this.sums.newHandle
+          sums[3] = this.sums.oldHandle
+          sums[4] = this.sums.totalFinish
+        }
       })
 
       return sums
+    },
+    dimensionChange() {
+      this.userDatas = []
+      this.total = 0
+      this.$nextTick(this.userHandle(this.perpageNumber, this.currentPage))
     }
   },
   create() {},
   mounted() {
+    if (this.roles.indexOf('ADMIN') > -1) {
+      this.queryForm.dimension = '2'
+    }
     this.listUserAgents()
     this.queryHandle()
   }
@@ -323,7 +375,7 @@ export default {
       .card-panel-text {
         line-height: 18px;
         color: rgba(0, 0, 0, 0.45);
-        font-size: 16px;
+        font-size: 14px;
         margin-bottom: 12px;
       }
 

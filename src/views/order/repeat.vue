@@ -166,7 +166,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-// import { listPage } from '@/api/order.js'
+import { orderRepeatListPage } from '@/api/order.js'
 
 export default {
   name: 'Waybill',
@@ -239,58 +239,33 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
-      console.log(numPerPage)
-      console.log(pageNum)
-      // let orderTimeStart = ''
-      // let orderTimeEnd = ''
-      // if (this.queryForm.orderTimeRange) {
-      //   orderTimeStart = this.queryForm.orderTimeRange[0]
-      //   orderTimeEnd = this.queryForm.orderTimeRange[1]
-      // }
-      // var param = {
-      //   numPerPage: numPerPage,
-      //   pageNum: pageNum,
-      //   orderNo: this.queryForm.orderNo,
-      //   goodsName: this.queryForm.goodsName,
-      //   receiverMobile: this.queryForm.receiverMobile,
-      //   wayBillNo: this.queryForm.wayBillNo,
-      //   orderTimeStart: orderTimeStart,
-      //   orderTimeEnd: orderTimeEnd,
-      //   merchantId: this.queryForm.merchantId === '-1' ? '' : this.queryForm.merchantId,
-      //   orderStatus: this.queryForm.orderStatus === '-1' ? '' : this.queryForm.orderStatus,
-      //   wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
-      //   noOrderStatus: this.queryForm.noOrderStatus === '-1' ? '' : this.queryForm.noOrderStatus,
-      //   noWayBillStatus:
-      //     this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
-      //   orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType
-      // }
-      // listPage(param).then(res => {
-      //   this.tableDataSearch = res.data.recordList
-      //   this.total = res.data.totalCount
-      // })
-      this.tableDataSearch = [
-        {
-          orderNo: '6768087746415198471',
-          merchantName: '佰福莱家居',
-          goodsName: '【好运莲莲】太阳能转动莲花座式车载香水',
-          goodsSpec: '【豪华升级版】七彩灯光，太阳能供电，360度自动旋转',
-          goodsAmount: '119.00',
-          goodsNum: '1',
-          wayAmount: '0.00',
-          actualAmount: '119.00',
-          receiver: '文兵',
-          receiverMobile: '18728534999',
-          expressCompany: '',
-          wayBillNo: '',
-          orderTime: '2019-12-08 23:17:20',
-          finishTime: '',
-          orderStatus: '备货中',
-          wayBillStatus: '',
-          userRemark: '',
-          merchantRemark: ''
-        }
-      ]
-      this.total = 1
+      let orderTimeStart = ''
+      let orderTimeEnd = ''
+      if (this.queryForm.orderTimeRange) {
+        orderTimeStart = this.queryForm.orderTimeRange[0]
+        orderTimeEnd = this.queryForm.orderTimeRange[1]
+      }
+      var param = {
+        numPerPage: numPerPage,
+        pageNum: pageNum,
+        orderNo: this.queryForm.orderNo,
+        goodsName: this.queryForm.goodsName,
+        receiverMobile: this.queryForm.receiverMobile,
+        wayBillNo: this.queryForm.wayBillNo,
+        orderTimeStart: orderTimeStart,
+        orderTimeEnd: orderTimeEnd,
+        merchantId: this.queryForm.merchantId === '-1' ? '' : this.queryForm.merchantId,
+        orderStatus: this.queryForm.orderStatus === '-1' ? '' : this.queryForm.orderStatus,
+        wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
+        noOrderStatus: this.queryForm.noOrderStatus === '-1' ? '' : this.queryForm.noOrderStatus,
+        noWayBillStatus:
+          this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
+        orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType
+      }
+      orderRepeatListPage(param).then(res => {
+        this.tableDataSearch = res.data.recordList
+        this.total = res.data.totalCount
+      })
     }
     /** 分页查询订单结束 */
   },

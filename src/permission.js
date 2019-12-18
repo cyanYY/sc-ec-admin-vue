@@ -44,7 +44,7 @@ router.beforeEach(async (to, from, next) => {
 
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
-          next({ path: '/', replace: true })
+          next({ ...to, replace: true })
         } catch (error) {
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')

@@ -41,25 +41,12 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
-
-  {
-    path: '/',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'index',
-        component: () => import('@/views/index/index'),
-        meta: { title: '欢迎页', icon: 'dashboard' }
-      }
-    ]
   }
 ]
 
 export const asyncRoutes = [
   {
-    path: '/dashboard',
+    path: '/',
     component: Layout,
     meta: { title: '首页', icon: 'dashboard', key: 'dashboard' },
     children: [
@@ -68,19 +55,6 @@ export const asyncRoutes = [
         name: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         meta: { title: '首页', icon: 'dashboard', key: 'dashboard' }
-      }
-    ]
-  },
-  {
-    path: '/customer',
-    component: Layout,
-    meta: { title: '首页', icon: 'dashboard', key: 'dashboard:customer' },
-    children: [
-      {
-        path: 'customer',
-        name: 'customer',
-        component: () => import('@/views/dashboard/customer'),
-        meta: { title: '首页', icon: 'dashboard', key: 'dashboard:customer' }
       }
     ]
   },
