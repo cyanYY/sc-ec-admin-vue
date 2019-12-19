@@ -62,3 +62,15 @@ export function orderRepeatListPage(params) {
   const url = '/order/orderRepeatListPage'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 重复订单确认
+export function orderRepeatConfirm(params) {
+  const url = '/order/confirmOrder'
+  return axios.post(url, params).then(res => res.data)
+}
+
+// 重复订单取消
+export function orderRepeatCancel(params) {
+  const url = '/order/cancelOrder'
+  return axios.post(url, params).then(res => res.data)
+}

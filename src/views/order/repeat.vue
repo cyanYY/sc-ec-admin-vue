@@ -127,7 +127,13 @@
         <el-table-column prop="goodsAmount" label="商品单价" align="center"> </el-table-column>
         <el-table-column prop="goodsNum" label="数量" align="center"> </el-table-column>
         <el-table-column prop="wayAmount" label="运费" align="center"> </el-table-column>
-        <el-table-column prop="actualAmount" label="实收款" align="center"> </el-table-column>
+        <el-table-column
+          :formatter="repeatTypeFmt"
+          prop="repeatType"
+          label="重复类型"
+          align="center"
+        >
+        </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" align="center">
         </el-table-column>
@@ -166,7 +172,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { orderRepeatListPage } from '@/api/order.js'
+import { orderRepeatListPage, orderRepeatConfirm, orderRepeatCancel } from '@/api/order.js'
 
 export default {
   name: 'Waybill',
@@ -266,8 +272,52 @@ export default {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
-    }
+    },
     /** 分页查询订单结束 */
+    repeatTypeFmt(row) {
+      switch (row.repeatType) {
+        case 'D':
+          return '当日重复'
+        case 'H':
+          return '历史重复'
+        default:
+          return row.repeatType
+      }
+    },
+    confirmBtnHandle(row) {
+      this.$confirm('确认订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = {
+          orderNo: row.orderNo
+        }
+        orderRepeatConfirm(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+      })
+    },
+    cancelBtnHandle(row) {
+      this.$confirm('确认取消订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = {
+          orderNo: row.orderNo
+        }
+        orderRepeatCancel(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+      })
+    }
   },
   create() {},
   mounted() {
