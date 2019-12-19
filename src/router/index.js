@@ -68,6 +68,12 @@ export const asyncRoutes = [
         name: 'waybill',
         component: () => import('@/views/waybill/index'),
         meta: { title: '运单管理', icon: 'table', key: 'waybill' }
+      },
+      {
+        path: 'exceed',
+        name: 'exceed',
+        component: () => import('@/views/waybill/exceed'),
+        meta: { title: '超区运单', icon: 'table', key: 'waybill:exceed' }
       }
     ]
   },

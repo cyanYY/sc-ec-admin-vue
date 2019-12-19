@@ -3,6 +3,16 @@
     <div class="queryForm">
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="">
+          <el-select v-model="queryForm.agentId" clearable placeholder="代理商">
+            <el-option
+              v-for="item in dropAgents"
+              :key="item.agentId"
+              :label="item.agentName"
+              :value="item.agentId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
           <el-input v-model="queryForm.merchantName" placeholder="商户名称"></el-input>
         </el-form-item>
         <el-form-item label="">
@@ -88,6 +98,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { successRate } from '@/api/order.js'
+import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils'
 
 export default {
@@ -113,7 +124,8 @@ export default {
         total: 0,
         totalSuc: 0,
         totalExc: 0
-      }
+      },
+      dropAgents: []
     }
   },
   methods: {
@@ -142,7 +154,8 @@ export default {
         goodsName: this.queryForm.goodsName,
         expressType: this.queryForm.expressType === '-1' ? '' : this.queryForm.expressType,
         orderTimeStart: orderTimeStart,
-        orderTimeEnd: orderTimeEnd
+        orderTimeEnd: orderTimeEnd,
+        agentId: this.queryForm.agentId
       }
       successRate(param).then(res => {
         this.sums.total = res.data.total
@@ -178,11 +191,17 @@ export default {
       })
 
       return sums
-    }
+    },
     /** 分页查询订单结束 */
+    listUserAgents() {
+      listUserAgents().then(res => {
+        this.dropAgents = res.data
+      })
+    }
   },
   create() {},
   mounted() {
+    this.listUserAgents()
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
   }

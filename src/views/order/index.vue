@@ -145,7 +145,7 @@
         <el-table-column prop="orderTime" label="订单提交时间" width="90" align="center">
         </el-table-column>
         <el-table-column prop="finishTime" label="完成时间" align="center"> </el-table-column>
-        <el-table-column prop="orderStatus" label="订单状态" align="center"> </el-table-column>
+        <el-table-column prop="orderStatusString" label="订单状态" align="center"></el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="userRemark" label="用户留言" align="center"> </el-table-column>
         <el-table-column prop="merchantRemark" label="商户留言" align="center"> </el-table-column>
@@ -729,18 +729,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.logWork-cont {
-  .logWork-tables {
-    margin-top: 20px;
-  }
-  .logWork-pages {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
-  }
-}
-</style>

@@ -95,3 +95,9 @@ export function batchClaim(params) {
   const url = '/wayBillException/batchClaim'
   return axios.post(url, params).then(res => res.data)
 }
+
+// 分页查询超区运单列表
+export function listPageExceed(params) {
+  const url = '/wayBill/listPageExceed'
+  return axios.post(url, params).then(res => res.data)
+}
