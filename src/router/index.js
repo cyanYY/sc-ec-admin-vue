@@ -74,6 +74,18 @@ export const asyncRoutes = [
         name: 'exceed',
         component: () => import('@/views/waybill/exceed'),
         meta: { title: '超区运单', icon: 'table', key: 'waybill:exceed' }
+      },
+      {
+        path: 'deliver',
+        name: 'deliver',
+        component: () => import('@/views/waybill/deliver'),
+        meta: { title: '发货统计', icon: 'table', key: 'waybill:deliver' }
+      },
+      {
+        path: 'deliverRepeat',
+        name: 'deliverRepeat',
+        component: () => import('@/views/waybill/deliverRepeat'),
+        meta: { title: '发货重复运单', icon: 'table', key: 'waybill:deliverRepeat' }
       }
     ]
   },

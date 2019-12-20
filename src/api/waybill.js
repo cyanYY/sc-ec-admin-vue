@@ -101,3 +101,18 @@ export function listPageExceed(params) {
   const url = '/wayBill/listPageExceed'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function listPageDeliver(params) {
+  const url = '/wayBill/listPageDeliver'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function listPageDeliverRepeat(params) {
+  const url = '/wayBill/listPageDeliverRepeat'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function listRepeat(params) {
+  const url = '/wayBill/listRepeat'
+  return axios.post(url, params).then(res => res.data)
+}

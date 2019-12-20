@@ -888,7 +888,7 @@ export default {
         '已取消',
         '再投后退回'
       ]
-      const dbWayBillStatus = ['妥投', '已开单', '运输中', '派送中', '已滞留', '反签收']
+      const dbWayBillStatus = ['妥投', '已开单', '运输中', '派送中', '已滞留', '反签收', '已退回']
       if (val === '1') {
         this.wayBillStatus = jdWayBillStatus
       } else if (val === '2') {

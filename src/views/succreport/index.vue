@@ -37,7 +37,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" @click="queryBtnHandle">查询</el-button>
+          <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -130,7 +130,10 @@ export default {
   },
   methods: {
     /** 分页查询订单开始 */
-    queryBtnHandle() {
+    queryBtnHandle(page) {
+      if (page) {
+        this.currentPage = page
+      }
       this.getListByPage(this.perpageNumber, this.currentPage)
     },
     // 页码发生变化

@@ -3,36 +3,10 @@
     <div class="queryForm">
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="">
-          <el-input v-model="queryForm.orderNo" placeholder="订单号" :editable="false"></el-input>
-        </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="queryForm.wayBillNo" placeholder="运单号" :editable="false"></el-input>
-        </el-form-item>
-        <el-form-item label="">
-          <el-select v-model="queryForm.wayBillStatus" placeholder="运单状态">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option
-              v-for="item in wayBillStatus"
-              :key="item"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="queryForm.goodsName" placeholder="物品名"></el-input>
-        </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="queryForm.receiverMobile" placeholder="收件人手机号"></el-input>
-        </el-form-item>
-        <el-form-item label="">
           <el-date-picker
-            type="daterange"
+            type="date"
             value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="下单开始日期"
-            end-placeholder="下单结束日期"
-            v-model="queryForm.orderTimeRange"
+            v-model="queryForm.orderDate"
             placeholder="下单时间"
           >
           </el-date-picker>
@@ -51,9 +25,16 @@
         center
         style="width: 100%;font-size: 13px;"
         highlight-current-row
+        row-key="wayBillNo"
+        lazy
+        :load="load"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        :row-class-name="tableRowClassName"
       >
-        <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
+        >
+        <el-table-column prop="wayBillNo" label="运单号" width="200" align="center">
         </el-table-column>
+        <el-table-column prop="orderNo" label="订单号" align="center"> </el-table-column>
         <el-table-column prop="goodsName" label="物品名" width="120" align="center">
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
@@ -62,9 +43,8 @@
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
         <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
-        <el-table-column prop="statusUpdateTime" label="状态更新时间" width="90" align="center">
-        </el-table-column>
-        <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
+        <el-table-column prop="packageNum" label="数量" align="center"> </el-table-column>
+        <el-table-column prop="orderDate" width="90" label="下单时间" align="center">
         </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -85,7 +65,8 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageExceed } from '@/api/waybill.js'
+import { listPageDeliverRepeat, listRepeat } from '@/api/waybill.js'
+import { parseTime } from '@/utils'
 
 export default {
   name: 'Waybill',
@@ -93,17 +74,15 @@ export default {
     Pagination
   },
   data() {
+    const currentDate = parseTime(new Date(), '{y}-{m}-{d}')
     return {
       tableDataSearch: [],
       currentPage: 1,
       perpageNumber: 20,
       total: 0,
       queryForm: {
-        orderTimeRange: [],
-        processTimeRange: [],
-        expressType: '1'
-      },
-      wayBillStatus: ['客户取消', '终止揽收', '已取消', '揽件再取']
+        orderDate: currentDate
+      }
     }
   },
   methods: {
@@ -121,27 +100,26 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
-      let orderTimeStart = ''
-      let orderTimeEnd = ''
-      if (this.queryForm.orderTimeRange) {
-        orderTimeStart = this.queryForm.orderTimeRange[0]
-        orderTimeEnd = this.queryForm.orderTimeRange[1]
-      }
       var param = {
         numPerPage: numPerPage,
         pageNum: pageNum,
-        orderNo: this.queryForm.orderNo,
-        wayBillNo: this.queryForm.wayBillNo,
-        wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus,
-        goodsName: this.queryForm.goodsName,
-        orderTimeStart: orderTimeStart,
-        orderTimeEnd: orderTimeEnd,
-        receiverMobile: this.queryForm.receiverMobile
+        orderDate: this.queryForm.orderDate
       }
-      listPageExceed(param).then(res => {
+      listPageDeliverRepeat(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
+    },
+    load(row, treeNode, resolve) {
+      const params = {
+        orderDate: row.orderDate,
+        goodsName: row.goodsName,
+        receiverMobile: row.receiverMobile
+      }
+      listRepeat(params).then(res => resolve(res.data))
+    },
+    tableRowClassName(row) {
+      return row.row.hasChildren ? '' : 'warning-row'
     }
   },
   create() {},
@@ -151,3 +129,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.el-table .warning-row {
+  background: oldlace;
+}
+</style>
