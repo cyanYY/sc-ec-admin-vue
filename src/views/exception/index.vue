@@ -97,6 +97,13 @@
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
+        <el-table-column
+          prop="expressType"
+          label="快递类型"
+          align="center"
+          :formatter="expressTypeFormatter"
+        >
+        </el-table-column>
         <el-table-column prop="hangReason" label="挂起原因" width="250" align="center">
           <template slot-scope="scope">
             <ol v-if="scope.row.hangReason">
@@ -578,6 +585,16 @@ export default {
     },
     handleSelectionChange(rows) {
       this.selectedWayBillNos = rows.map(row => row.wayBillNo)
+    },
+    expressTypeFormatter(row) {
+      switch (row.expressType) {
+        case '1':
+          return '京东快递'
+        case '2':
+          return '德邦快递'
+        default:
+          return row.expressType
+      }
     }
   },
   create() {},

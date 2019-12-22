@@ -26,17 +26,33 @@
         style="width: 100%;font-size: 13px;"
         highlight-current-row
         row-key="wayBillNo"
-        lazy
-        :load="load"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :row-class-name="tableRowClassName"
       >
         >
-        <el-table-column prop="wayBillNo" label="运单号" width="200" align="center">
+        <el-table-column prop="wayBillNo" label="运单号" width="180" align="center">
         </el-table-column>
-        <el-table-column prop="orderNo" label="订单号" align="center"> </el-table-column>
+        <el-table-column
+          prop="isExceed"
+          label="历史超区"
+          align="center"
+          :formatter="isExceedFormatter"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="expressType"
+          label="快递类型"
+          align="center"
+          :formatter="expressTypeFormatter"
+        >
+        </el-table-column>
+        <el-table-column prop="orderNo" width="100" label="订单号" align="center">
+        </el-table-column>
         <el-table-column prop="goodsName" label="物品名" width="120" align="center">
         </el-table-column>
+        <el-table-column prop="orderDate" width="90" label="下单时间" align="center">
+        </el-table-column>
+        <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
         </el-table-column>
@@ -44,9 +60,6 @@
         </el-table-column>
         <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="packageNum" label="数量" align="center"> </el-table-column>
-        <el-table-column prop="orderDate" width="90" label="下单时间" align="center">
-        </el-table-column>
-        <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -119,7 +132,27 @@ export default {
       listRepeat(params).then(res => resolve(res.data))
     },
     tableRowClassName(row) {
-      return row.row.hasChildren ? '' : 'warning-row'
+      return row.row.children ? '' : 'warning-row'
+    },
+    expressTypeFormatter(row) {
+      switch (row.expressType) {
+        case '1':
+          return '京东快递'
+        case '2':
+          return '德邦快递'
+        default:
+          return row.expressType
+      }
+    },
+    isExceedFormatter(row) {
+      switch (row.isExceed) {
+        case true:
+          return '是'
+        case false:
+          return '否'
+        default:
+          return row.isExceed
+      }
     }
   },
   create() {},
