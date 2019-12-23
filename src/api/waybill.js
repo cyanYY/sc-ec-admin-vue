@@ -116,3 +116,8 @@ export function listRepeat(params) {
   const url = '/wayBill/listRepeat'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function listDeliverDetail(params) {
+  const url = '/wayBill/listDeliverDetail'
+  return axios.post(url, params).then(res => res.data)
+}

@@ -82,6 +82,12 @@ export const asyncRoutes = [
         meta: { title: '发货统计', icon: 'table', key: 'waybill:deliver' }
       },
       {
+        path: 'deliverDetail',
+        name: 'deliverDetail',
+        component: () => import('@/views/waybill/deliverDetail'),
+        meta: { title: '发货单明细', icon: 'table' }
+      },
+      {
         path: 'deliverRepeat',
         name: 'deliverRepeat',
         component: () => import('@/views/waybill/deliverRepeat'),

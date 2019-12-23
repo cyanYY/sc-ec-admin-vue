@@ -50,6 +50,8 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
+          <el-button size="small" type="primary" @click="batchConfirmHandle">订单确认</el-button>
+          <el-button size="small" type="primary" @click="batchCancelHandle">订单取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -62,7 +64,9 @@
         center
         style="width: 100%;font-size: 13px;"
         highlight-current-row
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
         </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" width="100" align="center">
@@ -139,6 +143,7 @@ export default {
         orderTimeRange: [],
         merchantId: '-1'
       },
+      selectedRows: [],
       merchantList: [
         {
           label: '神创未来',
@@ -233,9 +238,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        const param = {
-          orderNo: row.orderNo
-        }
+        const param = [row.orderNo]
         orderRepeatConfirm(param).then(res => {
           this.$message({
             message: res.msg,
@@ -250,10 +253,69 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        const param = {
-          orderNo: row.orderNo
-        }
+        const param = [row.orderNo]
         orderRepeatCancel(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+      })
+    },
+    handleSelectionChange(rows) {
+      this.selectedRows = rows
+    },
+    batchCancelHandle() {
+      if (this.selectedRows.length === 0) {
+        this.$message({
+          message: '请至少选中一条数据',
+          type: 'error'
+        })
+        return
+      }
+      if (this.selectedRows.some(row => ['1', '2'].indexOf(row.orderStatus) === -1)) {
+        this.$message({
+          message: '存在不能取消数据',
+          type: 'error'
+        })
+        return
+      }
+      this.$confirm('确认取消订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = this.selectedRows.map(row => row.orderNo)
+        orderRepeatCancel(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+      })
+    },
+    batchConfirmHandle() {
+      if (this.selectedRows.length === 0) {
+        this.$message({
+          message: '请至少选中一条数据',
+          type: 'error'
+        })
+        return
+      }
+      if (this.selectedRows.some(row => ['1'].indexOf(row.orderStatus) === -1)) {
+        this.$message({
+          message: '存在不能确认数据',
+          type: 'error'
+        })
+        return
+      }
+      this.$confirm('确认订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = this.selectedRows.map(row => row.orderNo)
+        orderRepeatConfirm(param).then(res => {
           this.$message({
             message: res.msg,
             type: 'success'
