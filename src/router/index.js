@@ -121,6 +121,31 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/order-process',
+    component: Layout,
+    meta: { title: '差评订单处理', icon: 'form', key: 'order-process' },
+    children: [
+      {
+        path: '',
+        name: 'order-process',
+        component: () => import('@/views/order-process/index'),
+        meta: { title: '差评订单', icon: 'form', key: 'order-process:index' }
+      },
+      {
+        path: 'todo',
+        name: 'order-process-todo',
+        component: () => import('@/views/order-process/todo'),
+        meta: { title: '待处理', icon: 'form', key: 'order-process:todo' }
+      },
+      {
+        path: 'finish',
+        name: 'order-process-finish',
+        component: () => import('@/views/order-process/finish'),
+        meta: { title: '已处理', icon: 'table', key: 'order-process:finish' }
+      }
+    ]
+  },
+  {
     path: '/order',
     component: Layout,
     meta: { title: '订单管理', icon: 'form', key: 'order' },

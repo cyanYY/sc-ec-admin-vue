@@ -60,6 +60,11 @@
         </el-table-column>
         <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="packageNum" label="数量" align="center"> </el-table-column>
+        <el-table-column prop="option" width="100" fixed="right" align="center" label="操作">
+          <template slot-scope="scope">
+            <el-button @click="deleteRepeat(scope.row)" type="text" size="small">删除</el-button>
+          </template>
+        </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -78,7 +83,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageDeliverRepeat, listRepeat } from '@/api/waybill.js'
+import { listPageDeliverRepeat, listRepeat, deleteRepeat } from '@/api/waybill.js'
 import { parseTime } from '@/utils'
 
 export default {
@@ -153,6 +158,23 @@ export default {
         default:
           return row.isExceed
       }
+    },
+    deleteRepeat(row) {
+      this.$confirm('确认删除订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = {
+          wayBillNo: row.wayBillNo
+        }
+        deleteRepeat(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryHandle()
+        })
+      })
     }
   },
   create() {},

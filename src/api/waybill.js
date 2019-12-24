@@ -121,3 +121,8 @@ export function listDeliverDetail(params) {
   const url = '/wayBill/listDeliverDetail'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function deleteRepeat(params) {
+  const url = '/wayBill/deleteRepeat?wayBillNo=' + params.wayBillNo
+  return axios.get(url).then(res => res.data)
+}
