@@ -193,13 +193,19 @@ export const asyncRoutes = [
   {
     path: '/succreport',
     component: Layout,
-    meta: { title: '成功率统计', icon: 'table', key: 'succreport' },
+    meta: { title: '统计报表', icon: 'table', key: 'succreport' },
     children: [
       {
         path: '',
         name: 'succreport',
         component: () => import('@/views/succreport/index'),
-        meta: { title: '成功率统计', icon: 'table', key: 'succreport' }
+        meta: { title: '成功率统计', icon: 'table', key: 'succreport:index' }
+      },
+      {
+        path: 'profit',
+        name: 'profit',
+        component: () => import('@/views/succreport/profit'),
+        meta: { title: '利润报表', icon: 'table', key: 'succreport:profit' }
       }
     ]
   },

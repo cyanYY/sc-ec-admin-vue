@@ -73,6 +73,8 @@
         </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
+        <el-table-column prop="processResult" label="处理结果" width="110" align="center">
+        </el-table-column>
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
         <el-table-column prop="wayBillNo" label="运单号" align="center"> </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
@@ -101,6 +103,13 @@
       <el-form :model="processDetailForm" label-width="160px">
         <el-form-item label="订单号">
           <el-input v-model="processDetailForm.orderNo" :disabled="true" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="处理结果">
+          <el-input
+            v-model="processDetailForm.processResult"
+            :disabled="true"
+            placeholder=""
+          ></el-input>
         </el-form-item>
         <el-form-item label="客户截图:">
           <img :src="processDetailForm.processProof" class="avatar" />
@@ -190,6 +199,7 @@ export default {
       this.processDetailVisible = true
       this.processDetailForm.orderNo = row.orderNo
       this.processDetailForm.processProof = row.processProof
+      this.processDetailForm.processResult = row.processResult
     }
   },
   create() {},

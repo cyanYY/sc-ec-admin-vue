@@ -30,8 +30,9 @@
         :row-class-name="tableRowClassName"
       >
         >
-        <el-table-column prop="wayBillNo" label="运单号" width="180" align="center">
+        <el-table-column prop="orderDate" width="130" label="下单时间" align="center">
         </el-table-column>
+        <el-table-column prop="wayBillNo" label="运单号" align="center"> </el-table-column>
         <el-table-column
           prop="isExceed"
           label="历史超区"
@@ -49,8 +50,6 @@
         <el-table-column prop="orderNo" width="100" label="订单号" align="center">
         </el-table-column>
         <el-table-column prop="goodsName" label="物品名" width="120" align="center">
-        </el-table-column>
-        <el-table-column prop="orderDate" width="90" label="下单时间" align="center">
         </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>

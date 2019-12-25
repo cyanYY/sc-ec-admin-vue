@@ -65,8 +65,11 @@
         style="width: 100%;font-size: 13px;"
         highlight-current-row
         @selection-change="handleSelectionChange"
+        row-key="orderNo"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        :row-class-name="tableRowClassName"
       >
-        <el-table-column type="selection" width="50" align="center" />
+        <!-- <el-table-column type="selection" width="50" align="center" /> -->
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
         </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" width="100" align="center">
@@ -323,6 +326,9 @@ export default {
           this.queryBtnHandle()
         })
       })
+    },
+    tableRowClassName(row) {
+      return row.row.children ? '' : 'warning-row'
     }
   },
   create() {},

@@ -95,6 +95,8 @@
         </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
+        <el-table-column prop="processResult" label="处理结果" width="110" align="center">
+        </el-table-column>
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
         <el-table-column prop="wayBillNo" label="运单号" align="center"> </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
@@ -151,8 +153,11 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="handleForm.remark" placeholder=""></el-input>
+        <el-form-item label="处理结果">
+          <el-select v-model="handleForm.processResult" placeholder="">
+            <el-option label="用户同意撤销退款" value="用户同意撤销退款"></el-option>
+            <el-option label="用户不同意撤销退款" value="用户不同意撤销退款"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="handleExceptionCommit">确定</el-button>
@@ -300,6 +305,10 @@
         <el-form-item label="订单号">
           <el-input v-model="processDetailForm.orderNo" :disabled="true" placeholder=""></el-input>
         </el-form-item>
+        <el-form-item label="处理结果">
+          <el-input v-model="processDetailForm.processResult" :disabled="true" placeholder="">
+          </el-input>
+        </el-form-item>
         <el-form-item label="客户截图:">
           <img :src="processDetailForm.processProof" class="avatar" />
         </el-form-item>
@@ -336,7 +345,7 @@ export default {
       waybillHandleVisible: false,
       handleForm: {
         processProof: '',
-        remark: ''
+        processResult: ''
       },
       waybillHangVisible: false,
       hangForm: {
@@ -414,13 +423,13 @@ export default {
       this.waybillHandleVisible = true
       this.handleForm.orderNo = row.orderNo
       this.handleForm.processProof = ''
-      this.handleForm.remark = ''
+      this.handleForm.processResult = ''
     },
     handleExceptionCommit() {
       const param = {
         orderNo: this.handleForm.orderNo,
         processProof: this.handleForm.processProof,
-        remark: this.handleForm.remark
+        processResult: this.handleForm.processResult
       }
       handle(param).then(res => {
         this.waybillHandleVisible = false
@@ -548,6 +557,7 @@ export default {
       this.processDetailVisible = true
       this.processDetailForm.orderNo = row.orderNo
       this.processDetailForm.processProof = row.processProof
+      this.processDetailForm.processResult = row.processResult
     }
   },
   create() {},

@@ -129,8 +129,11 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="handleForm.remark" placeholder=""></el-input>
+        <el-form-item label="处理结果">
+          <el-select v-model="handleForm.processResult" placeholder="">
+            <el-option label="用户同意撤销退款" value="用户同意撤销退款"></el-option>
+            <el-option label="用户不同意撤销退款" value="用户不同意撤销退款"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="handleExceptionCommit">确定</el-button>
@@ -176,7 +179,7 @@ export default {
       waybillHandleVisible: false,
       handleForm: {
         processProof: '',
-        remark: ''
+        processResult: ''
       },
       waybillHangVisible: false,
       hangForm: {
@@ -242,13 +245,13 @@ export default {
       this.waybillHandleVisible = true
       this.handleForm.orderNo = row.orderNo
       this.handleForm.processProof = ''
-      this.handleForm.remark = ''
+      this.handleForm.processResult = ''
     },
     handleExceptionCommit() {
       const param = {
         orderNo: this.handleForm.orderNo,
         processProof: this.handleForm.processProof,
-        remark: this.handleForm.remark
+        processResult: this.handleForm.processResult
       }
       handle(param).then(res => {
         this.waybillHandleVisible = false

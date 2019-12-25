@@ -167,9 +167,8 @@
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
-        <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
+        <el-table-column prop="option" width="70" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
-            <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
             <el-button
               v-if="
                 !scope.row.operatorId &&
