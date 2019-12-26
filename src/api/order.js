@@ -74,3 +74,13 @@ export function orderRepeatCancel(params) {
   const url = '/order/cancelOrder'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function exportMerchant(params) {
+  const url = '/order/exportMerchant'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function exportGoodsId(params) {
+  const url = '/order/exportGoodsId'
+  return axios.post(url, params).then(res => res.data)
+}

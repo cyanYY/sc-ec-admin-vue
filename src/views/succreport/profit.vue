@@ -26,6 +26,8 @@
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
+        show-summary
+        :summary-method="getSummaries"
       >
         <el-table-column prop="date" label="日期" align="center"> </el-table-column>
         <el-table-column prop="incomeJd" label="京东代收货款" align="center"> </el-table-column>
@@ -36,7 +38,7 @@
         </el-table-column>
         <el-table-column prop="laborCost" label="人力成本" align="center"> </el-table-column>
         <el-table-column prop="adCost" label="广告成本" align="center"> </el-table-column>
-        <el-table-column prop="goodsDamageCost" label="货损成本" align="center"> </el-table-column>
+        <el-table-column prop="goodsCost" label="货品成本" align="center"> </el-table-column>
         <el-table-column prop="profit" label="毛利" align="center"> </el-table-column>
         <el-table-column prop="option" width="80" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
@@ -65,8 +67,8 @@
         <el-form-item label="广告成本">
           <el-input v-model="editCostForm.adCost" placeholder=""></el-input>
         </el-form-item>
-        <el-form-item label="货损成本">
-          <el-input v-model="editCostForm.goodsDamageCost" placeholder=""></el-input>
+        <el-form-item label="货品成本">
+          <el-input v-model="editCostForm.goodsCost" placeholder=""></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="editCostCommit">确定</el-button>
@@ -104,7 +106,17 @@ export default {
       editCostForm: {
         orderDate: '',
         adCost: '',
-        goodsDamageCost: ''
+        goodsCost: ''
+      },
+      sums: {
+        incomeJd: 0,
+        incomeDb: 0,
+        deliverCostJd: 0,
+        deliverCostDb: 0,
+        laborCost: 0,
+        adCost: 0,
+        goodsCost: 0,
+        profit: 0
       }
     }
   },
@@ -137,21 +149,30 @@ export default {
         orderTimeEnd: orderTimeEnd
       }
       listPage(param).then(res => {
-        this.tableDataSearch = res.data.recordList
-        this.total = res.data.totalCount
+        this.tableDataSearch = res.data.list.recordList
+        this.total = res.data.list.totalCount
+
+        this.sums.incomeJd = res.data.incomeJd
+        this.sums.incomeDb = res.data.incomeDb
+        this.sums.deliverCostJd = res.data.deliverCostJd
+        this.sums.deliverCostDb = res.data.deliverCostDb
+        this.sums.laborCost = res.data.laborCost
+        this.sums.adCost = res.data.adCost
+        this.sums.goodsCost = res.data.goodsCost
+        this.sums.profit = res.data.profit
       })
     },
     editCost(row) {
       this.editCostVisible = true
       this.editCostForm.orderDate = row.date
       this.editCostForm.adCost = row.adCost
-      this.editCostForm.goodsDamageCost = row.goodsDamageCost
+      this.editCostForm.goodsCost = row.goodsCost
     },
     editCostCommit() {
       const param = {
         orderDate: this.editCostForm.orderDate,
         adCost: this.editCostForm.adCost,
-        goodsDamageCost: this.editCostForm.goodsDamageCost
+        goodsCost: this.editCostForm.goodsCost
       }
       editCost(param).then(res => {
         this.editCostVisible = false
@@ -161,6 +182,27 @@ export default {
         })
         this.queryBtnHandle()
       })
+    },
+    getSummaries(param) {
+      const { columns } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+
+        sums[1] = this.sums.incomeJd
+        sums[2] = this.sums.incomeDb
+        sums[3] = this.sums.deliverCostJd
+        sums[4] = this.sums.deliverCostDb
+        sums[5] = this.sums.laborCost
+        sums[6] = this.sums.adCost
+        sums[7] = this.sums.goodsCost
+        sums[8] = this.sums.profit
+      })
+
+      return sums
     }
   },
   create() {},

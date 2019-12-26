@@ -112,6 +112,7 @@
             >超区订单导入</el-button
           >
           <el-button size="small" type="success" @click="exportBtnHandle">订单导出</el-button>
+          <el-button size="small" type="success" @click="exportInvoiceHandle">导出发货单</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -373,6 +374,45 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog
+      size="small"
+      title="导出发货单"
+      :close-on-click-modal="false"
+      :visible.sync="exportInvoiceVisible"
+    >
+      <el-form :model="exrOrderUploadForm" label-width="120px">
+        <el-form-item label="选择商户">
+          <el-select v-model="exportInvoiceForm.merchantId" placeholder="" @change="merchantChange">
+            <el-option
+              v-for="item in exportMerchantList"
+              :key="item.merchantId"
+              :label="item.merchantName"
+              :value="item.merchantId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择商品">
+          <el-select v-model="exportInvoiceForm.goodsId" placeholder="">
+            <el-option
+              v-for="item in exportGoodsList"
+              :key="item.goodsId"
+              :label="item.goodsName"
+              :value="item.goodsId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            size="small"
+            type="primary"
+            :loading="exportInvoiceLoading"
+            @click="exportInvoice"
+            >确认导出
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -384,7 +424,9 @@ import {
   addOrder,
   updateOrder,
   uploadOffOrder,
-  uploadExrOrder
+  uploadExrOrder,
+  exportMerchant,
+  exportGoodsId
 } from '@/api/order.js'
 import axios from 'axios'
 
@@ -463,7 +505,15 @@ export default {
           label: '伟平商行',
           value: '9'
         }
-      ]
+      ],
+      exportInvoiceVisible: false,
+      exportInvoiceLoading: false,
+      exportInvoiceForm: {
+        merchantId: '',
+        goodsId: ''
+      },
+      exportMerchantList: [],
+      exportGoodsList: []
     }
   },
   methods: {
@@ -595,6 +645,53 @@ export default {
       })
     },
     /** 订单导出结束 */
+
+    /** 导出发货单开始 */
+    exportInvoiceHandle() {
+      this.exportInvoiceVisible = true
+      this.exportInvoiceForm.merchantId = ''
+      this.exportInvoiceForm.goodsId = ''
+
+      exportMerchant({}).then(res => {
+        this.exportMerchantList = res.data
+      })
+    },
+    merchantChange(value) {
+      const param = {
+        merchantId: value
+      }
+      exportGoodsId(param).then(res => {
+        this.exportGoodsList = res.data
+      })
+    },
+    exportInvoice() {
+      this.exportInvoiceLoading = true
+      var param = {
+        merchantId: this.exportInvoiceForm.merchantId,
+        goodsId: this.exportInvoiceForm.goodsId
+      }
+      axios({
+        method: 'post',
+        url: this.baseURL + '/order/exportInvoice',
+        data: param,
+        responseType: 'blob'
+      }).then(res => {
+        this.exportInvoiceLoading = false
+        const fileName = '发货单.xls'
+        const blob = new Blob([res.data], { type: 'application/xls' })
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, fileName)
+        } else {
+          var link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.download = fileName
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
+        this.exportInvoiceVisible = false
+      })
+    },
+    /** 导出发货单结束 */
 
     /** 新增订单开始 */
     addBtnHandle() {

@@ -69,7 +69,12 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :row-class-name="tableRowClassName"
       >
-        <!-- <el-table-column type="selection" width="50" align="center" /> -->
+        <el-table-column type="selection" width="50" align="center" />
+        <el-table-column prop="orderTime" label="订单提交时间" width="130" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.orderTime && scope.row.orderTime.substring(0, 10) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
         </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" width="100" align="center">
@@ -85,9 +90,7 @@
         >
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
-        <el-table-column prop="receiverMobile" label="收件人手机号" align="center">
-        </el-table-column>
-        <el-table-column prop="orderTime" label="订单提交时间" width="90" align="center">
+        <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
         </el-table-column>
         <el-table-column prop="orderStatusString" label="订单状态" align="center">
         </el-table-column>
@@ -328,6 +331,7 @@ export default {
       })
     },
     tableRowClassName(row) {
+      console.log(row)
       return row.row.children ? '' : 'warning-row'
     }
   },
@@ -338,3 +342,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.el-table .warning-row {
+  background: oldlace;
+}
+</style>
