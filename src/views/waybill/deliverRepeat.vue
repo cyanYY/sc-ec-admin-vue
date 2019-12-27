@@ -1,7 +1,13 @@
 <template>
-  <div class="app-container waybill-cont">
+  <div class="app-container">
     <div class="queryForm">
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
+        <el-form-item label="">
+          <el-select v-model="queryForm.type" placeholder="" @change="typeChange">
+            <el-option label="重复单" value="repeat"></el-option>
+            <el-option label="用户取消" value="cancel"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="">
           <el-date-picker
             type="date"
@@ -13,6 +19,14 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
+          <el-button
+            v-if="queryForm.type === 'cancel'"
+            :loading="synLoading"
+            size="small"
+            type="primary"
+            @click="synOrder"
+            >订单同步</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -31,9 +45,13 @@
       >
         >
         <el-table-column prop="orderDate" width="130" label="下单时间" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.orderDate && scope.row.orderDate.substring(0, 19) }}
+          </template>
         </el-table-column>
         <el-table-column prop="wayBillNo" label="运单号" align="center"> </el-table-column>
         <el-table-column
+          v-if="queryForm.type === 'repeat'"
           prop="isExceed"
           label="历史超区"
           align="center"
@@ -52,14 +70,28 @@
         <el-table-column prop="goodsName" label="物品名" width="120" align="center">
         </el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
+        <el-table-column
+          v-if="queryForm.type === 'cancel'"
+          prop="orderStatus"
+          label="订单状态"
+          align="center"
+        >
+        </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
         </el-table-column>
-        <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
+        <el-table-column prop="receiverAddress" label="收件人地址" width="170" align="center">
         </el-table-column>
         <el-table-column prop="collectionFee" label="代收货款" align="center"> </el-table-column>
         <el-table-column prop="packageNum" label="数量" align="center"> </el-table-column>
-        <el-table-column prop="option" width="100" fixed="right" align="center" label="操作">
+        <el-table-column
+          v-if="queryForm.type === 'repeat'"
+          prop="option"
+          width="100"
+          fixed="right"
+          align="center"
+          label="操作"
+        >
           <template slot-scope="scope">
             <el-button @click="deleteRepeat(scope.row)" type="text" size="small">删除</el-button>
           </template>
@@ -83,6 +115,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { listPageDeliverRepeat, listRepeat, deleteRepeat } from '@/api/waybill.js'
+import { synOrder } from '@/api/order.js'
 import { parseTime } from '@/utils'
 
 export default {
@@ -98,8 +131,10 @@ export default {
       perpageNumber: 20,
       total: 0,
       queryForm: {
-        orderDate: currentDate
-      }
+        orderDate: currentDate,
+        type: 'repeat'
+      },
+      synLoading: false
     }
   },
   methods: {
@@ -120,7 +155,8 @@ export default {
       var param = {
         numPerPage: numPerPage,
         pageNum: pageNum,
-        orderDate: this.queryForm.orderDate
+        orderDate: this.queryForm.orderDate,
+        type: this.queryForm.type
       }
       listPageDeliverRepeat(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -136,7 +172,11 @@ export default {
       listRepeat(params).then(res => resolve(res.data))
     },
     tableRowClassName(row) {
-      return row.row.children ? '' : 'warning-row'
+      if (this.queryForm.type === 'cancel') {
+        return ''
+      } else {
+        return row.row.children ? '' : 'warning-row'
+      }
     },
     expressTypeFormatter(row) {
       switch (row.expressType) {
@@ -174,6 +214,21 @@ export default {
           this.queryHandle()
         })
       })
+    },
+    typeChange() {
+      this.queryHandle(1)
+    },
+    synOrder() {
+      this.synLoading = true
+      synOrder({})
+        .then(res => {
+          this.synLoading = false
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+        })
+        .catch(() => (this.synLoading = false))
     }
   },
   create() {},

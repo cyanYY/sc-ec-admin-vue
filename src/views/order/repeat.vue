@@ -72,7 +72,7 @@
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="orderTime" label="订单提交时间" width="130" align="center">
           <template slot-scope="scope">
-            {{ scope.row.orderTime && scope.row.orderTime.substring(0, 10) }}
+            {{ scope.row.orderTime && scope.row.orderTime.substring(0, 19) }}
           </template>
         </el-table-column>
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
