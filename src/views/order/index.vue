@@ -402,6 +402,17 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <!-- <el-form-item label="">
+          <el-date-picker
+            v-model="exportInvoiceForm.orderTimeRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="订单开始日期"
+            end-placeholder="订单结束日期"
+            format="yyyy-MM-dd HH"
+          >
+          </el-date-picker>
+        </el-form-item> -->
         <el-form-item>
           <el-button
             size="small"
@@ -511,6 +522,7 @@ export default {
       exportInvoiceForm: {
         merchantId: '',
         goodsId: ''
+        // orderTimeRange: []
       },
       exportMerchantList: [],
       exportGoodsList: []
@@ -651,6 +663,7 @@ export default {
       this.exportInvoiceVisible = true
       this.exportInvoiceForm.merchantId = ''
       this.exportInvoiceForm.goodsId = ''
+      // this.exportInvoiceForm.orderTimeRange = []
 
       exportMerchant({}).then(res => {
         this.exportMerchantList = res.data
@@ -666,9 +679,17 @@ export default {
     },
     exportInvoice() {
       this.exportInvoiceLoading = true
+      // let timeStart = ''
+      // let timeEnd = ''
+      // if (this.exportInvoiceForm.orderTimeRange) {
+      //   timeStart = this.exportInvoiceForm.orderTimeRange[0]
+      //   timeEnd = this.exportInvoiceForm.orderTimeRange[1]
+      // }
       var param = {
         merchantId: this.exportInvoiceForm.merchantId,
         goodsId: this.exportInvoiceForm.goodsId
+        // timeStart: timeStart,
+        // timeEnd: timeEnd
       }
       axios({
         method: 'post',

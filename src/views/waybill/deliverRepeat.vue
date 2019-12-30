@@ -241,6 +241,11 @@ export default {
 
 <style>
 .el-table .warning-row {
-  background: oldlace;
+  color: #ffffff;
+  background: #f56c6c;
+}
+
+.el-table .warning-row.hover-row {
+  color: #606266;
 }
 </style>
