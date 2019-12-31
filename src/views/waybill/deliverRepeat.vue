@@ -49,7 +49,6 @@
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
-        highlight-current-row
         row-key="wayBillNo"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :row-class-name="tableRowClassName"
@@ -260,10 +259,10 @@ export default {
 <style>
 .el-table .warning-row {
   color: #ffffff;
-  background: #f56c6c;
+  background: #f09d76;
 }
 
-.el-table .warning-row.hover-row {
-  color: #606266;
+.el-table tr.hover-row > td {
+  background-color: rgba(0, 0, 0, 0) !important;
 }
 </style>
