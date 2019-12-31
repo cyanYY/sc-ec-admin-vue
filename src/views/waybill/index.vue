@@ -836,6 +836,7 @@ export default {
       })
     },
     wayTrace(row) {
+      this.traceHtml = '查询中...'
       this.wayTraceVisible = true
 
       const param = {

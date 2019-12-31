@@ -210,6 +210,19 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/stock',
+    component: Layout,
+    meta: { title: '库存管理', icon: 'table', key: 'stock' },
+    children: [
+      {
+        path: '',
+        name: 'stock',
+        component: () => import('@/views/stock/overtime'),
+        meta: { title: '超时运单', icon: 'table', key: 'stock:overtime' }
+      }
+    ]
+  },
+  {
     path: '/system',
     component: Layout,
     meta: { title: '系统管理', icon: 'table', key: 'system' },

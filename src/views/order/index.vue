@@ -402,17 +402,17 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="">
+        <el-form-item label="下单时间">
           <el-date-picker
             v-model="exportInvoiceForm.orderTimeRange"
             type="datetimerange"
             range-separator="至"
-            start-placeholder="订单开始日期"
-            end-placeholder="订单结束日期"
-            format="yyyy-MM-dd HH"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
           >
           </el-date-picker>
-        </el-form-item> -->
+        </el-form-item>
         <el-form-item>
           <el-button
             size="small"
@@ -521,8 +521,8 @@ export default {
       exportInvoiceLoading: false,
       exportInvoiceForm: {
         merchantId: '',
-        goodsId: ''
-        // orderTimeRange: []
+        goodsId: '',
+        orderTimeRange: []
       },
       exportMerchantList: [],
       exportGoodsList: []
@@ -663,7 +663,7 @@ export default {
       this.exportInvoiceVisible = true
       this.exportInvoiceForm.merchantId = ''
       this.exportInvoiceForm.goodsId = ''
-      // this.exportInvoiceForm.orderTimeRange = []
+      this.exportInvoiceForm.orderTimeRange = []
 
       exportMerchant({}).then(res => {
         this.exportMerchantList = res.data
@@ -679,17 +679,17 @@ export default {
     },
     exportInvoice() {
       this.exportInvoiceLoading = true
-      // let timeStart = ''
-      // let timeEnd = ''
-      // if (this.exportInvoiceForm.orderTimeRange) {
-      //   timeStart = this.exportInvoiceForm.orderTimeRange[0]
-      //   timeEnd = this.exportInvoiceForm.orderTimeRange[1]
-      // }
+      let orderTimeStart = ''
+      let orderTimeEnd = ''
+      if (this.exportInvoiceForm.orderTimeRange) {
+        orderTimeStart = this.exportInvoiceForm.orderTimeRange[0]
+        orderTimeEnd = this.exportInvoiceForm.orderTimeRange[1]
+      }
       var param = {
         merchantId: this.exportInvoiceForm.merchantId,
-        goodsId: this.exportInvoiceForm.goodsId
-        // timeStart: timeStart,
-        // timeEnd: timeEnd
+        goodsId: this.exportInvoiceForm.goodsId,
+        orderTimeStart: orderTimeStart,
+        orderTimeEnd: orderTimeEnd
       }
       axios({
         method: 'post',

@@ -17,6 +17,17 @@
           >
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.wayBillStatus" placeholder="运单状态">
+            <el-option label="全部" value="-1"></el-option>
+            <el-option
+              v-for="item in wayBillStatus"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
           <el-button
@@ -114,12 +125,11 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageDeliverRepeat, listRepeat, deleteRepeat } from '@/api/waybill.js'
+import { listPageDeliverRepeat, deleteRepeat } from '@/api/waybill.js'
 import { synOrder } from '@/api/order.js'
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'Waybill',
   components: {
     Pagination
   },
@@ -134,6 +144,21 @@ export default {
         orderDate: currentDate,
         type: 'repeat'
       },
+      wayBillStatus: [
+        '妥投',
+        '拒收',
+        '客户取消',
+        '终止揽收',
+        '订单入站',
+        '配送员收货',
+        '协商再投结果',
+        '分拣中心发货',
+        '分拣中心验货',
+        '站点验货',
+        '站点再投',
+        '已取消',
+        '再投后退回'
+      ],
       synLoading: false
     }
   },
@@ -156,20 +181,13 @@ export default {
         numPerPage: numPerPage,
         pageNum: pageNum,
         orderDate: this.queryForm.orderDate,
-        type: this.queryForm.type
+        type: this.queryForm.type,
+        wayBillStatus: this.queryForm.wayBillStatus === '-1' ? '' : this.queryForm.wayBillStatus
       }
       listPageDeliverRepeat(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
-    },
-    load(row, treeNode, resolve) {
-      const params = {
-        orderDate: row.orderDate,
-        goodsName: row.goodsName,
-        receiverMobile: row.receiverMobile
-      }
-      listRepeat(params).then(res => resolve(res.data))
     },
     tableRowClassName(row) {
       if (this.queryForm.type === 'cancel') {
