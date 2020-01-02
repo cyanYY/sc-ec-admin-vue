@@ -1,16 +1,16 @@
 import axios from '@/utils/request'
 
 export function listPage(params) {
-  const url = '/profit/listPage'
+  const url = '/goods/listPage'
   return axios.post(url, params).then(res => res.data)
 }
 
-export function editCost(params) {
-  const url = '/profit/editCost'
+export function add(params) {
+  const url = '/goods/add'
   return axios.post(url, params).then(res => res.data)
 }
 
-export function listPageDeliver(params) {
-  const url = '/profit/listPageDeliver'
+export function update(params) {
+  const url = '/goods/update'
   return axios.post(url, params).then(res => res.data)
 }

@@ -206,6 +206,12 @@ export const asyncRoutes = [
         name: 'profit',
         component: () => import('@/views/succreport/profit'),
         meta: { title: '利润报表', icon: 'table', key: 'succreport:profit' }
+      },
+      {
+        path: 'deliver',
+        name: 'deliver',
+        component: () => import('@/views/succreport/deliver'),
+        meta: { title: '发货统计', icon: 'table', key: 'succreport:deliver' }
       }
     ]
   },
@@ -219,6 +225,12 @@ export const asyncRoutes = [
         name: 'stock',
         component: () => import('@/views/stock/overtime'),
         meta: { title: '超时运单', icon: 'table', key: 'stock:overtime' }
+      },
+      {
+        path: 'goods',
+        name: 'goods',
+        component: () => import('@/views/stock/goods'),
+        meta: { title: '商品管理', icon: 'table', key: 'stock:goods' }
       }
     ]
   },
