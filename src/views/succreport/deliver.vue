@@ -4,12 +4,10 @@
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="">
           <el-date-picker
-            v-model="queryForm.orderTimeRange"
-            type="daterange"
+            type="date"
             value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            v-model="queryForm.orderDate"
+            placeholder="下单时间"
           >
           </el-date-picker>
         </el-form-item>
@@ -59,9 +57,7 @@ export default {
   },
   data() {
     const date = new Date()
-    const endDate = parseTime(date, '{y}-{m}-{d}')
-    date.setDate(date.getDate() - 14)
-    const startDate = parseTime(date, '{y}-{m}-{d}')
+    const orderDate = parseTime(date, '{y}-{m}-{d}')
 
     return {
       tableDataSearch: [],
@@ -69,7 +65,7 @@ export default {
       perpageNumber: 20,
       total: 0,
       queryForm: {
-        orderTimeRange: [startDate, endDate]
+        orderDate: orderDate
       }
     }
   },
@@ -89,17 +85,11 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
-      let orderTimeStart = ''
-      let orderTimeEnd = ''
-      if (this.queryForm.orderTimeRange) {
-        orderTimeStart = this.queryForm.orderTimeRange[0]
-        orderTimeEnd = this.queryForm.orderTimeRange[1]
-      }
       var param = {
         numPerPage: numPerPage,
         pageNum: pageNum,
-        orderTimeStart: orderTimeStart,
-        orderTimeEnd: orderTimeEnd
+        orderTimeStart: this.queryForm.orderDate,
+        orderTimeEnd: this.queryForm.orderDate
       }
       listPageDeliver(param).then(res => {
         this.tableDataSearch = res.data.recordList
