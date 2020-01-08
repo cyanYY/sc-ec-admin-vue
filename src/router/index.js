@@ -248,7 +248,7 @@ export const asyncRoutes = [
         path: 'refund',
         name: 'refund',
         component: () => import('@/views/stock/refund'),
-        meta: { title: '退货扫码', icon: 'table' } //, key: 'stock:refund' }
+        meta: { title: '退货扫码', icon: 'table', key: 'stock:refund' }
       }
     ]
   },
