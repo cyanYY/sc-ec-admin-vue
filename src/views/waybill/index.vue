@@ -16,6 +16,7 @@
           >
             <el-option label="京东快递" value="1"></el-option>
             <el-option label="德邦快递" value="2"></el-option>
+            <el-option label="韵达快递" value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -218,6 +219,7 @@
           <el-select v-model="waybillUploadForm.expressType" placeholder="">
             <el-option label="京东快递" value="1"></el-option>
             <el-option label="德邦快递" value="2"></el-option>
+            <el-option label="韵达快递" value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">

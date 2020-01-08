@@ -103,16 +103,16 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
-          <el-button size="small" type="info" @click="addBtnHandle">新增订单</el-button>
-          <el-button size="small" type="warning" @click="uplaodBtnHandle">订单导入</el-button>
-          <el-button size="small" type="warning" @click="offUplaodBtnHandle"
+          <!-- <el-button size="small" type="info" @click="addBtnHandle">新增订单</el-button>
+          <el-button size="small" type="warning" @click="uplaodBtnHandle">订单导入</el-button> -->
+          <el-button size="small" type="primary" @click="offUplaodBtnHandle"
             >线下订单导入</el-button
           >
-          <el-button size="small" type="warning" @click="exrUplaodBtnHandle"
+          <!-- <el-button size="small" type="warning" @click="exrUplaodBtnHandle"
             >超区订单导入</el-button
           >
-          <el-button size="small" type="success" @click="exportBtnHandle">订单导出</el-button>
-          <el-button size="small" type="success" @click="exportInvoiceHandle">导出发货单</el-button>
+          <el-button size="small" type="success" @click="exportBtnHandle">订单导出</el-button> -->
+          <el-button size="small" type="primary" @click="exportInvoiceHandle">导出发货单</el-button>
         </el-form-item>
       </el-form>
     </div>

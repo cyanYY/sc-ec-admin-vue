@@ -89,3 +89,8 @@ export function synOrder(params) {
   const url = '/order/synOrder'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function listPageScalp(params) {
+  const url = '/order/orderScalpListPage'
+  return axios.post(url, params).then(res => res.data)
+}

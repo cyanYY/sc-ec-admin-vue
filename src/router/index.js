@@ -120,31 +120,31 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/order-process',
-    component: Layout,
-    meta: { title: '退款订单处理', icon: 'form', key: 'order-process' },
-    children: [
-      {
-        path: '',
-        name: 'order-process',
-        component: () => import('@/views/order-process/index'),
-        meta: { title: '退款订单', icon: 'form', key: 'order-process:index' }
-      },
-      {
-        path: 'todo',
-        name: 'order-process-todo',
-        component: () => import('@/views/order-process/todo'),
-        meta: { title: '待处理', icon: 'form', key: 'order-process:todo' }
-      },
-      {
-        path: 'finish',
-        name: 'order-process-finish',
-        component: () => import('@/views/order-process/finish'),
-        meta: { title: '已处理', icon: 'table', key: 'order-process:finish' }
-      }
-    ]
-  },
+  // {
+  //   path: '/order-process',
+  //   component: Layout,
+  //   meta: { title: '退款订单处理', icon: 'form', key: 'order-process' },
+  //   children: [
+  //     {
+  //       path: '',
+  //       name: 'order-process',
+  //       component: () => import('@/views/order-process/index'),
+  //       meta: { title: '退款订单', icon: 'form', key: 'order-process:index' }
+  //     },
+  //     {
+  //       path: 'todo',
+  //       name: 'order-process-todo',
+  //       component: () => import('@/views/order-process/todo'),
+  //       meta: { title: '待处理', icon: 'form', key: 'order-process:todo' }
+  //     },
+  //     {
+  //       path: 'finish',
+  //       name: 'order-process-finish',
+  //       component: () => import('@/views/order-process/finish'),
+  //       meta: { title: '已处理', icon: 'table', key: 'order-process:finish' }
+  //     }
+  //   ]
+  // },
   {
     path: '/order',
     component: Layout,
@@ -161,6 +161,12 @@ export const asyncRoutes = [
         name: 'repeat',
         component: () => import('@/views/order/repeat'),
         meta: { title: '重复单', icon: 'form', key: 'order:repeat' }
+      },
+      {
+        path: 'scalp',
+        name: 'scalp',
+        component: () => import('@/views/order/scalp'),
+        meta: { title: '刷单订单', icon: 'form', key: 'order:scalp' }
       }
     ]
   },
@@ -223,6 +229,12 @@ export const asyncRoutes = [
       {
         path: '',
         name: 'stock',
+        component: () => import('@/views/stock/index'),
+        meta: { title: '库存管理', icon: 'table', key: 'stock:index' }
+      },
+      {
+        path: 'overtime',
+        name: 'overtime',
         component: () => import('@/views/stock/overtime'),
         meta: { title: '超时运单', icon: 'table', key: 'stock:overtime' }
       },

@@ -70,7 +70,7 @@
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
-            <el-button @click="deleteWaybill(scope.row)" type="text" size="small">删除</el-button>
+            <!-- <el-button @click="deleteWaybill(scope.row)" type="text" size="small">删除</el-button> -->
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">

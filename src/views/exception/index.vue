@@ -593,6 +593,8 @@ export default {
           return '京东快递'
         case '2':
           return '德邦快递'
+        case '3':
+          return '韵达快递'
         default:
           return row.expressType
       }
