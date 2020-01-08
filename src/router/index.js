@@ -243,6 +243,12 @@ export const asyncRoutes = [
         name: 'goods',
         component: () => import('@/views/stock/goods'),
         meta: { title: '商品管理', icon: 'table', key: 'stock:goods' }
+      },
+      {
+        path: 'refund',
+        name: 'refund',
+        component: () => import('@/views/stock/refund'),
+        meta: { title: '退货扫码', icon: 'table' } //, key: 'stock:refund' }
       }
     ]
   },
