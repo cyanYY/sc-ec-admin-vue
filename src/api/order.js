@@ -94,3 +94,8 @@ export function listPageScalp(params) {
   const url = '/order/orderScalpListPage'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function orderDelivery(params) {
+  const url = '/order/orderDelivery'
+  return axios.post(url, params).then(res => res.data)
+}

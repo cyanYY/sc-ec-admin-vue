@@ -113,6 +113,9 @@
           >
           <el-button size="small" type="success" @click="exportBtnHandle">订单导出</el-button> -->
           <el-button size="small" type="primary" @click="exportInvoiceHandle">导出发货单</el-button>
+          <el-button size="small" type="primary" @click="invoiceUplaodBtnHandle">
+            发货单导入
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -303,7 +306,7 @@
       :visible.sync="offOrderUploadVisible"
     >
       <el-form :model="offOrderUploadForm" label-width="120px">
-        <el-form-item label="选择商户">
+        <!-- <el-form-item label="选择商户">
           <el-select v-model="offOrderUploadForm.merchantId" placeholder="">
             <el-option
               v-for="item in merchantList"
@@ -312,7 +315,7 @@
               :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="选择文件">
           <el-upload
             ref="offOrderUpload"
@@ -424,6 +427,36 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog
+      @close="() => this.$refs['invoiceUpload'].clearFiles()"
+      size="small"
+      title=""
+      :close-on-click-modal="false"
+      :visible.sync="invoiceUploadVisible"
+    >
+      <el-form :model="invoiceUploadForm" label-width="120px">
+        <el-form-item label="选择文件">
+          <el-upload
+            ref="invoiceUpload"
+            class="upload-demo"
+            :action="this.baseURL + '/file/upload'"
+            :on-success="invoiceUploadSuccess"
+          >
+            <el-button size="small">上传发货单</el-button>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            :loading="invoiceUploadLoading"
+            size="small"
+            type="primary"
+            @click="invoiceUploadHandle"
+            >确认导入</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -437,7 +470,8 @@ import {
   uploadOffOrder,
   uploadExrOrder,
   exportMerchant,
-  exportGoodsId
+  exportGoodsId,
+  orderDelivery
 } from '@/api/order.js'
 import axios from 'axios'
 
@@ -525,7 +559,11 @@ export default {
         orderTimeRange: []
       },
       exportMerchantList: [],
-      exportGoodsList: []
+      exportGoodsList: [],
+      invoiceUploadVisible: false,
+      invoiceFileName: '',
+      invoiceUploadLoading: false,
+      invoiceUploadForm: {}
     }
   },
   methods: {
@@ -785,8 +823,8 @@ export default {
         })
       }
       var param = {
-        fileName: this.offOrderFileName,
-        merchantId: this.offOrderUploadForm.merchantId
+        fileName: this.offOrderFileName
+        // merchantId: this.offOrderUploadForm.merchantId
       }
       this.offOrderUploadLoading = true
       uploadOffOrder(param)
@@ -837,8 +875,42 @@ export default {
         .catch(() => {
           this.exrOrderUploadLoading = false
         })
-    }
+    },
     /** 超区订单导入结束 */
+
+    /** 发货单导入开始 */
+    invoiceUplaodBtnHandle() {
+      this.invoiceUploadVisible = true
+    },
+    invoiceUploadSuccess(res) {
+      this.invoiceFileName = res.data.fileName
+    },
+    invoiceUploadHandle() {
+      if (!this.invoiceFileName) {
+        this.$message({
+          message: '请先上传数据文件',
+          type: 'error'
+        })
+      }
+      var param = {
+        fileName: this.invoiceFileName
+      }
+      this.invoiceUploadLoading = true
+      orderDelivery(param)
+        .then(res => {
+          this.invoiceUploadLoading = false
+          this.invoiceUploadVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+        .catch(() => {
+          this.invoiceUploadLoading = false
+        })
+    }
+    /** 发货单导入结束 */
   },
   create() {},
   mounted() {

@@ -26,6 +26,8 @@
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
+        <el-table-column prop="changeWayBillNo" label="换单号" width="100" align="center">
+        </el-table-column>
         <el-table-column prop="goodsName" label="物品名" width="120" align="center">
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
