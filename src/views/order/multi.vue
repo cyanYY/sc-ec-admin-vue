@@ -90,6 +90,11 @@
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="userRemark" label="用户留言" align="center"> </el-table-column>
         <el-table-column prop="merchantRemark" label="商户留言" align="center"> </el-table-column>
+        <el-table-column prop="option" fixed="right" align="center" label="操作">
+          <template slot-scope="scope">
+            <el-button @click="remarkBtnHandle(scope.row)" type="text" size="small">备注</el-button>
+          </template>
+        </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -103,12 +108,29 @@
         @currentPage="getCurrentPage"
       ></Pagination>
     </div>
+
+    <el-dialog
+      size="small"
+      title=""
+      :close-on-click-modal="false"
+      :visible.sync="remarkFormVisible"
+    >
+      <el-form :model="remarkForm" label-width="120px">
+        <el-form-item label="订单号">{{ remarkForm.orderNo }}</el-form-item>
+        <el-form-item label="运单号">
+          <el-input v-model="remarkForm.merchantRemark" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="remarkOrderHandle">确定</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageScalp } from '@/api/order.js'
+import { orderMListPage, remarkOrder } from '@/api/order.js'
 
 export default {
   components: {
@@ -161,7 +183,12 @@ export default {
           label: '伟平商行',
           value: '9'
         }
-      ]
+      ],
+      remarkFormVisible: false,
+      remarkForm: {
+        orderNo: '',
+        merchantRemark: ''
+      }
     }
   },
   methods: {
@@ -198,12 +225,35 @@ export default {
         merchantId: this.queryForm.merchantId === '-1' ? '' : this.queryForm.merchantId,
         orderStatus: this.queryForm.orderStatus === '-1' ? '' : this.queryForm.orderStatus
       }
-      listPageScalp(param).then(res => {
+      orderMListPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
-    }
+    },
     /** 分页查询订单结束 */
+
+    /** 备注订单开始 */
+    remarkBtnHandle(row) {
+      this.remarkFormVisible = true
+
+      this.remarkForm.orderNo = row.orderNo
+      this.remarkForm.merchantRemark = row.merchantRemark
+    },
+    remarkOrderHandle() {
+      var param = {
+        orderNo: this.remarkForm.orderNo,
+        merchantRemark: this.remarkForm.merchantRemark
+      }
+      remarkOrder(param).then(res => {
+        this.remarkFormVisible = false
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        })
+        this.queryBtnHandle()
+      })
+    }
+    /** 备注订单结束 */
   },
   create() {},
   mounted() {

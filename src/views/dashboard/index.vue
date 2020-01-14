@@ -202,8 +202,16 @@ export default {
       this.userHandle(perPage, currPage)
     },
     groupPanelInfo() {
+      let startDate = ''
+      let endDate = ''
+      if (this.queryForm.dateRange) {
+        startDate = this.queryForm.dateRange[0]
+        endDate = this.queryForm.dateRange[1]
+      }
       const param = {
-        agentId: this.queryForm.agentId
+        agentId: this.queryForm.agentId,
+        startDate: startDate,
+        endDate: endDate
       }
       getGroupPanelInfo(param).then(res => {
         this.stasticsData = res.data

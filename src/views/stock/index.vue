@@ -3,24 +3,14 @@
     <div class="queryForm">
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="">
-          <el-select v-model="queryForm.expressType" clearable placeholder="快递类型">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
           <el-input v-model="queryForm.goodsName" placeholder="商品名称"></el-input>
         </el-form-item>
         <el-form-item>
           <el-date-picker
-            v-model="queryForm.dateRange"
-            size="small"
-            type="daterange"
+            type="date"
             value-format="yyyy-MM-dd"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            v-model="queryForm.stockDate"
+            placeholder="日期"
           >
           </el-date-picker>
         </el-form-item>
@@ -40,19 +30,11 @@
         highlight-current-row
       >
         <el-table-column prop="stockDate" label="日期" align="center"> </el-table-column>
-        <el-table-column
-          prop="expressType"
-          label="快递类型"
-          align="center"
-          :formatter="expressTypeFormatter"
-        >
-        </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" align="center"> </el-table-column>
+        <el-table-column prop="remaindNum" label="前日剩余" align="center"> </el-table-column>
+        <el-table-column prop="incrNum" label="今日新增" align="center"> </el-table-column>
+        <el-table-column prop="deliverNum" label="本地发货" align="center"> </el-table-column>
         <el-table-column prop="stockNum" label="库存" align="center"> </el-table-column>
-        <el-table-column prop="deliverNum" label="发货数" align="center"> </el-table-column>
-        <el-table-column prop="unDeliverNum" label="未发货数" align="center"> </el-table-column>
-        <el-table-column prop="backNum" label="退回数" align="center"> </el-table-column>
-        <el-table-column prop="remaindNum" label="剩余数" align="center"> </el-table-column>
         <el-table-column prop="option" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button @click="updateBtnHandle(scope.row)" type="text" size="small">修改</el-button>
@@ -79,8 +61,14 @@
       :visible.sync="updateFormVisible"
     >
       <el-form :model="updateForm" label-width="120px">
-        <el-form-item label="库存数">
-          <el-input v-model="updateForm.stockNum" placeholder=""></el-input>
+        <el-form-item label="前日剩余">
+          <el-input v-model="updateForm.remaindNum" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="今日新增">
+          <el-input v-model="updateForm.incrNum" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="本地发货">
+          <el-input v-model="updateForm.deliverNum" placeholder=""></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="updateHandle">确定</el-button>
@@ -93,21 +81,29 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { listPage, updateStock } from '@/api/stock.js'
+import { parseTime } from '@/utils'
 
 export default {
   components: {
     Pagination
   },
   data() {
+    const date = new Date()
+    const stockDate = parseTime(date, '{y}-{m}-{d}')
+
     return {
       tableDataSearch: [],
       currentPage: 1,
       perpageNumber: 20,
       total: 0,
-      queryForm: {},
+      queryForm: {
+        stockDate: stockDate
+      },
       updateForm: {
         id: '',
-        stockNum: ''
+        remaindNum: '',
+        incrNum: '',
+        deliverNum: ''
       },
       updateFormVisible: false
     }
@@ -128,36 +124,16 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
-      let startDate = ''
-      let endDate = ''
-      if (this.queryForm.dateRange) {
-        startDate = this.queryForm.dateRange[0]
-        endDate = this.queryForm.dateRange[1]
-      }
       const param = {
         numPerPage: numPerPage,
         pageNum: pageNum,
-        expressType: this.queryForm.expressType,
         goodsName: this.queryForm.goodsName,
-        orderTimeStart: startDate,
-        orderTimeEnd: endDate
+        stockDate: this.queryForm.stockDate
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
-    },
-    expressTypeFormatter(row) {
-      switch (row.expressType) {
-        case '1':
-          return '京东快递'
-        case '2':
-          return '德邦快递'
-        case '3':
-          return '韵达快递'
-        default:
-          return row.expressType
-      }
     },
     /** 分页查询结束 */
 
@@ -166,12 +142,16 @@ export default {
       this.updateFormVisible = true
 
       this.updateForm.id = row.id
-      this.updateForm.stockNum = row.stockNum
+      this.updateForm.remaindNum = row.remaindNum
+      this.updateForm.incrNum = row.incrNum
+      this.updateForm.deliverNum = row.deliverNum
     },
     updateHandle() {
       const param = {
         id: this.updateForm.id,
-        stockNum: this.updateForm.stockNum
+        remaindNum: this.updateForm.remaindNum,
+        incrNum: this.updateForm.incrNum,
+        deliverNum: this.updateForm.deliverNum
       }
       updateStock(param).then(res => {
         this.updateFormVisible = false

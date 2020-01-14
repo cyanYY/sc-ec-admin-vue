@@ -9,3 +9,8 @@ export function add(params) {
   const url = '/wayBillRefund/add'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function getGroupPanelInfo(params) {
+  const url = '/wayBillRefund/getGroupPanelInfo'
+  return axios.post(url, params).then(res => res.data)
+}

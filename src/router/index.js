@@ -163,6 +163,12 @@ export const asyncRoutes = [
         meta: { title: '重复单', icon: 'form', key: 'order:repeat' }
       },
       {
+        path: 'multi',
+        name: 'multi',
+        component: () => import('@/views/order/multi'),
+        meta: { title: '多台订单', icon: 'form', key: 'order:multi' }
+      },
+      {
         path: 'scalp',
         name: 'scalp',
         component: () => import('@/views/order/scalp'),
