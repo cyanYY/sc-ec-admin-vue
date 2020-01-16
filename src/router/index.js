@@ -264,6 +264,12 @@ export const asyncRoutes = [
     meta: { title: '系统管理', icon: 'table', key: 'system' },
     children: [
       {
+        path: 'sms',
+        name: 'sms',
+        component: () => import('@/views/system/sms'),
+        meta: { title: '短信模板管理', icon: 'form', key: 'system:sms' }
+      },
+      {
         path: '',
         name: 'system',
         component: () => import('@/views/system/index'),
