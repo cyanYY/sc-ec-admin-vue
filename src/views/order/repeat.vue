@@ -97,13 +97,16 @@
         </el-table-column>
         <el-table-column prop="option" fixed="right" align="center" width="90" label="操作">
           <template slot-scope="scope">
-            <el-button
+            <!-- <el-button
               v-if="['1'].indexOf(scope.row.orderStatus) > -1"
               @click="confirmBtnHandle(scope.row)"
               type="text"
               size="small"
               >确认</el-button
-            >
+            > -->
+            <el-button @click="confirmRepeatBtnHandle(scope.row)" type="text" size="small">
+              确认
+            </el-button>
             <el-button
               v-if="['1', '2'].indexOf(scope.row.orderStatus) > -1"
               @click="cancelBtnHandle(scope.row)"
@@ -131,7 +134,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { orderRepeatListPage, orderRepeatConfirm, orderRepeatCancel } from '@/api/order.js'
+import { orderRepeatListPage, orderRepeatConfirm, orderRepeatCancel, handleMOrder } from '@/api/order.js'
 
 export default {
   name: 'Waybill',
@@ -332,6 +335,23 @@ export default {
     tableRowClassName(row) {
       console.log(row)
       return row.row.children ? '' : 'warning-row'
+    },
+    confirmRepeatBtnHandle(row) {
+      this.$confirm('确认重复?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        const param = {
+          orderNo: row.orderNo
+        }
+        handleMOrder(param).then(res => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryBtnHandle()
+        })
+      })
     }
   },
   create() {},

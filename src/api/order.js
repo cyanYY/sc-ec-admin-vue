@@ -104,3 +104,8 @@ export function remarkOrder(params) {
   const url = '/order/remarkOrder'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function handleMOrder(params) {
+  const url = '/order/handleMOrder'
+  return axios.post(url, params).then(res => res.data)
+}
