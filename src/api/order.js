@@ -109,3 +109,18 @@ export function handleMOrder(params) {
   const url = '/order/handleMOrder'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function reFundListPage(params) {
+  const url = '/refund/reFundListPage'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function agreeRefund(params) {
+  const url = '/refund/agreeRefund'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function refuseRefund(params) {
+  const url = '/refund/refuseRefund'
+  return axios.post(url, params).then(res => res.data)
+}

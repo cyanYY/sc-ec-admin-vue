@@ -77,9 +77,14 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="batchClaim">批量认领</el-button>
+          <!-- <el-button size="small" type="primary" @click="batchClaim">批量认领</el-button> -->
+          <el-button
+            v-if="roles.indexOf('SYS_ADMIN') > -1 || roles.indexOf('OPER_HEADER') > -1"
+            size="small"
+            type="primary"
+            @click="dispatchBtnHandle"
+            >派单</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -142,7 +147,7 @@
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
-        <el-table-column prop="option" width="80" fixed="right" align="center" label="操作">
+        <!-- <el-table-column prop="option" width="80" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
             <el-button
               v-if="
@@ -156,7 +161,7 @@
               >办理</el-button
             >
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -359,18 +364,51 @@
         <el-button size="small" type="primary" @click="hangException(claimForm)">挂起</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog size="small" title="" :close-on-click-modal="false" :visible.sync="dispatchVisible">
+      <el-form>
+        <el-form-item label="操作员：">
+          <!-- <el-select multiple v-model="dispatchForm.users" placeholder="">
+            <el-option
+              v-for="item in groupUsers"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select> -->
+          <el-transfer
+            v-model="dispatchForm.users"
+            :titles="['待选择', '已选择']"
+            :props="{
+              key: 'id',
+              label: 'name'
+            }"
+            :data="groupUsers"
+          ></el-transfer>
+        </el-form-item>
+        <el-form-item>
+          <el-button :loading="dispatchLoading" size="small" type="primary" @click="dispatchHandle"
+            >确认派单</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination/index'
-import { listPage, handle, hang, trace, claim, batchClaim } from '@/api/waybill.js'
-import { listUserAgents } from '@/api/user.js'
+import { listPage, handle, hang, trace, claim, batchClaim, dispatchAll } from '@/api/waybill.js'
+import { listUserAgents, listGroupUsers } from '@/api/user.js'
 
 export default {
   name: 'Exception',
   components: {
     Pagination
+  },
+  computed: {
+    ...mapGetters(['roles'])
   },
   data() {
     return {
@@ -405,7 +443,13 @@ export default {
         claimed: false
       },
       dropAgents: [],
-      selectedWayBillNos: []
+      selectedWayBillNos: [],
+      dispatchVisible: false,
+      dispatchLoading: false,
+      groupUsers: [],
+      dispatchForm: {
+        users: []
+      }
     }
   },
   methods: {
@@ -598,6 +642,31 @@ export default {
         default:
           return row.expressType
       }
+    },
+    dispatchBtnHandle() {
+      this.dispatchVisible = true
+      this.dispatchForm.users = []
+
+      listGroupUsers().then(res => {
+        this.groupUsers = res.data
+      })
+    },
+    dispatchHandle() {
+      this.dispatchLoading = true
+      const param = this.groupUsers.filter(item => this.dispatchForm.users.indexOf(item.id) > -1)
+      dispatchAll(param)
+        .then(res => {
+          this.dispatchVisible = false
+          this.dispatchLoading = false
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          this.queryHandle()
+        })
+        .catch(() => {
+          this.dispatchLoading = false
+        })
     }
   },
   create() {},

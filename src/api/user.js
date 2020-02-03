@@ -78,3 +78,8 @@ export function listUserAgents() {
   const url = '/user/listUserAgents'
   return request.get(url).then(res => res.data)
 }
+
+export function listGroupUsers() {
+  const url = '/user/listGroupUsers'
+  return request.get(url).then(res => res.data)
+}

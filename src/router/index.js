@@ -157,6 +157,12 @@ export const asyncRoutes = [
         meta: { title: '订单管理', icon: 'form', key: 'order:index' }
       },
       {
+        path: 'refund',
+        name: 'refund',
+        component: () => import('@/views/order/refund'),
+        meta: { title: '退款订单', icon: 'form', key: 'order:refund' }
+      },
+      {
         path: 'repeat',
         name: 'repeat',
         component: () => import('@/views/order/repeat'),

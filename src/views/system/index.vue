@@ -92,6 +92,12 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="所属组：">
+          <el-select v-model="itemAdd.groupId" placeholder="" clearable>
+            <el-option label="神创" value="1"></el-option>
+            <el-option label="千易" value="2"></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancelAdd">取消</el-button>
@@ -152,6 +158,12 @@
               :label="item.merchantName"
               :value="item.merchantId"
             ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属组：">
+          <el-select v-model="itemEdit.groupId" placeholder="" clearable>
+            <el-option label="神创" value="1"></el-option>
+            <el-option label="千易" value="2"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -218,7 +230,8 @@ export default {
         phone: '',
         roleIds: [],
         agentId: '',
-        merchantIds: []
+        merchantIds: [],
+        groupId: ''
       },
       rulesAdd: {
         account: [
@@ -315,6 +328,7 @@ export default {
       this.itemEdit.roleIds = row.roles.map(role => role.id)
       this.itemEdit.agentId = row.agentId
       this.itemEdit.merchantIds = row.merchantIds
+      this.itemEdit.groupId = row.groupId
       this.dialogEdit = true
     },
     closeEdit(done) {

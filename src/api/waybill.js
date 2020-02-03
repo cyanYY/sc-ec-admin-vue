@@ -126,3 +126,7 @@ export function deleteRepeat(params) {
   const url = '/wayBill/deleteRepeat?wayBillNo=' + params.wayBillNo
   return axios.get(url).then(res => res.data)
 }
+export function dispatchAll(params) {
+  const url = '/wayBillException/dispatchAll'
+  return axios.post(url, params).then(res => res.data)
+}
