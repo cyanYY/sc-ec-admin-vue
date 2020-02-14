@@ -115,6 +115,16 @@ export function reFundListPage(params) {
   return axios.post(url, params).then(res => res.data)
 }
 
+export function agreeReturn(params) {
+  const url = '/refund/agreeReturn'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function refuseReturn(params) {
+  const url = '/refund/refuseReturn'
+  return axios.post(url, params).then(res => res.data)
+}
+
 export function agreeRefund(params) {
   const url = '/refund/agreeRefund'
   return axios.post(url, params).then(res => res.data)
@@ -122,5 +132,10 @@ export function agreeRefund(params) {
 
 export function refuseRefund(params) {
   const url = '/refund/refuseRefund'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function dailyStatistics(params) {
+  const url = '/order/dailyStatistics'
   return axios.post(url, params).then(res => res.data)
 }

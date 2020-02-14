@@ -157,12 +157,6 @@ export const asyncRoutes = [
         meta: { title: '订单管理', icon: 'form', key: 'order:index' }
       },
       {
-        path: 'refund',
-        name: 'refund',
-        component: () => import('@/views/order/refund'),
-        meta: { title: '退款订单', icon: 'form', key: 'order:refund' }
-      },
-      {
         path: 'repeat',
         name: 'repeat',
         component: () => import('@/views/order/repeat'),
@@ -179,6 +173,25 @@ export const asyncRoutes = [
         name: 'scalp',
         component: () => import('@/views/order/scalp'),
         meta: { title: '刷单订单', icon: 'form', key: 'order:scalp' }
+      }
+    ]
+  },
+  {
+    path: '/aftersale',
+    component: Layout,
+    meta: { title: '售后管理', icon: 'form', key: 'aftersale' },
+    children: [
+      {
+        path: '',
+        name: 'index',
+        component: () => import('@/views/aftersale/index'),
+        meta: { title: '售后订单', icon: 'form', key: 'aftersale:index' }
+      },
+      {
+        path: 'service',
+        name: 'service',
+        component: () => import('@/views/aftersale/service'),
+        meta: { title: '服务请求', icon: 'form', key: 'aftersale:service' }
       }
     ]
   },
@@ -230,6 +243,12 @@ export const asyncRoutes = [
         name: 'deliver',
         component: () => import('@/views/succreport/deliver'),
         meta: { title: '发货统计', icon: 'table', key: 'succreport:deliver' }
+      },
+      {
+        path: 'sale',
+        name: 'sale',
+        component: () => import('@/views/succreport/sale'),
+        meta: { title: '销售统计', icon: 'table', key: 'succreport:sale' }
       }
     ]
   },

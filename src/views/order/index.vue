@@ -392,6 +392,12 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="支付方式">
+          <el-select v-model="exportInvoiceForm.payMethod" placeholder="" @change="merchantChange">
+            <el-option label="货到付款" value="0"></el-option>
+            <el-option label="在线支付" value="1"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="选择商品">
           <el-select v-model="exportInvoiceForm.goodsId" placeholder="">
             <el-option
@@ -437,7 +443,7 @@ import {
   uploadOffOrder,
   uploadExrOrder,
   exportMerchant,
-  exportGoodsId,
+  exportGoodsId
 } from '@/api/order.js'
 import axios from 'axios'
 
@@ -522,10 +528,11 @@ export default {
       exportInvoiceForm: {
         merchantId: '',
         goodsId: '',
+        payMethod: '',
         orderTimeRange: []
       },
       exportMerchantList: [],
-      exportGoodsList: [],
+      exportGoodsList: []
     }
   },
   methods: {
@@ -662,6 +669,7 @@ export default {
     exportInvoiceHandle() {
       this.exportInvoiceVisible = true
       this.exportInvoiceForm.merchantId = ''
+      this.exportInvoiceForm.payMethod = ''
       this.exportInvoiceForm.goodsId = ''
       this.exportInvoiceForm.orderTimeRange = []
 
@@ -669,9 +677,16 @@ export default {
         this.exportMerchantList = res.data
       })
     },
-    merchantChange(value) {
+    merchantChange() {
+      this.exportInvoiceForm.goodsId = ''
+      const merchantId = this.exportInvoiceForm.merchantId
+      const payMethod = this.exportInvoiceForm.payMethod
+      if (!merchantId || !payMethod) {
+        return
+      }
       const param = {
-        merchantId: value
+        merchantId: merchantId,
+        payMethod: payMethod
       }
       exportGoodsId(param).then(res => {
         this.exportGoodsList = res.data
@@ -687,6 +702,7 @@ export default {
       }
       var param = {
         merchantId: this.exportInvoiceForm.merchantId,
+        payMethod: this.exportInvoiceForm.payMethod,
         goodsId: this.exportInvoiceForm.goodsId,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd
@@ -696,21 +712,29 @@ export default {
         url: this.baseURL + '/order/exportInvoice',
         data: param,
         responseType: 'blob'
-      }).then(res => {
-        this.exportInvoiceLoading = false
-        const fileName = '发货单.xls'
-        const blob = new Blob([res.data], { type: 'application/xls' })
-        if (window.navigator.msSaveOrOpenBlob) {
-          navigator.msSaveBlob(blob, fileName)
-        } else {
-          var link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          link.download = fileName
-          link.click()
-          window.URL.revokeObjectURL(link.href)
-        }
-        this.exportInvoiceVisible = false
       })
+        .then(res => {
+          this.exportInvoiceLoading = false
+          const fileName = '发货单.xls'
+          const blob = new Blob([res.data], { type: 'application/xls' })
+          if (window.navigator.msSaveOrOpenBlob) {
+            navigator.msSaveBlob(blob, fileName)
+          } else {
+            var link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = fileName
+            link.click()
+            window.URL.revokeObjectURL(link.href)
+          }
+          this.exportInvoiceVisible = false
+        })
+        .catch(error => {
+          this.$message({
+            message: error,
+            type: 'error'
+          })
+          this.exportInvoiceLoading = false
+        })
     },
     /** 导出发货单结束 */
 
@@ -837,7 +861,7 @@ export default {
         .catch(() => {
           this.exrOrderUploadLoading = false
         })
-    },
+    }
     /** 超区订单导入结束 */
   },
   create() {},
