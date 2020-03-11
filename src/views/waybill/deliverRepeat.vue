@@ -103,7 +103,7 @@
           label="操作"
         >
           <template slot-scope="scope">
-            <el-button @click="deleteRepeat(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="deleteRepeat(scope.row)" type="text" size="small">取消</el-button>
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -203,6 +203,10 @@ export default {
           return '德邦快递'
         case '3':
           return '韵达快递'
+        case '4':
+          return '中通快递'
+        case '5':
+          return '圆通快递'
         default:
           return row.expressType
       }
@@ -218,7 +222,7 @@ export default {
       }
     },
     deleteRepeat(row) {
-      this.$confirm('确认删除订单?', '提示', {
+      this.$confirm('确定取消重复运单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {

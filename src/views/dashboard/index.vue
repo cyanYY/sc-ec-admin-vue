@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
-    <el-row :gutter="40" class="panel-group">
+    <el-row v-if="roles.indexOf('SYS_ADMIN') > -1" :gutter="40" class="panel-group">
       <el-col :span="6" class="card-panel-col">
         <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-exception">
@@ -19,7 +19,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="6" class="card-panel-col">
+      <!-- <el-col :span="6" class="card-panel-col">
         <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-exception-ok">
             <i class="el-icon-edit-outline card-panel-icon"></i>
@@ -72,7 +72,7 @@
             />
           </div>
         </div>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-row :gutter="8">
@@ -202,16 +202,16 @@ export default {
       this.userHandle(perPage, currPage)
     },
     groupPanelInfo() {
-      let startDate = ''
-      let endDate = ''
-      if (this.queryForm.dateRange) {
-        startDate = this.queryForm.dateRange[0]
-        endDate = this.queryForm.dateRange[1]
-      }
+      // let startDate = ''
+      // let endDate = ''
+      // if (this.queryForm.dateRange) {
+      //   startDate = this.queryForm.dateRange[0]
+      //   endDate = this.queryForm.dateRange[1]
+      // }
       const param = {
-        agentId: this.queryForm.agentId,
-        startDate: startDate,
-        endDate: endDate
+        agentId: this.queryForm.agentId
+        // startDate: startDate,
+        // endDate: endDate
       }
       getGroupPanelInfo(param).then(res => {
         this.stasticsData = res.data

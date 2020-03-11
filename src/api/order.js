@@ -27,8 +27,7 @@ export function updateOrder(params) {
 
 // 导入线下订单
 export function uploadOffOrder(params) {
-  const url =
-    '/wayBill/offOrderUpload?fileName=' + params.fileName + '&merchantId=' + params.merchantId
+  const url = '/wayBill/offOrderUpload?fileName=' + params.fileName
   return axios.post(url, params).then(res => res.data)
 }
 
@@ -137,5 +136,20 @@ export function refuseRefund(params) {
 
 export function dailyStatistics(params) {
   const url = '/order/dailyStatistics'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function remark(params) {
+  const url = '/refund/remarkRefund'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function hang(params) {
+  const url = '/refund/hangRefund'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function orderSuccRate(params) {
+  const url = '/order/orderSuccRate'
   return axios.post(url, params).then(res => res.data)
 }

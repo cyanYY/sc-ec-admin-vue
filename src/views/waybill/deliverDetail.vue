@@ -37,11 +37,15 @@
             <el-table-column prop="totalJdOn" label="线上" align="center"> </el-table-column>
             <el-table-column prop="totalJdOff" label="线下" align="center"> </el-table-column>
           </el-table-column>
-          <el-table-column prop="totalDb" label="德邦" align="center">
-            <el-table-column prop="totalDbOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="totalDbOff" label="线下" align="center"> </el-table-column>
+          <el-table-column prop="totalZt" label="中通" align="center">
+            <el-table-column prop="totalZtOn" label="线上" align="center"> </el-table-column>
+            <el-table-column prop="totalZtOff" label="线下" align="center"> </el-table-column>
           </el-table-column>
-          <el-table-column prop="exceedJd" label="超区" align="center">
+          <el-table-column prop="totalYt" label="圆通" align="center">
+            <el-table-column prop="totalYtOn" label="线上" align="center"> </el-table-column>
+            <el-table-column prop="totalYtOff" label="线下" align="center"> </el-table-column>
+          </el-table-column>
+          <el-table-column prop="exceedJd" label="京东超区" align="center">
             <el-table-column prop="exceedJdOn" label="线上" align="center"> </el-table-column>
             <el-table-column prop="exceedJdOff" label="线下" align="center"> </el-table-column>
           </el-table-column>

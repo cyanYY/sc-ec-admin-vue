@@ -46,6 +46,7 @@
         highlight-current-row
       >
         <el-table-column prop="orderNo" label="订单号" width="100" align="center" />
+        <el-table-column prop="processComment" label="评价内容" width="200" align="center" />
         <el-table-column prop="hangReason" label="挂起历史" width="250" align="center">
           <template slot-scope="scope">
             <ol v-if="scope.row.remark">
@@ -55,7 +56,7 @@
             </ol>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsName" label="物品名" width="120" align="center">
+        <el-table-column prop="goodsName" label="物品名" width="200" align="center">
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">

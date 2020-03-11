@@ -46,6 +46,7 @@
         highlight-current-row
       >
         <el-table-column prop="orderNo" label="订单号" width="100" align="center" />
+        <el-table-column prop="processComment" label="评价内容" width="200" align="center" />
         <el-table-column prop="hangReason" label="挂起历史" width="250" align="center">
           <template slot-scope="scope">
             <ol v-if="scope.row.remark">
@@ -55,7 +56,7 @@
             </ol>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsName" label="物品名" width="120" align="center">
+        <el-table-column prop="goodsName" label="物品名" width="200" align="center">
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
@@ -78,24 +79,7 @@
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="option" width="100" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
-            <el-button
-              v-if="
-                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
-              "
-              @click="handleException(scope.row)"
-              type="text"
-              size="small"
-              >处理</el-button
-            >
-            <el-button
-              v-if="
-                scope.row.processStatus === '未处理' || scope.row.processStatus === '未处理|挂起'
-              "
-              @click="hangException(scope.row)"
-              type="text"
-              size="small"
-              >挂起</el-button
-            >
+            <el-button @click="claimException(scope.row)" type="text" size="small">处理</el-button>
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -129,11 +113,8 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="处理结果">
-          <el-select v-model="handleForm.processResult" placeholder="">
-            <el-option label="用户同意撤销退款" value="用户同意撤销退款"></el-option>
-            <el-option label="用户不同意撤销退款" value="用户不同意撤销退款"></el-option>
-          </el-select>
+        <el-form-item label="备注">
+          <el-input v-model="handleForm.remark" placeholder=""></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="handleExceptionCommit">确定</el-button>
@@ -141,25 +122,108 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog title="" :close-on-click-modal="false" :visible.sync="waybillHangVisible">
-      <el-form :model="hangForm" label-width="160px">
-        <el-form-item label="订单号">
-          <el-input v-model="hangForm.orderNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="hangForm.remark" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="hangExceptionCommit">确定</el-button>
-        </el-form-item>
-      </el-form>
+    <el-dialog
+      width="70%"
+      title="差评订单处理"
+      :close-on-click-modal="false"
+      :visible.sync="wayClaimVisible"
+      @close="queryHandle"
+    >
+      <el-row :gutter="10">
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">订单号：</label>
+            <div class="el-form-item__content">{{ claimForm.orderNo }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">物品名：</label>
+            <div class="el-form-item__content">{{ claimForm.goodsName }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">实收金额：</label>
+            <div class="el-form-item__content">{{ claimForm.acutalAmount }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">收件人：</label>
+            <div class="el-form-item__content">{{ claimForm.receiver }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">收件人手机号：</label>
+            <div class="el-form-item__content">{{ claimForm.receiverMobile }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">渠道：</label>
+            <div class="el-form-item__content">{{ claimForm.channel }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">下单时间：</label>
+            <div class="el-form-item__content">{{ claimForm.orderTime }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">运单号：</label>
+            <div class="el-form-item__content">{{ claimForm.wayBillNo }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">运单状态：</label>
+            <div class="el-form-item__content">{{ claimForm.wayBillStatus }}</div>
+          </div></el-col
+        >
+        <el-col :span="8"
+          ><div>
+            <label class="el-form-item__label">处理状态：</label>
+            <div class="el-form-item__content">{{ claimForm.processStatus }}</div>
+          </div></el-col
+        >
+        <el-col :span="12"
+          ><div>
+            <label class="el-form-item__label">收件人地址：</label>
+            <div class="el-form-item__content">{{ claimForm.receiverAddress }}</div>
+          </div></el-col
+        >
+        <el-col :span="12"
+          ><div>
+            <label class="el-form-item__label">挂起原因：</label>
+            <div v-if="claimForm.remark" class="el-form-item__content">
+              <span :key="index" v-for="(item, index) in claimForm.remark.split(',')">
+                {{ index + 1 + '. ' + item }}<br />
+              </span>
+            </div></div
+        ></el-col>
+      </el-row>
+      <div style="margin-top: 10px; text-align: right;">
+        <el-button size="small" type="success" @click="handleException(claimForm, '已改')"
+          >已改</el-button
+        >
+        <el-button size="small" type="primary" @click="handleException(claimForm, '拒绝')"
+          >拒绝</el-button
+        >
+        <el-button size="small" type="primary" @click="handleException(claimForm, '挂起')"
+          >挂起</el-button
+        >
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { listPageTodo, handle, hang } from '@/api/order-process.js'
+import { listPageTodo, handle } from '@/api/order-process.js'
 
 export default {
   components: {
@@ -176,14 +240,14 @@ export default {
         orderTimeRange: [],
         processTimeRange: []
       },
+      wayClaimVisible: false,
+      claimForm: {},
       waybillHandleVisible: false,
       handleForm: {
         processProof: '',
-        processResult: ''
-      },
-      waybillHangVisible: false,
-      hangForm: {
-        remark: ''
+        processResult: '',
+        remark: '',
+        type: ''
       }
     }
   },
@@ -241,17 +305,20 @@ export default {
         }
       )
     },
-    handleException(row) {
+    handleException(row, type) {
       this.waybillHandleVisible = true
+
       this.handleForm.orderNo = row.orderNo
       this.handleForm.processProof = ''
-      this.handleForm.processResult = ''
+      this.handleForm.remark = ''
+      this.handleForm.type = type
     },
     handleExceptionCommit() {
       const param = {
         orderNo: this.handleForm.orderNo,
         processProof: this.handleForm.processProof,
-        processResult: this.handleForm.processResult
+        processResult: this.handleForm.type,
+        remark: this.handleForm.remark
       }
       handle(param).then(res => {
         this.waybillHandleVisible = false
@@ -263,25 +330,20 @@ export default {
         this.queryHandle()
       })
     },
-    hangException(row) {
-      this.waybillHangVisible = true
-      this.hangForm.orderNo = row.orderNo
-      this.hangForm.remark = ''
-    },
-    hangExceptionCommit() {
-      const param = {
-        orderNo: this.hangForm.orderNo,
-        remark: this.hangForm.remark
-      }
-      hang(param).then(res => {
-        this.waybillHangVisible = false
-        this.wayClaimVisible = false
-        this.$message({
-          message: res.msg,
-          type: 'success'
-        })
-        this.queryHandle()
-      })
+    claimException(row) {
+      this.wayClaimVisible = true
+      this.claimForm.orderNo = row.orderNo
+      this.claimForm.goodsName = row.goodsName
+      this.claimForm.actualAmount = row.actualAmount
+      this.claimForm.receiver = row.receiver
+      this.claimForm.receiverMobile = row.receiverMobile
+      this.claimForm.receiverAddress = row.receiverAddress
+      this.claimForm.channel = row.channel
+      this.claimForm.orderTime = row.orderTime
+      this.claimForm.wayBillNo = row.wayBillNo
+      this.claimForm.wayBillStatus = row.wayBillStatus
+      this.claimForm.processStatus = row.processStatus
+      this.claimForm.remark = row.remark
     },
     beforeImgUpload(file) {
       const isJPG =

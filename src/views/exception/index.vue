@@ -147,9 +147,10 @@
         <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
         </el-table-column>
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
-        <!-- <el-table-column prop="option" width="80" fixed="right" align="center" label="操作">
+        <el-table-column prop="option" width="80" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
-            <el-button
+            <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
+            <!-- <el-button
               v-if="
                 !scope.row.operatorId &&
                   (scope.row.processStatus === '未处理' ||
@@ -159,9 +160,9 @@
               type="text"
               size="small"
               >办理</el-button
-            >
+            > -->
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>
@@ -639,6 +640,10 @@ export default {
           return '德邦快递'
         case '3':
           return '韵达快递'
+        case '4':
+          return '中通快递'
+        case '5':
+          return '圆通快递'
         default:
           return row.expressType
       }

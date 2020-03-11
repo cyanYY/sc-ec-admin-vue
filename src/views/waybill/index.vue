@@ -9,14 +9,13 @@
           <el-input v-model="queryForm.wayBillNo" placeholder="运单号" :editable="false"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-select
-            v-model="queryForm.expressType"
-            placeholder="快递类型"
-            @change="expressTypeChange"
-          >
+          <el-select v-model="queryForm.expressType" placeholder="快递类型">
+            <el-option label="全部" value="-1"></el-option>
             <el-option label="京东快递" value="1"></el-option>
             <el-option label="德邦快递" value="2"></el-option>
             <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="中通快递" value="4"></el-option>
+            <el-option label="圆通快递" value="5"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -95,11 +94,18 @@
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
           <el-button
-            v-if="roles.indexOf('SYS_ADMIN') > -1"
+            v-if="roles.indexOf('SYS_ADMIN') > -1 || roles.indexOf('DELIVER') > -1"
             size="small"
             type="primary"
             @click="wayBillUploadHandle"
             >运单导入</el-button
+          >
+          <el-button
+            v-if="roles.indexOf('SYS_ADMIN') > -1 || roles.indexOf('DELIVER') > -1"
+            size="small"
+            type="primary"
+            @click="batchUpdateStatusHandle"
+            >批量更新运单状态</el-button
           >
           <el-button
             v-if="roles.indexOf('SYS_ADMIN') > -1"
@@ -170,7 +176,8 @@
         <el-table-column prop="operator" label="操作员" align="center"> </el-table-column>
         <el-table-column prop="option" width="70" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
-            <el-button
+            <el-button @click="wayTrace(scope.row)" type="text" size="small">轨迹</el-button>
+            <!-- <el-button
               v-if="
                 !scope.row.operatorId &&
                   (scope.row.processStatus === '未处理' ||
@@ -180,7 +187,7 @@
               type="text"
               size="small"
               >办理</el-button
-            >
+            > -->
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -220,6 +227,8 @@
             <el-option label="京东快递" value="1"></el-option>
             <el-option label="德邦快递" value="2"></el-option>
             <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="中通快递" value="4"></el-option>
+            <el-option label="圆通快递" value="5"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -246,6 +255,46 @@
     </el-dialog>
 
     <el-dialog
+      @close="batchUpdateStatusClose"
+      size="small"
+      title="更新运单状态"
+      :close-on-click-modal="false"
+      :visible.sync="batchUpdateStatusVisible"
+    >
+      <el-form>
+        <el-form-item label="快递类型：">
+          <el-select v-model="batchUpdateStatusForm.expressType" placeholder="">
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
+            <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="中通快递" value="4"></el-option>
+            <el-option label="圆通快递" value="5"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择文件">
+          <el-upload
+            ref="batchUpdateStatus"
+            :limit="1"
+            :multiple="false"
+            :action="this.baseURL + '/file/upload'"
+            :on-success="batchUpdateStatusSuccess"
+          >
+            <el-button size="small">上传运单</el-button>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            :loading="batchUpdateStatusLoading"
+            size="small"
+            type="primary"
+            @click="batchUpdateStatusCommit"
+            >确认导入</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog
       @close="wayBillExceptionUploadClose"
       size="small"
       title=""
@@ -261,6 +310,15 @@
               :label="item.agentName"
               :value="item.agentId"
             ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="快递类型：">
+          <el-select v-model="waybillExceptionUploadForm.expressType" placeholder="">
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
+            <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="中通快递" value="4"></el-option>
+            <el-option label="圆通快递" value="5"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -522,6 +580,7 @@ import Pagination from '@/components/Pagination/index'
 import {
   listPage,
   uploadWaybill,
+  batchUpdateStatus,
   uploadWaybillException,
   handle,
   hang,
@@ -548,12 +607,13 @@ export default {
       total: 0,
       queryForm: {
         orderTimeRange: [],
-        processTimeRange: [],
-        expressType: '1'
+        processTimeRange: []
       },
       waybillUploadVisible: false,
+      batchUpdateStatusVisible: false,
       waybillExceptionUploadVisible: false,
       waybillFileName: '',
+      batchUpdateStatusFileName: '',
       waybillExceptionFileName: '',
       waybillHandleVisible: false,
       handleForm: {
@@ -564,6 +624,7 @@ export default {
         userSigned: false
       },
       waybillUploadLoading: false,
+      batchUpdateStatusLoading: false,
       waybillExceptionUploadLoading: false,
       waybillHangVisible: false,
       hangForm: {
@@ -581,8 +642,12 @@ export default {
         agentId: '',
         expressType: '1'
       },
+      batchUpdateStatusForm: {
+        expressType: '4'
+      },
       waybillExceptionUploadForm: {
-        agentId: ''
+        agentId: '',
+        expressType: '1'
       },
       waybillAuditVisible: false,
       auditAgentId: '',
@@ -647,7 +712,7 @@ export default {
         processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
         deliveryMobile: this.queryForm.deliveryMobile,
         agentId: this.queryForm.agentId,
-        expressType: this.queryForm.expressType
+        expressType: this.queryForm.expressType === '-1' ? '' : this.queryForm.expressType
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -680,6 +745,13 @@ export default {
       this.waybillUploadForm.agentId = ''
       this.waybillUploadForm.expressType = '1'
     },
+    batchUpdateStatusHandle() {
+      this.batchUpdateStatusVisible = true
+    },
+    batchUpdateStatusClose() {
+      this.$refs['batchUpdateStatus'].clearFiles()
+      this.batchUpdateStatusForm.expressType = '4'
+    },
     wayBillExceptionUploadClose() {
       this.$refs['wayBillExceptionUpload'].clearFiles()
       this.waybillExceptionUploadForm.agentId = ''
@@ -690,6 +762,9 @@ export default {
     },
     waybillUploadSuccess(res) {
       this.waybillFileName = res.data.fileName
+    },
+    batchUpdateStatusSuccess(res) {
+      this.batchUpdateStatusFileName = res.data.fileName
     },
     waybillExceptionUploadSuccess(res) {
       this.waybillExceptionFileName = res.data.fileName
@@ -719,6 +794,32 @@ export default {
         })
         .catch(() => {
           this.waybillUploadLoading = false
+        })
+    },
+    batchUpdateStatusCommit() {
+      if (!this.batchUpdateStatusFileName) {
+        this.$message({
+          message: '请先上传数据文件',
+          type: 'error'
+        })
+      }
+      var param = {
+        expressType: this.batchUpdateStatusForm.expressType,
+        fileName: this.batchUpdateStatusFileName
+      }
+      this.batchUpdateStatusLoading = true
+      batchUpdateStatus(param)
+        .then(res => {
+          this.batchUpdateStatusLoading = false
+          this.batchUpdateStatusVisible = false
+          this.$message({
+            message: res.msg || '数据导入成功',
+            type: 'success'
+          })
+          this.queryHandle()
+        })
+        .catch(() => {
+          this.batchUpdateStatusLoading = false
         })
     },
     waybillExceptionUploadHandle() {
@@ -873,30 +974,30 @@ export default {
       listUserAgents().then(res => {
         this.dropAgents = res.data
       })
-    },
-    expressTypeChange(val) {
-      const jdWayBillStatus = [
-        '妥投',
-        '拒收',
-        '客户取消',
-        '终止揽收',
-        '订单入站',
-        '配送员收货',
-        '协商再投结果',
-        '分拣中心发货',
-        '分拣中心验货',
-        '站点验货',
-        '站点再投',
-        '已取消',
-        '再投后退回'
-      ]
-      const dbWayBillStatus = ['妥投', '已开单', '运输中', '派送中', '已滞留', '反签收', '已退回']
-      if (val === '1') {
-        this.wayBillStatus = jdWayBillStatus
-      } else if (val === '2') {
-        this.wayBillStatus = dbWayBillStatus
-      }
     }
+    //   expressTypeChange(val) {
+    //     const jdWayBillStatus = [
+    //       '妥投',
+    //       '拒收',
+    //       '客户取消',
+    //       '终止揽收',
+    //       '订单入站',
+    //       '配送员收货',
+    //       '协商再投结果',
+    //       '分拣中心发货',
+    //       '分拣中心验货',
+    //       '站点验货',
+    //       '站点再投',
+    //       '已取消',
+    //       '再投后退回'
+    //     ]
+    //     const dbWayBillStatus = ['妥投', '已开单', '运输中', '派送中', '已滞留', '反签收', '已退回']
+    //     if (val === '1') {
+    //       this.wayBillStatus = jdWayBillStatus
+    //     } else if (val === '2') {
+    //       this.wayBillStatus = dbWayBillStatus
+    //     }
+    //   }
   },
   create() {},
   mounted() {

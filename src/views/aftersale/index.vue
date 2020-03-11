@@ -18,13 +18,37 @@
           <el-input v-model="queryForm.buyerTel" placeholder="客户手机号"></el-input>
         </el-form-item>
         <el-form-item label="">
+          <el-input v-model="queryForm.operator" placeholder="操作员"></el-input>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.applyStatus" clearable="" placeholder="申请状态">
+            <el-option
+              v-for="item in applyStatusArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
           <el-date-picker
-            v-model="queryForm.orderTimeRange"
+            v-model="queryForm.applyTimeRange"
             type="daterange"
             value-format="yyyy-MM-dd"
             range-separator="至"
-            start-placeholder="订单开始日期"
-            end-placeholder="订单结束日期"
+            start-placeholder="申请开始日期"
+            end-placeholder="申请结束日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="">
+          <el-date-picker
+            v-model="queryForm.operatorTimeRange"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            range-separator="至"
+            start-placeholder="处理开始日期"
+            end-placeholder="处理结束日期"
           >
           </el-date-picker>
         </el-form-item>
@@ -41,7 +65,7 @@
         size="mini"
         center
         style="width: 100%;font-size: 13px;"
-        highlight-current-row
+        :row-class-name="tableRowClassName"
       >
         <el-table-column prop="orderNo" label="订单号" width="100" align="center">
         </el-table-column>
@@ -50,7 +74,8 @@
         </el-table-column>
         <el-table-column prop="userName" label="客户姓名" align="center"> </el-table-column>
         <el-table-column prop="buyerTel" label="客户电话" align="center"> </el-table-column>
-        <el-table-column prop="userExpectation" label="客户期望" align="center"> </el-table-column>
+        <el-table-column prop="repeatDesc" label="是否重复" align="center"> </el-table-column>
+        <el-table-column prop="applyTime" label="申请时间" align="center"> </el-table-column>
         <el-table-column
           prop="applyStatus"
           label="申请状态"
@@ -58,9 +83,27 @@
           align="center"
         >
         </el-table-column>
-        <el-table-column prop="option" fixed="right" align="center" label="操作">
+        <el-table-column
+          prop="refundType"
+          :formatter="refundTypeFormatter"
+          label="类型"
+          align="center"
+        >
+        </el-table-column>
+        <el-table-column prop="operator" label="处理人" align="center"> </el-table-column>
+        <el-table-column prop="operatorTime" label="处理时间" align="center"> </el-table-column>
+        <el-table-column prop="operateStatusDesc" label="处理状态" align="center">
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" align="center"> </el-table-column>
+        <el-table-column prop="option" fixed="right" align="center" width="100" label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleBtnHandle(scope.row)" type="text" size="small">处理</el-button>
+            <el-button
+              v-if="['6'].indexOf(scope.row.applyStatus) > -1 && scope.row.operateStatus != '1'"
+              @click="handleBtnHandle(scope.row)"
+              type="text"
+              size="small"
+              >处理</el-button
+            >
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -119,8 +162,8 @@
           >
           <el-col :span="8"
             ><div>
-              <label class="el-form-item__label">下单时间：</label>
-              <div class="el-form-item__content">{{ returnInfo.orderTime }}</div>
+              <label class="el-form-item__label">处理时间：</label>
+              <div class="el-form-item__content">{{ returnInfo.operatorTime }}</div>
             </div></el-col
           >
           <el-col :span="8"
@@ -137,9 +180,19 @@
           >
         </el-row>
       </el-card>
+      <el-card header="售后记录" style="margin-top: 10px;">
+        <el-table :data="afterSaleList" size="mini" center style="width: 100%;font-size: 13px;">
+          <el-table-column prop="operatorTime" label="处理时间" align="center"> </el-table-column>
+          <el-table-column prop="operator" label="处理人员" align="center"> </el-table-column>
+          <el-table-column prop="remark" label="处理记录" align="center"> </el-table-column>
+          <el-table-column prop="operateStatusDesc" label="处理状态" align="center">
+          </el-table-column>
+        </el-table>
+      </el-card>
       <div style="margin-top: 10px; text-align: right;">
         <el-button size="small" type="success" @click="agreeReturnHandle">同意退货</el-button>
         <el-button size="small" type="primary" @click="refuseReturnHandle">拒绝退货</el-button>
+        <el-button size="small" type="primary" @click="hangHandle">挂起</el-button>
       </div>
     </el-dialog>
 
@@ -147,15 +200,15 @@
       <el-form :model="returnForm" label-width="160px">
         <el-form-item label="拒绝原因">
           <el-select v-model="returnForm.reason" placeholder="">
-            <el-option label="1" value="未收到货(未填写退货单号)"></el-option>
-            <el-option label="2" value="退货与原订单不符(商品不符,退货地址不符)"></el-option>
+            <el-option value="1" label="未收到货(未填写退货单号)"></el-option>
+            <el-option value="2" label="退货与原订单不符(商品不符,退货地址不符)"></el-option>
             <el-option
-              label="3"
-              value="退货商品影响二次销售,订单超出售后时效(订单完成超7天)"
+              value="3"
+              label="退货商品影响二次销售,订单超出售后时效(订单完成超7天)"
             ></el-option>
-            <el-option label="4" value="买家误操作/取消申请"></el-option>
-            <el-option label="5" value="已与买家协商补偿,包括差价,赠品,额外补偿"></el-option>
-            <el-option label="6" value="已与买家协商补发商品,已与买家协商换货"></el-option>
+            <el-option value="4" label="买家误操作/取消申请"></el-option>
+            <el-option value="5" label="已与买家协商补偿,包括差价,赠品,额外补偿"></el-option>
+            <el-option value="6" label="已与买家协商补发商品,已与买家协商换货"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="图片凭证:">
@@ -170,6 +223,9 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
+        <el-form-item label="备注：">
+          <el-input v-model="returnForm.remark" placeholder=""></el-input>
+        </el-form-item>
         <el-form-item style="color: red;">
           请核对您上传的图片信息 收件人：{{ returnForm.userName }},订单号：{{ returnForm.orderNo }}
         </el-form-item>
@@ -179,7 +235,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog
+    <!-- <el-dialog
       width="70%"
       title="退款处理"
       :close-on-click-modal="false"
@@ -256,15 +312,15 @@
       <el-form :model="refundForm" label-width="160px">
         <el-form-item label="拒绝原因">
           <el-select v-model="refundForm.reason" placeholder="">
-            <el-option label="1" value="未收到货(未填写退货单号)"></el-option>
-            <el-option label="2" value="退货与原订单不符(商品不符,退货地址不符)"></el-option>
+            <el-option value="1" label="未收到货(未填写退货单号)"></el-option>
+            <el-option value="2" label="退货与原订单不符(商品不符,退货地址不符)"></el-option>
             <el-option
-              label="3"
-              value="退货商品影响二次销售,订单超出售后时效(订单完成超7天)"
+              value="3"
+              label="退货商品影响二次销售,订单超出售后时效(订单完成超7天)"
             ></el-option>
-            <el-option label="4" value="买家误操作/取消申请"></el-option>
-            <el-option label="5" value="已与买家协商补偿,包括差价,赠品,额外补偿"></el-option>
-            <el-option label="6" value="已与买家协商补发商品,已与买家协商换货"></el-option>
+            <el-option value="4" label="买家误操作/取消申请"></el-option>
+            <el-option value="5" label="已与买家协商补偿,包括差价,赠品,额外补偿"></el-option>
+            <el-option value="6" label="已与买家协商补发商品,已与买家协商换货"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="图片凭证:">
@@ -286,19 +342,48 @@
           <el-button size="small" type="primary" @click="refundCommit">确定拒绝</el-button>
         </el-form-item>
       </el-form>
+    </el-dialog> -->
+
+    <el-dialog title="挂起" :close-on-click-modal="false" :visible.sync="agreeVisible">
+      <el-form :model="agreeForm" label-width="160px">
+        <el-form-item label="备注：">
+          <el-input v-model="agreeForm.remark" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="agreeCommit">确定</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="挂起" :close-on-click-modal="false" :visible.sync="hangVisible">
+      <el-form :model="hangForm" label-width="160px">
+        <el-form-item label="备注：">
+          <el-input v-model="hangForm.remark" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="hangCommit">确定</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="备注" :close-on-click-modal="false" :visible.sync="remarkVisible">
+      <el-form :model="remarkForm" label-width="160px">
+        <el-form-item label="备注：">
+          <el-input v-model="remarkForm.remark" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="remarkCommit">确定</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import {
-  reFundListPage,
-  agreeReturn,
-  refuseReturn,
-  agreeRefund,
-  refuseRefund
-} from '@/api/order.js'
+import { reFundListPage, agreeRefund, refuseRefund, remark, hang } from '@/api/order.js'
+import { queryAfterSaleLogs } from '@/api/refund.js'
+import { applyStatusArray, orderStatusArray } from '@/utils/const'
 
 export default {
   components: {
@@ -312,7 +397,8 @@ export default {
       perpageNumber: 20,
       total: 0,
       queryForm: {
-        orderTimeRange: []
+        applyTimeRange: [],
+        operatorTimeRange: []
       },
       returnHandleVisible: false,
       returnInfo: {
@@ -342,7 +428,8 @@ export default {
         orderNo: '',
         userName: '',
         reason: '',
-        img: ''
+        img: '',
+        remark: ''
       },
       refundVisible: false,
       refundForm: {
@@ -350,7 +437,26 @@ export default {
         userName: '',
         reason: '',
         img: ''
-      }
+      },
+      remarkVisible: false,
+      remarkForm: {
+        remark: ''
+      },
+      hangVisible: false,
+      hangForm: {
+        id: '',
+        orderNo: '',
+        remark: ''
+      },
+      agreeVisible: false,
+      agreeForm: {
+        id: '',
+        orderNo: '',
+        remark: ''
+      },
+      applyStatusArray: applyStatusArray,
+      orderStatusArray: orderStatusArray,
+      afterSaleList: []
     }
   },
   methods: {
@@ -369,11 +475,17 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
-      let orderTimeStart = ''
-      let orderTimeEnd = ''
-      if (this.queryForm.orderTimeRange) {
-        orderTimeStart = this.queryForm.orderTimeRange[0]
-        orderTimeEnd = this.queryForm.orderTimeRange[1]
+      let applyTimeStart = ''
+      let applyTimeEnd = ''
+      if (this.queryForm.applyTimeRange) {
+        applyTimeStart = this.queryForm.applyTimeRange[0]
+        applyTimeEnd = this.queryForm.applyTimeRange[1]
+      }
+      let operatorTimeStart = ''
+      let operatorTimeEnd = ''
+      if (this.queryForm.operatorTimeRange) {
+        operatorTimeStart = this.queryForm.operatorTimeRange[0]
+        operatorTimeEnd = this.queryForm.operatorTimeRange[1]
       }
       var param = {
         numPerPage: numPerPage,
@@ -383,8 +495,12 @@ export default {
         goodsName: this.queryForm.goodsName,
         userName: this.queryForm.userName,
         buyerTel: this.queryForm.buyerTel,
-        orderTimeStart: orderTimeStart,
-        orderTimeEnd: orderTimeEnd
+        applyStatus: this.queryForm.applyStatus,
+        operator: this.queryForm.operator,
+        applyTimeStart: applyTimeStart,
+        applyTimeEnd: applyTimeEnd,
+        operatorTimeStart: operatorTimeStart,
+        operatorTimeEnd: operatorTimeEnd
       }
       reFundListPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -392,70 +508,86 @@ export default {
       })
     },
     applyStatusFormatter(row) {
-      switch (row.applyStatus) {
-        case '6':
-          return '待审核'
-        case '7':
-          return '待收货'
-        case '8':
-          return '未解决'
-        case '9':
-          return '已完成'
-        case '23':
-          return '待审核'
-        case '10':
-          return '待收货'
-        case '11':
-          return '待收货'
-        case '13':
-          return '未解决'
-        case '12':
-          return '已完成'
-        case '14':
-          return '已完成'
-        case '22':
-          return '已完成'
-        case '24':
-          return '已完成'
+      const item = this.orderStatusArray.find(item => item.value === row.applyStatus)
+      return item ? item.label : row.applyStatus
+    },
+    refundTypeFormatter(row) {
+      switch (row.refundType) {
+        case '1':
+          return '系统同步'
+        case '2':
+          return '线下售后'
         default:
-          return row.applyStatus
+          return row.refundType
       }
+    },
+    operateStatusFormatter(row) {
+      switch (row.operateStatus) {
+        case '1':
+          return '已处理'
+        default:
+          return row.operateStatus
+      }
+    },
+    tableRowClassName({ row }) {
+      if (row.refundType === '2') {
+        return 'warning-row'
+      }
+      return ''
     },
     /** 分页查询订单结束 */
 
     handleBtnHandle(row) {
-      if (row.userExpectation === '退货') {
-        this.returnHandleVisible = true
+      // if (row.userExpectation === '退货') {
+      this.returnHandleVisible = true
 
-        this.returnInfo.orderNo = row.orderNo
-        this.returnInfo.orderStatus = row.orderStatus
-        this.returnInfo.applyTime = row.applyTime
-        this.returnInfo.userName = row.userName
-        this.returnInfo.buyerTel = row.buyerTel
-        this.returnInfo.orderTime = row.orderTime
-        this.returnInfo.merchantName = row.merchantName
-        this.returnInfo.goodsName = row.goodsName
-      } else if (row.userExpectation === '待退款') {
-        this.refundHandleVisible = true
+      this.returnInfo.id = row.id
+      this.returnInfo.orderNo = row.orderNo
+      this.returnInfo.applyStatus = row.applyStatus
+      this.returnInfo.applyTime = row.applyTime
+      this.returnInfo.userName = row.userName
+      this.returnInfo.buyerTel = row.buyerTel
+      this.returnInfo.operatorTime = row.operatorTime
+      this.returnInfo.merchantName = row.merchantName
+      this.returnInfo.goodsName = row.goodsName
 
-        this.refundInfo.orderNo = row.orderNo
-        this.refundInfo.orderStatus = row.orderStatus
-        this.refundInfo.applyTime = row.applyTime
-        this.refundInfo.userName = row.userName
-        this.refundInfo.buyerTel = row.buyerTel
-        this.refundInfo.orderTime = row.orderTime
-        this.refundInfo.merchantName = row.merchantName
-        this.refundInfo.goodsName = row.goodsName
-        // TODO 获取售后日志信息
+      const param = {
+        id: this.returnInfo.id,
+        orderNo: this.returnInfo.orderNo
       }
+      queryAfterSaleLogs(param).then(res => {
+        this.afterSaleList = res.data
+      })
+      // } else if (row.userExpectation === '待退款') {
+      //   this.refundHandleVisible = true
+
+      //   this.refundInfo.orderNo = row.orderNo
+      //   this.refundInfo.orderStatus = row.orderStatus
+      //   this.refundInfo.applyTime = row.applyTime
+      //   this.refundInfo.userName = row.userName
+      //   this.refundInfo.buyerTel = row.buyerTel
+      //   this.refundInfo.orderTime = row.orderTime
+      //   this.refundInfo.merchantName = row.merchantName
+      //   this.refundInfo.goodsName = row.goodsName
+      //   // TODO 获取售后日志信息
+      // }
     },
 
     /** 同意退货开始 */
     agreeReturnHandle() {
+      this.agreeVisible = true
+      this.agreeForm.id = this.returnInfo.id
+      this.agreeForm.orderNo = this.returnInfo.orderNo
+      this.agreeForm.remark = ''
+    },
+    agreeCommit() {
       const param = {
-        orderNo: this.returnInfo.orderNo
+        remark: this.agreeForm.remark,
+        orderNo: this.agreeForm.orderNo,
+        id: this.agreeForm.id
       }
-      agreeReturn(param).then(res => {
+      agreeRefund(param).then(res => {
+        this.agreeVisible = false
         this.returnHandleVisible = false
         this.$message({
           message: res.msg,
@@ -469,18 +601,22 @@ export default {
     /** 拒绝退货开始 */
     refuseReturnHandle() {
       this.returnVisible = true
+      this.returnForm.id = this.returnInfo.id
       this.returnForm.orderNo = this.returnInfo.orderNo
       this.returnForm.userName = this.returnInfo.userName
       this.returnForm.reason = ''
       this.returnForm.img = ''
+      this.returnForm.remark = ''
     },
     returnCommit() {
       const param = {
+        id: this.returnForm.id,
         orderNo: this.returnForm.orderNo,
         reason: this.returnForm.reason,
-        img: this.returnForm.img
+        img: this.returnForm.img,
+        remark: this.returnForm.remark
       }
-      refuseReturn(param).then(res => {
+      refuseRefund(param).then(res => {
         this.returnVisible = false
         this.returnHandleVisible = false
         this.$message({
@@ -508,39 +644,67 @@ export default {
     },
     /** 拒绝退货结束 */
 
-    /** 同意退款开始 */
-    agreeRefundHandle() {
-      const param = {
-        orderNo: this.refundInfo.orderNo
-      }
-      agreeRefund(param).then(res => {
-        this.refundHandleVisible = false
-        this.$message({
-          message: res.msg,
-          type: 'success'
-        })
-        this.queryBtnHandle()
-      })
-    },
-    /** 同意退款结束 */
+    // /** 同意退款开始 */
+    // agreeRefundHandle() {
+    //   const param = {
+    //     orderNo: this.refundInfo.orderNo
+    //   }
+    //   agreeRefund(param).then(res => {
+    //     this.refundHandleVisible = false
+    //     this.$message({
+    //       message: res.msg,
+    //       type: 'success'
+    //     })
+    //     this.queryBtnHandle()
+    //   })
+    // },
+    // /** 同意退款结束 */
 
-    /** 拒绝退货开始 */
-    refuseRefundHandle() {
-      this.refundVisible = true
-      this.refundForm.orderNo = this.refundInfo.orderNo
-      this.refundForm.userName = this.refundInfo.userName
-      this.refundForm.reason = ''
-      this.refundForm.img = ''
+    // /** 拒绝退货开始 */
+    // refuseRefundHandle() {
+    //   this.refundVisible = true
+    //   this.refundForm.orderNo = this.refundInfo.orderNo
+    //   this.refundForm.userName = this.refundInfo.userName
+    //   this.refundForm.reason = ''
+    //   this.refundForm.img = ''
+    // },
+    // refundCommit() {
+    //   const param = {
+    //     orderNo: this.refundForm.orderNo,
+    //     reason: this.refundForm.reason,
+    //     img: this.refundForm.img
+    //   }
+    //   refuseRefund(param).then(res => {
+    //     this.refundVisible = false
+    //     this.refundHandleVisible = false
+    //     this.$message({
+    //       message: res.msg,
+    //       type: 'success'
+    //     })
+    //     this.queryBtnHandle()
+    //   })
+    // },
+    // refundImgSuccess(res) {
+    //   this.refundForm.img = res.data.fileName
+    // },
+    // /** 拒绝退款结束 */
+
+    /** 挂起开始 */
+    hangHandle() {
+      this.hangVisible = true
+      this.hangForm.orderNo = this.returnInfo.orderNo
+      this.hangForm.id = this.returnInfo.id
+      this.hangForm.remark = ''
     },
-    refundCommit() {
+    hangCommit() {
       const param = {
-        orderNo: this.refundForm.orderNo,
-        reason: this.refundForm.reason,
-        img: this.refundForm.img
+        remark: this.hangForm.remark,
+        orderNo: this.hangForm.orderNo,
+        id: this.hangForm.id
       }
-      refuseRefund(param).then(res => {
-        this.refundVisible = false
-        this.refundHandleVisible = false
+      hang(param).then(res => {
+        this.hangVisible = false
+        this.returnHandleVisible = false
         this.$message({
           message: res.msg,
           type: 'success'
@@ -548,10 +712,29 @@ export default {
         this.queryBtnHandle()
       })
     },
-    refundImgSuccess(res) {
-      this.refundForm.img = res.data.fileName
+    /** 挂起结束 */
+
+    /** 备注开始 */
+    remarkHandle(row) {
+      this.remarkVisible = true
+      this.remarkForm.orderNo = row.orderNo
+      this.remarkForm.remark = ''
+    },
+    remarkCommit() {
+      const param = {
+        remark: this.remarkForm.remark,
+        orderNo: this.remarkForm.orderNo
+      }
+      remark(param).then(res => {
+        this.remarkVisible = false
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        })
+        this.queryBtnHandle()
+      })
     }
-    /** 拒绝退款结束 */
+    /** 备注结束 */
   },
   create() {},
   mounted() {
@@ -587,5 +770,16 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+}
+</style>
+
+<style>
+.el-table .warning-row {
+  color: #ffffff;
+  background: #f09d76;
+}
+
+.el-table tr.hover-row > td {
+  background-color: rgba(0, 0, 0, 0) !important;
 }
 </style>

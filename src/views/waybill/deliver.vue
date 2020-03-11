@@ -33,8 +33,10 @@
         <el-table-column prop="total" label="总发货数" align="center"> </el-table-column>
         <el-table-column prop="totalJd" label="京东发货数" align="center"> </el-table-column>
         <el-table-column prop="exceedJd" label="京东超区数" align="center"> </el-table-column>
-        <el-table-column prop="jdToDb" label="京东转德邦" align="center"> </el-table-column>
-        <el-table-column prop="totalDb" label="德邦发货数" align="center"> </el-table-column>
+        <el-table-column prop="totalZt" label="中通发货数" align="center"> </el-table-column>
+        <el-table-column prop="jdToZt" label="京东转中通" align="center"> </el-table-column>
+        <el-table-column prop="totalYt" label="圆通发货数" align="center"> </el-table-column>
+        <el-table-column prop="jdToYt" label="京东转圆通" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>
         </div>

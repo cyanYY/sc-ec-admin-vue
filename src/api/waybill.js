@@ -11,6 +11,11 @@ export function uploadWaybill(params) {
   const url = '/wayBill/upload'
   return axios.post(url, params).then(res => res.data)
 }
+// 批量更新运单状态
+export function batchUpdateStatus(params) {
+  const url = '/wayBill/batchUpdateStatus'
+  return axios.post(url, params).then(res => res.data)
+}
 
 // 导入异常运单
 export function uploadWaybillException(params) {
@@ -128,5 +133,10 @@ export function deleteRepeat(params) {
 }
 export function dispatchAll(params) {
   const url = '/wayBillException/dispatchAll'
+  return axios.post(url, params).then(res => res.data)
+}
+
+export function listPageStasticsFinish(params) {
+  const url = '/wayBill/listPageStasticsFinish'
   return axios.post(url, params).then(res => res.data)
 }

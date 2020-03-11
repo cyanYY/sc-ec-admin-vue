@@ -176,7 +176,7 @@
         <el-table-column prop="changeWayBillNo" label="换单号" align="center"> </el-table-column>
         <el-table-column prop="isReject" label="是否拒收" align="center"> </el-table-column>
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
-        <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
+        <el-table-column prop="problemDesc" label="问题描述" width="250" align="center">
         </el-table-column>
         <el-table-column prop="auditOpinion" label="审核意见" width="120" align="center">
         </el-table-column>
@@ -336,6 +336,10 @@ export default {
           return '德邦快递'
         case '3':
           return '韵达快递'
+        case '4':
+          return '中通快递'
+        case '5':
+          return '圆通快递'
         default:
           return row.expressType
       }

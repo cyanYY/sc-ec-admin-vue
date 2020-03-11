@@ -85,7 +85,11 @@
         </el-form-item>
         <el-form-item label="">
           <el-select v-model="queryForm.hangReason" placeholder="挂起原因">
-            <el-option label="全部" value="-1"></el-option>
+            <el-option label="全部" value="-1"></el-option
+            ><el-option
+              label="因新冠肺炎疫情，用户无法签收"
+              value="因新冠肺炎疫情，用户无法签收"
+            ></el-option>
             <el-option label="客户联系不上" value="客户联系不上"></el-option>
             <el-option label="客户要求自提" value="客户要求自提"></el-option>
             <el-option
@@ -176,7 +180,7 @@
         <el-table-column prop="changeWayBillNo" label="换单号" align="center"> </el-table-column>
         <el-table-column prop="isReject" label="是否拒收" align="center"> </el-table-column>
         <el-table-column prop="exceptionType" label="异常类型" align="center"> </el-table-column>
-        <el-table-column prop="problemDesc" label="问题描述" width="120" align="center">
+        <el-table-column prop="problemDesc" label="问题描述" width="250" align="center">
         </el-table-column>
         <el-table-column prop="option" width="130" fixed="right" align="center" label="操作">
           <template slot-scope="scope">
@@ -234,6 +238,10 @@
         </el-form-item>
         <el-form-item label="审核意见">
           <el-select style="width: 100%;" v-model="handleForm.auditOpinion" placeholder="">
+            <el-option
+              label="因新冠肺炎疫情，用户无法签收"
+              value="因新冠肺炎疫情，用户无法签收"
+            ></el-option>
             <el-option label="请退回处理" value="请退回处理"></el-option>
             <el-option label="客户要签收，辛苦再配送" value="客户要签收，辛苦再配送"></el-option>
             <el-option
@@ -276,6 +284,10 @@
         </el-form-item>
         <el-form-item label="挂起原因">
           <el-select style="width: 100%;" v-model="hangForm.hangReason" placeholder="">
+            <el-option
+              label="因新冠肺炎疫情，用户无法签收"
+              value="因新冠肺炎疫情，用户无法签收"
+            ></el-option>
             <el-option label="客户联系不上" value="客户联系不上"></el-option>
             <el-option label="客户要求自提" value="客户要求自提"></el-option>
             <el-option
@@ -524,6 +536,10 @@ export default {
           return '德邦快递'
         case '3':
           return '韵达快递'
+        case '4':
+          return '中通快递'
+        case '5':
+          return '圆通快递'
         default:
           return row.expressType
       }

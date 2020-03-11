@@ -3,30 +3,10 @@
     <div class="queryForm">
       <el-form size="small" :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="">
-          <el-select v-model="queryForm.agentId" clearable placeholder="代理商">
-            <el-option
-              v-for="item in dropAgents"
-              :key="item.agentId"
-              :label="item.agentName"
-              :value="item.agentId"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="">
           <el-input v-model="queryForm.merchantName" placeholder="商户名称"></el-input>
         </el-form-item>
         <el-form-item label="">
           <el-input v-model="queryForm.goodsName" placeholder="商品名称"></el-input>
-        </el-form-item>
-        <el-form-item label="">
-          <el-select v-model="queryForm.expressType" placeholder="快递类型">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="">
           <el-date-picker
@@ -55,41 +35,64 @@
         :summary-method="getSummaries"
         show-summary
       >
-        <el-table-column prop="orderDate" label="日期" align="center"> </el-table-column>
-        <el-table-column prop="merchantName" label="商户名称" align="center"> </el-table-column>
+        <el-table-column prop="orderDate" label="日期" width="100" align="center">
+        </el-table-column>
+        <el-table-column prop="merchantName" label="商户名称" width="120" align="center">
+        </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" width="200" align="center">
         </el-table-column>
-        <el-table-column prop="total" label="总数" align="center"> </el-table-column>
-        <el-table-column prop="totalNotExceed" label="总数(除超区)" align="center">
+        <el-table-column prop="total" label="订单数" width="70" align="center"> </el-table-column>
+        <el-table-column prop="cancel" label="总取消数" width="70" align="center">
         </el-table-column>
-        <el-table-column prop="totalSuc" label="已完成" align="center"> </el-table-column>
-        <el-table-column label="成功率" align="center">
+        <el-table-column prop="cancelNotRepeat" label="非重复取消数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="notDeliver" label="未发货数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="jdDeliver" label="京东发货数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="jdExceed" label="京东超区数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="ztDeliver" label="中通发货数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="ztExceed" label="中通超区数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="allExceed" label="都超区数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="jdFinish" label="京东妥投数" width="70" align="center">
+        </el-table-column>
+        <el-table-column prop="ztFinish" label="中通妥投数" width="70" align="center">
+        </el-table-column>
+        <el-table-column label="京东妥投率" width="70" align="center">
           <template slot-scope="scope">
             <span>{{
-              scope.row.total == 0
+              scope.row.jdDeliver - scope.row.jdExceed === 0
                 ? '-'
-                : ((scope.row.totalSuc * 100) / scope.row.total).toFixed(2) + '%'
+                : ((scope.row.jdFinish * 100) / (scope.row.jdDeliver - scope.row.jdExceed)).toFixed(
+                    2
+                  ) + '%'
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="totalException" label="异常数" align="center"> </el-table-column>
-        <el-table-column label="异常率" align="center">
+        <el-table-column label="中通妥投率" width="70" align="center">
           <template slot-scope="scope">
             <span>{{
-              scope.row.total == 0
+              scope.row.ztDeliver - scope.row.ztExceed === 0
                 ? '-'
-                : ((scope.row.totalException * 100) / scope.row.total).toFixed(2) + '%'
+                : ((scope.row.ztFinish * 100) / (scope.row.ztDeliver - scope.row.ztExceed)).toFixed(
+                    2
+                  ) + '%'
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="exceptionSuc" label="异常妥投数" align="center"> </el-table-column>
-        <el-table-column prop="totalCancel" label="超区数" align="center"> </el-table-column>
-        <el-table-column label="成功率(除超区)" align="center">
+        <el-table-column label="总妥投率" width="70" align="center">
           <template slot-scope="scope">
             <span>{{
-              scope.row.totalNotExceed == 0
+              scope.row.deliver - scope.row.allExceed === 0
                 ? '-'
-                : ((scope.row.totalSuc * 100) / scope.row.totalNotExceed).toFixed(2) + '%'
+                : (
+                    ((scope.row.jdFinish + scope.row.ztFinish) * 100) /
+                    (scope.row.deliver - scope.row.allExceed)
+                  ).toFixed(2) + '%'
             }}</span>
           </template>
         </el-table-column>
@@ -111,8 +114,7 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { successRate } from '@/api/order.js'
-import { listUserAgents } from '@/api/user.js'
+import { orderSuccRate } from '@/api/order.js'
 import { parseTime } from '@/utils'
 
 export default {
@@ -123,7 +125,7 @@ export default {
   data() {
     const date = new Date()
     const endDate = parseTime(date, '{y}-{m}-{d}')
-    date.setDate(date.getDate() - 14)
+    date.setDate(date.getDate() - 7)
     const startDate = parseTime(date, '{y}-{m}-{d}')
 
     return {
@@ -136,11 +138,17 @@ export default {
       },
       sums: {
         total: 0,
-        totalNotExceed: 0,
-        totalSuc: 0,
-        totalExc: 0
-      },
-      dropAgents: []
+        cancel: 0,
+        cancelNotRepeat: 0,
+        notDeliver: 0,
+        deliver: 0,
+        jdDeliver: 0,
+        jdExceed: 0,
+        jdFinish: 0,
+        ztDeliver: 0,
+        ztExceed: 0,
+        ztFinish: 0
+      }
     }
   },
   methods: {
@@ -175,13 +183,19 @@ export default {
         orderTimeEnd: orderTimeEnd,
         agentId: this.queryForm.agentId
       }
-      successRate(param).then(res => {
+      orderSuccRate(param).then(res => {
         this.sums.total = res.data.total
-        this.sums.totalNotExceed = res.data.totalNotExceed
-        this.sums.totalSuc = res.data.totalSuc
-        this.sums.totalExc = res.data.totalExc
-        this.sums.exceptionSuc = res.data.exceptionSuc
-        this.sums.totalCancel = res.data.totalCancel
+        this.sums.cancel = res.data.cancel
+        this.sums.cancelNotRepeat = res.data.cancelNotRepeat
+        this.sums.notDeliver = res.data.notDeliver
+        this.sums.deliver = res.data.deliver
+        this.sums.jdDeliver = res.data.jdDeliver
+        this.sums.ztDeliver = res.data.ztDeliver
+        this.sums.jdExceed = res.data.jdExceed
+        this.sums.ztExceed = res.data.ztExceed
+        this.sums.allExceed = res.data.allExceed
+        this.sums.jdFinish = res.data.jdFinish
+        this.sums.ztFinish = res.data.ztFinish
         this.tableDataSearch = res.data.result.recordList
         this.total = res.data.result.totalCount
       })
@@ -195,37 +209,41 @@ export default {
           return
         }
         sums[3] = this.sums.total
-        sums[4] = this.sums.totalNotExceed
-        sums[5] = this.sums.totalSuc
-        sums[6] =
-          this.sums.total == 0
+        sums[4] = this.sums.cancel
+        sums[5] = this.sums.cancelNotRepeat
+        sums[6] = this.sums.notDeliver
+        sums[7] = this.sums.jdDeliver
+        sums[8] = this.sums.jdExceed
+        sums[9] = this.sums.ztDeliver
+        sums[10] = this.sums.ztExceed
+        sums[11] = this.sums.allExceed
+        sums[12] = this.sums.jdFinish
+        sums[13] = this.sums.ztFinish
+        sums[14] =
+          this.sums.jdDeliver - this.sums.jdExceed === 0
             ? '-'
-            : ((this.sums.totalSuc * 100) / this.sums.total).toFixed(2) + '%'
-        sums[7] = this.sums.totalExc
-        sums[8] =
-          this.sums.total == 0
+            : ((this.sums.jdFinish * 100) / (this.sums.jdDeliver - this.sums.jdExceed)).toFixed(2) +
+              '%'
+        sums[15] =
+          this.sums.ztDeliver - this.sums.ztExceed === 0
             ? '-'
-            : ((this.sums.totalExc * 100) / this.sums.total).toFixed(2) + '%'
-        sums[9] = this.sums.exceptionSuc
-        sums[10] = this.sums.totalCancel
-        sums[11] =
-          this.sums.totalNotExceed == 0
+            : ((this.sums.ztFinish * 100) / (this.sums.ztDeliver - this.sums.ztExceed)).toFixed(2) +
+              '%'
+        sums[16] =
+          this.sums.deliver - this.sums.allExceed === 0
             ? '-'
-            : ((this.sums.totalSuc * 100) / this.sums.totalNotExceed).toFixed(2) + '%'
+            : (
+                ((this.sums.jdFinish + this.sums.ztFinish) * 100) /
+                (this.sums.deliver - this.sums.allExceed)
+              ).toFixed(2) + '%'
       })
 
       return sums
-    },
-    /** 分页查询订单结束 */
-    listUserAgents() {
-      listUserAgents().then(res => {
-        this.dropAgents = res.data
-      })
     }
+    /** 分页查询订单结束 */
   },
   create() {},
   mounted() {
-    this.listUserAgents()
     // 挂载页面获取数据
     this.getListByPage(this.perpageNumber, this.currentPage)
   }

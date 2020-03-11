@@ -120,31 +120,31 @@ export const asyncRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/order-process',
-  //   component: Layout,
-  //   meta: { title: '退款订单处理', icon: 'form', key: 'order-process' },
-  //   children: [
-  //     {
-  //       path: '',
-  //       name: 'order-process',
-  //       component: () => import('@/views/order-process/index'),
-  //       meta: { title: '退款订单', icon: 'form', key: 'order-process:index' }
-  //     },
-  //     {
-  //       path: 'todo',
-  //       name: 'order-process-todo',
-  //       component: () => import('@/views/order-process/todo'),
-  //       meta: { title: '待处理', icon: 'form', key: 'order-process:todo' }
-  //     },
-  //     {
-  //       path: 'finish',
-  //       name: 'order-process-finish',
-  //       component: () => import('@/views/order-process/finish'),
-  //       meta: { title: '已处理', icon: 'table', key: 'order-process:finish' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/order-process',
+    component: Layout,
+    meta: { title: '差评订单处理', icon: 'form', key: 'order-process' },
+    children: [
+      {
+        path: '',
+        name: 'order-process',
+        component: () => import('@/views/order-process/index'),
+        meta: { title: '差评订单', icon: 'form', key: 'order-process:index' }
+      },
+      {
+        path: 'todo',
+        name: 'order-process-todo',
+        component: () => import('@/views/order-process/todo'),
+        meta: { title: '待处理', icon: 'form', key: 'order-process:todo' }
+      },
+      {
+        path: 'finish',
+        name: 'order-process-finish',
+        component: () => import('@/views/order-process/finish'),
+        meta: { title: '已处理', icon: 'table', key: 'order-process:finish' }
+      }
+    ]
+  },
   {
     path: '/order',
     component: Layout,
@@ -186,6 +186,12 @@ export const asyncRoutes = [
         name: 'index',
         component: () => import('@/views/aftersale/index'),
         meta: { title: '售后订单', icon: 'form', key: 'aftersale:index' }
+      },
+      {
+        path: 'off',
+        name: 'off',
+        component: () => import('@/views/aftersale/off'),
+        meta: { title: '线下售后', icon: 'form', key: 'aftersale:off' }
       },
       {
         path: 'service',
@@ -233,6 +239,12 @@ export const asyncRoutes = [
         meta: { title: '成功率统计', icon: 'table', key: 'succreport:index' }
       },
       {
+        path: 'orderSucc',
+        name: 'orderSucc',
+        component: () => import('@/views/succreport/orderSucc'),
+        meta: { title: '订单成功率', icon: 'table', key: 'succreport:orderSucc' }
+      },
+      {
         path: 'profit',
         name: 'profit',
         component: () => import('@/views/succreport/profit'),
@@ -249,6 +261,12 @@ export const asyncRoutes = [
         name: 'sale',
         component: () => import('@/views/succreport/sale'),
         meta: { title: '销售统计', icon: 'table', key: 'succreport:sale' }
+      },
+      {
+        path: 'finish',
+        name: 'finish',
+        component: () => import('@/views/succreport/finish'),
+        meta: { title: '妥投统计', icon: 'table', key: 'succreport:finish' }
       }
     ]
   },

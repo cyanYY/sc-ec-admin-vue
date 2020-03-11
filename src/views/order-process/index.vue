@@ -44,11 +44,7 @@
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryHandle(1)">查询</el-button>
-          <el-button
-            v-if="roles.indexOf('SYS_ADMIN') > -1"
-            size="small"
-            type="primary"
-            @click="wayBillUploadHandle"
+          <el-button size="small" type="primary" @click="wayBillUploadHandle"
             >差评订单导入</el-button
           >
           <el-button size="small" type="primary" @click="batchClaim">批量认领</el-button>
@@ -68,16 +64,17 @@
       >
         <el-table-column type="selection" width="50" align="center" />
         <el-table-column prop="orderNo" label="订单号" width="100" align="center" />
+        <el-table-column prop="processComment" label="评价内容" width="200" align="center" />
         <el-table-column prop="hangReason" label="挂起历史" width="250" align="center">
           <template slot-scope="scope">
-            <ol v-if="scope.row.hangReason">
-              <li :key="item.index" v-for="item in scope.row.hangReason.split(',')">
+            <ol v-if="scope.row.remark">
+              <li :key="item.index" v-for="item in scope.row.remark.split(',')">
                 <span>{{ item }}</span>
               </li>
             </ol>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsName" label="物品名" width="120" align="center">
+        <el-table-column prop="goodsName" label="物品名" width="200" align="center">
         </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" width="110" align="center">
@@ -153,28 +150,11 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="处理结果">
-          <el-select v-model="handleForm.processResult" placeholder="">
-            <el-option label="用户同意撤销退款" value="用户同意撤销退款"></el-option>
-            <el-option label="用户不同意撤销退款" value="用户不同意撤销退款"></el-option>
-          </el-select>
+        <el-form-item label="备注">
+          <el-input v-model="handleForm.remark" placeholder=""></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="handleExceptionCommit">确定</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog title="" :close-on-click-modal="false" :visible.sync="waybillHangVisible">
-      <el-form :model="hangForm" label-width="160px">
-        <el-form-item label="订单号">
-          <el-input v-model="hangForm.orderNo" :disabled="true" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="hangForm.remark" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="hangExceptionCommit">确定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -264,8 +244,15 @@
         ></el-col>
       </el-row>
       <div v-if="claimForm.claimed" style="margin-top: 10px; text-align: right;">
-        <el-button size="small" type="success" @click="handleException(claimForm)">处理</el-button>
-        <el-button size="small" type="primary" @click="hangException(claimForm)">挂起</el-button>
+        <el-button size="small" type="success" @click="handleException(claimForm, '已改')"
+          >已改</el-button
+        >
+        <el-button size="small" type="primary" @click="handleException(claimForm, '拒绝')"
+          >拒绝</el-button
+        >
+        <el-button size="small" type="primary" @click="handleException(claimForm, '挂起')"
+          >挂起</el-button
+        >
       </div>
     </el-dialog>
 
@@ -320,7 +307,7 @@
 <script type="text/ecmascript-6">
 import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination/index'
-import { upload, listPage, handle, hang, claim, batchClaim } from '@/api/order-process.js'
+import { upload, listPage, handle, claim, batchClaim } from '@/api/order-process.js'
 
 export default {
   name: 'Exception',
@@ -345,7 +332,9 @@ export default {
       waybillHandleVisible: false,
       handleForm: {
         processProof: '',
-        processResult: ''
+        processResult: '',
+        remark: '',
+        type: ''
       },
       waybillHangVisible: false,
       hangForm: {
@@ -419,40 +408,23 @@ export default {
         }
       )
     },
-    handleException(row) {
+    handleException(row, type) {
       this.waybillHandleVisible = true
+
       this.handleForm.orderNo = row.orderNo
       this.handleForm.processProof = ''
-      this.handleForm.processResult = ''
+      this.handleForm.remark = ''
+      this.handleForm.type = type
     },
     handleExceptionCommit() {
       const param = {
         orderNo: this.handleForm.orderNo,
         processProof: this.handleForm.processProof,
-        processResult: this.handleForm.processResult
+        processResult: this.handleForm.type,
+        remark: this.handleForm.remark
       }
       handle(param).then(res => {
         this.waybillHandleVisible = false
-        this.wayClaimVisible = false
-        this.$message({
-          message: res.msg,
-          type: 'success'
-        })
-        this.queryHandle()
-      })
-    },
-    hangException(row) {
-      this.waybillHangVisible = true
-      this.hangForm.orderNo = row.orderNo
-      this.hangForm.remark = ''
-    },
-    hangExceptionCommit() {
-      const param = {
-        orderNo: this.hangForm.orderNo,
-        remark: this.hangForm.remark
-      }
-      hang(param).then(res => {
-        this.waybillHangVisible = false
         this.wayClaimVisible = false
         this.$message({
           message: res.msg,

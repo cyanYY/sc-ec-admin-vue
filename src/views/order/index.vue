@@ -98,7 +98,7 @@
           <el-select v-model="queryForm.orderType" placeholder="订单类型">
             <el-option label="全部" value="-1"></el-option>
             <el-option label="线下" value="线下"></el-option>
-            <el-option label="超区" value="超区"></el-option>
+            <el-option label="售后" value="售后"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -132,14 +132,20 @@
         </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" width="150" align="center">
         </el-table-column>
-        <el-table-column prop="goodsSpec" label="商品规格" width="150" align="center">
-        </el-table-column>
         <el-table-column prop="goodsAmount" label="商品单价" align="center"> </el-table-column>
         <el-table-column prop="goodsNum" label="数量" align="center"> </el-table-column>
-        <el-table-column prop="wayAmount" label="运费" align="center"> </el-table-column>
         <el-table-column prop="actualAmount" label="实收款" align="center"> </el-table-column>
         <el-table-column prop="receiver" label="收件人" align="center"> </el-table-column>
         <el-table-column prop="receiverMobile" label="收件人手机号" align="center">
+        </el-table-column>
+        <el-table-column prop="receiverAddress" label="收件人地址" width="150" align="center">
+        </el-table-column>
+        <el-table-column
+          prop="payMethod"
+          :formatter="payMethondFormatter"
+          label="支付方式"
+          align="center"
+        >
         </el-table-column>
         <el-table-column prop="expressCompany" label="快递公司" align="center"> </el-table-column>
         <el-table-column prop="wayBillNo" label="快递单号" align="center"> </el-table-column>
@@ -149,10 +155,12 @@
         <el-table-column prop="orderStatusString" label="订单状态" align="center"></el-table-column>
         <el-table-column prop="wayBillStatus" label="运单状态" align="center"> </el-table-column>
         <el-table-column prop="userRemark" label="用户留言" align="center"> </el-table-column>
-        <el-table-column prop="merchantRemark" label="商户留言" align="center"> </el-table-column>
-        <el-table-column prop="option" fixed="right" align="center" label="操作">
+        <el-table-column prop="merchantRemark" label="商户留言" width="150" align="center">
+        </el-table-column>
+        <el-table-column prop="option" fixed="right" align="center" width="100" label="操作">
           <template slot-scope="scope">
-            <el-button @click="updateBtnHandle(scope.row)" type="text" size="small">修改</el-button>
+            <el-button @click="updateBtnHandle(scope.row)" type="text" size="small">备注</el-button>
+            <el-button @click="cancelBtnHandle(scope.row)" type="text" size="small">取消</el-button>
           </template>
         </el-table-column>
         <div slot="empty" v-if="total <= 0">
@@ -270,24 +278,9 @@
     >
       <el-form :model="updateForm" label-width="120px">
         <el-form-item label="订单号">{{ updateForm.orderNo }}</el-form-item>
-        <el-form-item label="运单号">
-          <el-input v-model="updateForm.wayBillNo" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="快递公司">
-          <el-input v-model="updateForm.expressCompany" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="订单状态">
-          <el-input v-model="updateForm.orderStatus" placeholder=""></el-input>
-        </el-form-item>
-        <el-form-item label="选择商户">
-          <el-select v-model="updateForm.merchantId" placeholder="">
-            <el-option
-              v-for="item in merchantList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+        <el-form-item label="订单状态">{{ updateForm.orderStatusString }}</el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="updateForm.merchantRemark" placeholder=""></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="updateOrderHandle">确定</el-button>
@@ -303,16 +296,6 @@
       :visible.sync="offOrderUploadVisible"
     >
       <el-form :model="offOrderUploadForm" label-width="120px">
-        <!-- <el-form-item label="选择商户">
-          <el-select v-model="offOrderUploadForm.merchantId" placeholder="">
-            <el-option
-              v-for="item in merchantList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="选择文件">
           <el-upload
             ref="offOrderUpload"
@@ -408,6 +391,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="选择快递">
+          <el-select v-model="exportInvoiceForm.expressType" placeholder="">
+            <el-option label="京东快递" value="1"></el-option>
+            <el-option label="德邦快递" value="2"></el-option>
+            <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="中通快递" value="4"></el-option>
+            <el-option label="圆通快递" value="5"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="下单时间">
           <el-date-picker
             v-model="exportInvoiceForm.orderTimeRange"
@@ -430,6 +422,89 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog
+      width="70%"
+      title="取消订单"
+      :close-on-click-modal="false"
+      :visible.sync="cancelFormVisible"
+    >
+      <el-card header="订单信息">
+        <el-row :gutter="10">
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">订单号：</label>
+              <div class="el-form-item__content">{{ cancelForm.orderNo }}</div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">商户名称</label>
+              <div class="el-form-item__content">
+                {{ cancelForm.merchantName }}
+              </div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">商品名称</label>
+              <div class="el-form-item__content">
+                {{ cancelForm.goodsName }}
+              </div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">下单时间：</label>
+              <div class="el-form-item__content">
+                {{ cancelForm.orderTime }}
+              </div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">收件人：</label>
+              <div class="el-form-item__content">{{ cancelForm.receiver }}</div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">收件人手机号：</label>
+              <div class="el-form-item__content">{{ cancelForm.receiverMobile }}</div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">收件人地址：</label>
+              <div class="el-form-item__content">{{ cancelForm.receiverAddress }}</div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">实收款：</label>
+              <div class="el-form-item__content">{{ cancelForm.actualAmount }}</div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">支付方式</label>
+              <div class="el-form-item__content">
+                {{ payMethondFormatter({ payMethod: cancelForm.payMethod }) }}
+              </div>
+            </div></el-col
+          >
+          <el-col :span="8"
+            ><div>
+              <label class="el-form-item__label">订单状态：</label>
+              <div class="el-form-item__content">{{ cancelForm.orderStatusString }}</div>
+            </div></el-col
+          >
+        </el-row>
+      </el-card>
+      <div style="margin-top: 10px; text-align: right;">
+        <el-button size="small" type="primary" @click="cancelHandle">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -439,11 +514,12 @@ import {
   listPage,
   uploadOrder,
   addOrder,
-  updateOrder,
   uploadOffOrder,
   uploadExrOrder,
   exportMerchant,
-  exportGoodsId
+  exportGoodsId,
+  orderRepeatCancel,
+  remarkOrder
 } from '@/api/order.js'
 import axios from 'axios'
 
@@ -470,10 +546,8 @@ export default {
       addForm: {},
       updateForm: {
         orderNo: '',
-        wayBillNo: '',
-        expressCompany: '',
         orderStatus: '',
-        merchantId: ''
+        merchantRemark: ''
       },
       addFormVisible: false,
       updateFormVisible: false,
@@ -529,10 +603,24 @@ export default {
         merchantId: '',
         goodsId: '',
         payMethod: '',
-        orderTimeRange: []
+        orderTimeRange: [],
+        expressType: '1'
       },
       exportMerchantList: [],
-      exportGoodsList: []
+      exportGoodsList: [],
+      cancelFormVisible: false,
+      cancelForm: {
+        orderNo: '',
+        merchantName: '',
+        goodsName: '',
+        orderTime: '',
+        receiver: '',
+        receiverMobile: '',
+        receiverAddress: '',
+        actualAmount: '',
+        payMethod: '',
+        orderStatusString: ''
+      }
     }
   },
   methods: {
@@ -578,6 +666,18 @@ export default {
         this.tableDataSearch = res.data.recordList
         this.total = res.data.totalCount
       })
+    },
+    payMethondFormatter(row) {
+      switch (row.payMethod) {
+        case '0':
+          return '货到付款'
+        case '1':
+          return '在线支付'
+        case '2':
+          return '在线支付'
+        default:
+          return row.payMethod
+      }
     },
     /** 分页查询订单结束 */
 
@@ -671,6 +771,7 @@ export default {
       this.exportInvoiceForm.merchantId = ''
       this.exportInvoiceForm.payMethod = ''
       this.exportInvoiceForm.goodsId = ''
+      this.exportInvoiceForm.expressType = '1'
       this.exportInvoiceForm.orderTimeRange = []
 
       exportMerchant({}).then(res => {
@@ -704,6 +805,7 @@ export default {
         merchantId: this.exportInvoiceForm.merchantId,
         payMethod: this.exportInvoiceForm.payMethod,
         goodsId: this.exportInvoiceForm.goodsId,
+        expressType: this.exportInvoiceForm.expressType,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd
       }
@@ -770,20 +872,15 @@ export default {
       this.updateFormVisible = true
 
       this.updateForm.orderNo = row.orderNo
-      this.updateForm.wayBillNo = row.wayBillNo
-      this.updateForm.expressCompany = row.expressCompany
-      this.updateForm.orderStatus = row.orderStatus
-      this.updateForm.merchantId = row.merchantId
+      this.updateForm.orderStatusString = row.orderStatusString
+      this.updateForm.merchantRemark = row.merchantRemark
     },
     updateOrderHandle() {
       var param = {
         orderNo: this.updateForm.orderNo,
-        wayBillNo: this.updateForm.wayBillNo,
-        expressCompany: this.updateForm.expressCompany,
-        orderStatus: this.updateForm.orderStatus,
-        merchantId: this.updateForm.merchantId
+        merchantRemark: this.updateForm.merchantRemark
       }
-      updateOrder(param).then(res => {
+      remarkOrder(param).then(res => {
         this.updateFormVisible = false
         this.$message({
           message: res.msg,
@@ -793,6 +890,34 @@ export default {
       })
     },
     /** 修改订单结束 */
+
+    /** 取消订单开始 */
+    cancelBtnHandle(row) {
+      this.cancelFormVisible = true
+
+      this.cancelForm.orderNo = row.orderNo
+      this.cancelForm.merchantName = row.merchantName
+      this.cancelForm.goodsName = row.goodsName
+      this.cancelForm.orderTime = row.orderTime
+      this.cancelForm.receiver = row.receiver
+      this.cancelForm.receiverMobile = row.receiverMobile
+      this.cancelForm.receiverAddress = row.receiverAddress
+      this.cancelForm.actualAmount = row.actualAmount
+      this.cancelForm.payMethod = row.payMethod
+      this.cancelForm.orderStatusString = row.orderStatusString
+    },
+    cancelHandle() {
+      const param = [this.cancelForm.orderNo]
+      orderRepeatCancel(param).then(res => {
+        this.cancelFormVisible = false
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        })
+        this.queryBtnHandle()
+      })
+    },
+    /** 取消订单结束 */
 
     /** 线下订单导入开始 */
     offUplaodBtnHandle() {
@@ -810,7 +935,6 @@ export default {
       }
       var param = {
         fileName: this.offOrderFileName
-        // merchantId: this.offOrderUploadForm.merchantId
       }
       this.offOrderUploadLoading = true
       uploadOffOrder(param)
