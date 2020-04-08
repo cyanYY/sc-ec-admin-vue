@@ -47,8 +47,8 @@
         <el-form-item label="">
           <el-select v-model="queryForm.orderStatus" placeholder="订单状态">
             <el-option label="全部" value="-1"></el-option>
-            <el-option label="已完成" value="已完成"></el-option>
-            <el-option label="已取消" value="已取消"></el-option>
+            <el-option label="已完成" value="5"></el-option>
+            <el-option label="已取消" value="4"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -72,8 +72,8 @@
         <el-form-item label="">
           <el-select v-model="queryForm.noOrderStatus" placeholder="订单非状态">
             <el-option label="全部" value="-1"></el-option>
-            <el-option label="已完成" value="已完成"></el-option>
-            <el-option label="已取消" value="已取消"></el-option>
+            <el-option label="已完成" value="5"></el-option>
+            <el-option label="已取消" value="4"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -100,6 +100,9 @@
             <el-option label="线下" value="线下"></el-option>
             <el-option label="售后" value="售后"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="queryForm.operator" placeholder="操作员" :editable="false"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
@@ -398,6 +401,7 @@
             <el-option label="韵达快递" value="3"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="下单时间">
@@ -522,6 +526,7 @@ import {
   remarkOrder
 } from '@/api/order.js'
 import axios from 'axios'
+import { merchantArray } from '@/utils/const'
 
 export default {
   name: 'Waybill',
@@ -559,44 +564,7 @@ export default {
       exrOrderFileName: '',
       exrOrderUploadLoading: false,
       exrOrderUploadForm: {},
-      merchantList: [
-        {
-          label: '神创未来',
-          value: '1'
-        },
-        {
-          label: '佰福莱家居',
-          value: '2'
-        },
-        {
-          label: '深圳泽泽好物',
-          value: '3'
-        },
-        {
-          label: '武汉翠泽商行',
-          value: '4'
-        },
-        {
-          label: '小优起飞',
-          value: '5'
-        },
-        {
-          label: '武汉娟娟好物',
-          value: '6'
-        },
-        {
-          label: '武汉清华好物',
-          value: '7'
-        },
-        {
-          label: '勇哥商行',
-          value: '8'
-        },
-        {
-          label: '伟平商行',
-          value: '9'
-        }
-      ],
+      merchantList: merchantArray,
       exportInvoiceVisible: false,
       exportInvoiceLoading: false,
       exportInvoiceForm: {
@@ -660,7 +628,8 @@ export default {
         noOrderStatus: this.queryForm.noOrderStatus === '-1' ? '' : this.queryForm.noOrderStatus,
         noWayBillStatus:
           this.queryForm.noWayBillStatus === '-1' ? '' : this.queryForm.noWayBillStatus,
-        orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType
+        orderType: this.queryForm.orderType === '-1' ? '' : this.queryForm.orderType,
+        operator: this.queryForm.operator
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList
@@ -991,7 +960,7 @@ export default {
   create() {},
   mounted() {
     // 挂载页面获取数据
-    this.getListByPage(this.perpageNumber, this.currentPage)
+    // this.getListByPage(this.perpageNumber, this.currentPage)
   }
 }
 </script>

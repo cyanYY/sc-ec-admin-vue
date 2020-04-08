@@ -109,6 +109,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { listPageScalp } from '@/api/order.js'
+import { merchantArray } from '@/utils/const'
 
 export default {
   components: {
@@ -124,44 +125,7 @@ export default {
         orderTimeRange: [],
         merchantId: '-1'
       },
-      merchantList: [
-        {
-          label: '神创未来',
-          value: '1'
-        },
-        {
-          label: '佰福莱家居',
-          value: '2'
-        },
-        {
-          label: '深圳泽泽好物',
-          value: '3'
-        },
-        {
-          label: '武汉翠泽商行',
-          value: '4'
-        },
-        {
-          label: '小优起飞',
-          value: '5'
-        },
-        {
-          label: '武汉娟娟好物',
-          value: '6'
-        },
-        {
-          label: '武汉清华好物',
-          value: '7'
-        },
-        {
-          label: '勇哥商行',
-          value: '8'
-        },
-        {
-          label: '伟平商行',
-          value: '9'
-        }
-      ]
+      merchantList: merchantArray
     }
   },
   methods: {

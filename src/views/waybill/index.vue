@@ -16,6 +16,7 @@
             <el-option label="韵达快递" value="3"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -227,8 +228,10 @@
             <el-option label="京东快递" value="1"></el-option>
             <el-option label="德邦快递" value="2"></el-option>
             <el-option label="韵达快递" value="3"></el-option>
+            <el-option label="韵达在线支付" value="31"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -269,6 +272,7 @@
             <el-option label="韵达快递" value="3"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -319,6 +323,7 @@
             <el-option label="韵达快递" value="3"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -683,6 +688,19 @@ export default {
     },
     // 异步获取数据
     getListByPage(numPerPage, pageNum) {
+      if (
+        !this.queryForm.orderNo &&
+        !this.queryForm.receiverMobile &&
+        !this.queryForm.wayBillNo &&
+        !this.queryForm.deliveryMobile
+      ) {
+        this.$message({
+          message: '请增加查询条件',
+          type: 'error',
+          duration: 1000
+        })
+        return
+      }
       let orderTimeStart = ''
       let orderTimeEnd = ''
       let processTimeStart = ''
@@ -790,7 +808,6 @@ export default {
             message: res.msg || '数据导入成功',
             type: 'success'
           })
-          this.queryHandle()
         })
         .catch(() => {
           this.waybillUploadLoading = false
@@ -816,7 +833,6 @@ export default {
             message: res.msg || '数据导入成功',
             type: 'success'
           })
-          this.queryHandle()
         })
         .catch(() => {
           this.batchUpdateStatusLoading = false
@@ -844,7 +860,6 @@ export default {
             message: res.msg || '数据导入成功',
             type: 'success'
           })
-          this.queryHandle()
         })
         .catch(() => {
           this.waybillExceptionUploadLoading = false
@@ -1002,8 +1017,7 @@ export default {
   create() {},
   mounted() {
     // 挂载页面获取数据
-    this.getListByPage(this.perpageNumber, this.currentPage)
-    // this.listAgents()
+    // this.getListByPage(this.perpageNumber, this.currentPage)
     this.listUserAgents()
   }
 }

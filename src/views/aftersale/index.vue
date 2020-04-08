@@ -21,7 +21,7 @@
           <el-input v-model="queryForm.operator" placeholder="操作员"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-select v-model="queryForm.applyStatus" clearable="" placeholder="申请状态">
+          <el-select v-model="queryForm.applyStatus" clearable placeholder="申请状态">
             <el-option
               v-for="item in applyStatusArray"
               :key="item.value"
@@ -51,6 +51,13 @@
             end-placeholder="处理结束日期"
           >
           </el-date-picker>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.operateStatusDesc" clearable placeholder="处理状态">
+            <el-option label="订单挂起" value="订单挂起"></el-option>
+            <el-option label="已处理:拒绝退款" value="已处理:拒绝退款"></el-option>
+            <el-option label="已处理:同意退货" value="已处理:同意退货"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button size="small" type="primary" @click="queryBtnHandle(1)">查询</el-button>
@@ -500,7 +507,8 @@ export default {
         applyTimeStart: applyTimeStart,
         applyTimeEnd: applyTimeEnd,
         operatorTimeStart: operatorTimeStart,
-        operatorTimeEnd: operatorTimeEnd
+        operatorTimeEnd: operatorTimeEnd,
+        operateStatusDesc: this.queryForm.operateStatusDesc
       }
       reFundListPage(param).then(res => {
         this.tableDataSearch = res.data.recordList

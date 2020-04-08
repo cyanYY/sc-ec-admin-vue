@@ -34,12 +34,30 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="">
+          <el-date-picker
+            v-model="queryForm.operateTimeRange"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            range-separator="至"
+            start-placeholder="处理开始日期"
+            end-placeholder="处理结束日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="">
           <el-select v-model="queryForm.processStatus" placeholder="处理状态">
             <el-option label="全部" value="-1"></el-option>
             <el-option label="未处理" value="未处理"></el-option>
             <el-option label="未处理|挂起" value="未处理|挂起"></el-option>
             <el-option label="已处理" value="已处理"></el-option>
             <el-option label="待办理" value="待办理"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="queryForm.processResult" clearable placeholder="处理结果">
+            <el-option label="挂起" value="挂起"></el-option>
+            <el-option label="已改" value="已改"></el-option>
+            <el-option label="拒绝" value="拒绝"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -86,9 +104,10 @@
         </el-table-column>
         <el-table-column prop="receiverAddress" label="收件人地址" width="180" align="center">
         </el-table-column>
-        <el-table-column prop="channel" label="渠道" align="center"> </el-table-column>
         <el-table-column prop="actualAmount" label="实收金额" align="center"> </el-table-column>
         <el-table-column prop="orderTime" width="90" label="下单时间" align="center">
+        </el-table-column>
+        <el-table-column prop="operateTime" width="90" label="处理时间" align="center">
         </el-table-column>
         <el-table-column prop="processStatus" label="处理状态" width="110" align="center">
         </el-table-column>
@@ -326,7 +345,7 @@ export default {
       total: 0,
       queryForm: {
         orderTimeRange: [],
-        processTimeRange: [],
+        operateTimeRange: [],
         processStatus: '待办理'
       },
       waybillHandleVisible: false,
@@ -373,6 +392,12 @@ export default {
         orderTimeStart = this.queryForm.orderTimeRange[0]
         orderTimeEnd = this.queryForm.orderTimeRange[1]
       }
+      let operateTimeStart = ''
+      let operateTimeEnd = ''
+      if (this.queryForm.operateTimeRange) {
+        operateTimeStart = this.queryForm.operateTimeRange[0]
+        operateTimeEnd = this.queryForm.operateTimeRange[1]
+      }
       var param = {
         numPerPage: numPerPage,
         pageNum: pageNum,
@@ -382,8 +407,11 @@ export default {
         operator: this.queryForm.operator,
         orderTimeStart: orderTimeStart,
         orderTimeEnd: orderTimeEnd,
+        operateTimeStart: operateTimeStart,
+        operateTimeEnd: operateTimeEnd,
         receiverMobile: this.queryForm.receiverMobile,
-        processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus
+        processStatus: this.queryForm.processStatus === '-1' ? '' : this.queryForm.processStatus,
+        processResult: this.queryForm.processResult
       }
       listPage(param).then(res => {
         this.tableDataSearch = res.data.recordList

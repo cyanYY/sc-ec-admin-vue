@@ -40,7 +40,8 @@
         <el-table-column prop="applyTime" label="申请时间" align="center"> </el-table-column>
         <el-table-column prop="replyTime" label="处理时间" align="center"> </el-table-column>
         <el-table-column prop="operator" label="处理人" align="center"> </el-table-column>
-        <el-table-column prop="detail" label="服务内容" align="center"> </el-table-column>
+        <el-table-column prop="detail" width="250" label="服务内容" align="center">
+        </el-table-column>
         <el-table-column prop="reply" label="回复内容" align="center"> </el-table-column>
         <el-table-column prop="operateStatusDesc" label="状态" align="center"> </el-table-column>
         <el-table-column prop="option" fixed="right" align="center" label="操作">

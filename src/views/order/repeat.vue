@@ -81,6 +81,8 @@
         <el-table-column prop="goodsName" label="商品名称" width="150" align="center">
         </el-table-column>
         <el-table-column prop="goodsNum" label="数量" align="center"> </el-table-column>
+        <el-table-column :formatter="payMethodFmt" prop="payMethod" label="订单类型" align="center">
+        </el-table-column>
         <el-table-column
           :formatter="repeatTypeFmt"
           prop="repeatType"
@@ -134,7 +136,13 @@
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { orderRepeatListPage, orderRepeatConfirm, orderRepeatCancel, handleMOrder } from '@/api/order.js'
+import {
+  orderRepeatListPage,
+  orderRepeatConfirm,
+  orderRepeatCancel,
+  handleMOrder
+} from '@/api/order.js'
+import { merchantArray } from '@/utils/const'
 
 export default {
   name: 'Waybill',
@@ -152,44 +160,7 @@ export default {
         merchantId: '-1'
       },
       selectedRows: [],
-      merchantList: [
-        {
-          label: '神创未来',
-          value: '1'
-        },
-        {
-          label: '佰福莱家居',
-          value: '2'
-        },
-        {
-          label: '深圳泽泽好物',
-          value: '3'
-        },
-        {
-          label: '武汉翠泽商行',
-          value: '4'
-        },
-        {
-          label: '小优起飞',
-          value: '5'
-        },
-        {
-          label: '武汉娟娟好物',
-          value: '6'
-        },
-        {
-          label: '武汉清华好物',
-          value: '7'
-        },
-        {
-          label: '勇哥商行',
-          value: '8'
-        },
-        {
-          label: '伟平商行',
-          value: '9'
-        }
-      ]
+      merchantList: merchantArray
     }
   },
   methods: {
@@ -239,6 +210,14 @@ export default {
           return '历史重复'
         default:
           return row.repeatType
+      }
+    },
+    payMethodFmt(row) {
+      switch (row.payMethod) {
+        case '0':
+          return '货到付款'
+        default:
+          return '在线支付'
       }
     },
     confirmBtnHandle(row) {

@@ -71,7 +71,7 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
       logout(state.token)
         .then(() => {
@@ -80,6 +80,7 @@ const actions = {
           commit('SET_ROLES', [])
           removeToken()
           resetRouter()
+          dispatch('tagsView/delAllViews', null, { root: true })
           resolve()
         })
         .catch(error => {

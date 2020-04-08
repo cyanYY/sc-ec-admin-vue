@@ -41,7 +41,7 @@ module.exports = {
         target: 'http://127.0.0.1:6060'
       },
       '/ec': {
-        target: 'http://sc.schfuture.com'
+        target: 'http://test.schfuture.com'
       }
     }
   },

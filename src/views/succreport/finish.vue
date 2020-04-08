@@ -40,6 +40,8 @@
         <el-table-column prop="finishDate" label="妥投日期" align="center"> </el-table-column>
         <el-table-column prop="jdNum" label="京东妥投数" align="center"> </el-table-column>
         <el-table-column prop="jdAmount" label="京东妥投金额" align="center"> </el-table-column>
+        <el-table-column prop="ydNum" label="韵达妥投数" align="center"> </el-table-column>
+        <el-table-column prop="ydAmount" label="韵达妥投金额" align="center"> </el-table-column>
         <el-table-column prop="ztNum" label="中通妥投数" align="center"> </el-table-column>
         <el-table-column prop="ztAmount" label="中通妥投金额" align="center"> </el-table-column>
         <el-table-column prop="ytNum" label="圆通妥投数" align="center"> </el-table-column>

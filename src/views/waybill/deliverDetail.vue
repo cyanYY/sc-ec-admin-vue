@@ -27,27 +27,26 @@
         highlight-current-row
       >
         <el-table-column prop="goodsName" label="品名" align="center"> </el-table-column>
-        <el-table-column prop="total" label="合计" align="center"> </el-table-column>
         <el-table-column label="代发快递" align="center">
           <el-table-column label="小计" align="center">
-            <el-table-column prop="subtotalOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="subtotalOff" label="线下" align="center"> </el-table-column>
+            <el-table-column prop="subtotal" label="发货" align="center"> </el-table-column>
+            <!-- <el-table-column prop="subexceed" label="超区" align="center"> </el-table-column> -->
           </el-table-column>
-          <el-table-column prop="totalJd" label="京东" align="center">
-            <el-table-column prop="totalJdOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="totalJdOff" label="线下" align="center"> </el-table-column>
+          <el-table-column label="京东" align="center">
+            <el-table-column prop="totalJd" label="发货" align="center"> </el-table-column>
+            <el-table-column prop="exceedJd" label="超区" align="center"> </el-table-column>
           </el-table-column>
-          <el-table-column prop="totalZt" label="中通" align="center">
-            <el-table-column prop="totalZtOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="totalZtOff" label="线下" align="center"> </el-table-column>
+          <el-table-column label="韵达" align="center">
+            <el-table-column prop="totalYd" label="发货" align="center"> </el-table-column>
+            <el-table-column prop="exceedYd" label="未揽收" align="center"> </el-table-column>
           </el-table-column>
-          <el-table-column prop="totalYt" label="圆通" align="center">
-            <el-table-column prop="totalYtOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="totalYtOff" label="线下" align="center"> </el-table-column>
+          <el-table-column label="中通" align="center">
+            <el-table-column prop="totalZt" label="发货" align="center"> </el-table-column>
+            <el-table-column prop="exceedZt" label="未揽收" align="center"> </el-table-column>
           </el-table-column>
-          <el-table-column prop="exceedJd" label="京东超区" align="center">
-            <el-table-column prop="exceedJdOn" label="线上" align="center"> </el-table-column>
-            <el-table-column prop="exceedJdOff" label="线下" align="center"> </el-table-column>
+          <el-table-column label="圆通" align="center">
+            <el-table-column prop="totalYt" label="发货" align="center"> </el-table-column>
+            <el-table-column prop="exceedYt" label="未揽收" align="center"> </el-table-column>
           </el-table-column>
         </el-table-column>
       </el-table>

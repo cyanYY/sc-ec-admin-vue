@@ -58,6 +58,32 @@ export const asyncRoutes = [
       }
     ]
   },
+  // {
+  //   path: '/sql',
+  //   component: Layout,
+  //   meta: { title: '发货SQL', icon: 'dashboard' },
+  //   children: [
+  //     {
+  //       path: '',
+  //       name: 'sql',
+  //       component: () => import('@/views/index/sql'),
+  //       meta: { title: '发货SQL', icon: 'dashboard' }
+  //     }
+  //   ]
+  // },
+  {
+    path: '/workbench',
+    component: Layout,
+    meta: { title: '发货工作台', icon: 'dashboard', key: 'workbench' },
+    children: [
+      {
+        path: '',
+        name: 'workbench',
+        component: () => import('@/views/workbench/index'),
+        meta: { title: '发货工作台', icon: 'dashboard', key: 'workbench:index' }
+      }
+    ]
+  },
   {
     path: '/waybill',
     component: Layout,
@@ -117,6 +143,12 @@ export const asyncRoutes = [
         name: 'finish',
         component: () => import('@/views/exception/finish'),
         meta: { title: '已处理', icon: 'table', key: 'exception:finish' }
+      },
+      {
+        path: 'receivable',
+        name: 'receivable',
+        component: () => import('@/views/exception/receivable'),
+        meta: { title: '应收款运单', icon: 'table', key: 'exception:receivable' }
       }
     ]
   },
@@ -198,35 +230,15 @@ export const asyncRoutes = [
         name: 'service',
         component: () => import('@/views/aftersale/service'),
         meta: { title: '服务请求', icon: 'form', key: 'aftersale:service' }
-      }
-    ]
-  },
-  {
-    path: '/receivable',
-    component: Layout,
-    meta: { title: '应收款运单', icon: 'table', key: 'receivable' },
-    children: [
+      },
       {
-        path: '',
-        name: 'receivable',
-        component: () => import('@/views/receivable/index'),
-        meta: { title: '应收款运单', icon: 'table', key: 'receivable' }
+        path: 'stastics',
+        name: 'stastics',
+        component: () => import('@/views/aftersale/stastics'),
+        meta: { title: '客服统计', icon: 'form', key: 'aftersale:stastics' }
       }
     ]
   },
-  // {
-  //   path: '/bill',
-  //   component: Layout,
-  //   meta: { title: '京东账单', icon: 'table', key: 'bill' },
-  //   children: [
-  //     {
-  //       path: '',
-  //       name: 'bill',
-  //       component: () => import('@/views/bill/index'),
-  //       meta: { title: '京东账单', icon: 'table', key: 'bill' }
-  //     }
-  //   ]
-  // },
   {
     path: '/succreport',
     component: Layout,
@@ -244,17 +256,23 @@ export const asyncRoutes = [
         component: () => import('@/views/succreport/orderSucc'),
         meta: { title: '订单成功率', icon: 'table', key: 'succreport:orderSucc' }
       },
+      // {
+      //   path: 'profit',
+      //   name: 'profit',
+      //   component: () => import('@/views/succreport/profit'),
+      //   meta: { title: '利润报表', icon: 'table', key: 'succreport:profit' }
+      // },
+      // {
+      //   path: 'deliver',
+      //   name: 'deliver',
+      //   component: () => import('@/views/succreport/deliver'),
+      //   meta: { title: '发货统计', icon: 'table', key: 'succreport:deliver' }
+      // },
       {
-        path: 'profit',
-        name: 'profit',
-        component: () => import('@/views/succreport/profit'),
-        meta: { title: '利润报表', icon: 'table', key: 'succreport:profit' }
-      },
-      {
-        path: 'deliver',
-        name: 'deliver',
-        component: () => import('@/views/succreport/deliver'),
-        meta: { title: '发货统计', icon: 'table', key: 'succreport:deliver' }
+        path: 'bill',
+        name: 'bill',
+        component: () => import('@/views/succreport/bill'),
+        meta: { title: '结算账单', icon: 'table', key: 'succreport:bill' }
       },
       {
         path: 'sale',

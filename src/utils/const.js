@@ -63,5 +63,20 @@ export const merchantArray = [
   { label: '武汉娟娟好物', value: '6' },
   { label: '武汉清华好物', value: '7' },
   { label: '勇哥商行', value: '8' },
-  { label: '伟平商行', value: '9' }
+  { label: '伟平商行', value: '9' },
+  { label: '爱心淘', value: '11' },
+  { label: '格澜好物', value: '12' },
+  { label: '爱梦优选', value: '13' },
+  { label: '民福商行', value: '14' },
+  { label: '天天旺旺', value: '15' },
+  { label: '值选优购', value: '16' }
+]
+
+export const expressArray = [
+  { label: '京东快递', value: '1' },
+  { label: '德邦快递', value: '2' },
+  { label: '韵达快递', value: '3' },
+  { label: '中通快递', value: '4' },
+  { label: '圆通快递', value: '5' },
+  { label: '顺丰快递', value: '6' }
 ]

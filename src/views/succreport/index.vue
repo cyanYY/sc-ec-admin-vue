@@ -26,6 +26,7 @@
             <el-option label="韵达快递" value="3"></el-option>
             <el-option label="中通快递" value="4"></el-option>
             <el-option label="圆通快递" value="5"></el-option>
+            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -90,6 +91,15 @@
               scope.row.totalNotExceed == 0
                 ? '-'
                 : ((scope.row.totalSuc * 100) / scope.row.totalNotExceed).toFixed(2) + '%'
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="发货天数" align="center">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.deliverDays && scope.row.total != 0
+                ? (scope.row.deliverDays / scope.row.total).toFixed(2)
+                : '-'
             }}</span>
           </template>
         </el-table-column>
@@ -182,6 +192,7 @@ export default {
         this.sums.totalExc = res.data.totalExc
         this.sums.exceptionSuc = res.data.exceptionSuc
         this.sums.totalCancel = res.data.totalCancel
+        this.sums.deliverDays = res.data.deliverDays
         this.tableDataSearch = res.data.result.recordList
         this.total = res.data.result.totalCount
       })
@@ -212,6 +223,10 @@ export default {
           this.sums.totalNotExceed == 0
             ? '-'
             : ((this.sums.totalSuc * 100) / this.sums.totalNotExceed).toFixed(2) + '%'
+        sums[12] =
+          this.sums.deliverDays && this.sums.total != 0
+            ? (this.sums.deliverDays / this.sums.total).toFixed(2)
+            : '-'
       })
 
       return sums

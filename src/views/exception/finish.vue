@@ -340,6 +340,8 @@ export default {
           return '中通快递'
         case '5':
           return '圆通快递'
+        case '6':
+          return '顺丰快递'
         default:
           return row.expressType
       }

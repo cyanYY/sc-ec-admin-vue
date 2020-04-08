@@ -212,8 +212,8 @@ export default {
         goodsId: '',
         goodsName: '',
         confirmMsg: false,
-        cancelMsg: false,
-        deliverMsg: false
+        cancelMsg: true,
+        deliverMsg: true
       },
       updateForm: {
         id: '',
@@ -222,8 +222,8 @@ export default {
         goodsId: '',
         goodsName: '',
         confirmMsg: false,
-        cancelMsg: false,
-        deliverMsg: false
+        cancelMsg: true,
+        deliverMsg: true
       },
       addFormVisible: false,
       updateFormVisible: false,
@@ -289,8 +289,8 @@ export default {
       this.addForm.goodsId = ''
       this.addForm.goodsName = ''
       this.addForm.confirmMsg = false
-      this.addForm.cancelMsg = false
-      this.addForm.deliverMsg = false
+      this.addForm.cancelMsg = true
+      this.addForm.deliverMsg = true
     },
     addHandle() {
       const param = {

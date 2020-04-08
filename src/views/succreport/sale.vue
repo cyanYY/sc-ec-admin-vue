@@ -87,7 +87,7 @@
 import Pagination from '@/components/Pagination/index'
 import { dailyStatistics } from '@/api/order.js'
 import { parseTime } from '@/utils'
-import { orderStatusArray } from '@/utils/const'
+import { orderStatusArray, merchantArray } from '@/utils/const'
 
 export default {
   components: {
@@ -108,36 +108,7 @@ export default {
         orderTimeRange: [startDate, endDate]
       },
       orderStatusArray: orderStatusArray,
-      merchantList: [
-        {
-          label: '神创未来',
-          value: '1'
-        },
-        {
-          label: '佰福莱家居',
-          value: '2'
-        },
-        {
-          label: '深圳泽泽好物',
-          value: '3'
-        },
-        {
-          label: '武汉翠泽商行',
-          value: '4'
-        },
-        {
-          label: '小优起飞',
-          value: '5'
-        },
-        {
-          label: '武汉娟娟好物',
-          value: '6'
-        },
-        {
-          label: '武汉清华好物',
-          value: '7'
-        }
-      ]
+      merchantList: merchantArray
     }
   },
   methods: {
