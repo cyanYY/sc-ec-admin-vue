@@ -66,6 +66,7 @@
           :formatter="orderStatusFormatter"
         >
         </el-table-column>
+        <el-table-column prop="goodsAmount" label="平均金额" align="center"> </el-table-column>
         <el-table-column prop="totalNum" label="订单总数" align="center"> </el-table-column>
         <div slot="empty" v-if="total <= 0">
           <p :style="{ marginTop: '23px' }">未查询到数据记录</p>

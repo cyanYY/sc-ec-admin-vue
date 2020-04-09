@@ -103,7 +103,7 @@
               <el-button size="small" type="primary" @click="queryHandle()">查询</el-button>
             </el-form-item>
           </el-form>
-          <el-table :data="userDatas">
+          <el-table :data="userDatas" show-summary :summary-method="getSummaries">
             <el-table-column label="日期" width="95" align="center" prop="signDate" />
             <el-table-column label="操作员" width="80" align="center" prop="userName" />
             <el-table-column label="线下单" width="70" align="center" prop="offLineNum" />
@@ -119,6 +119,18 @@
               align="center"
               prop="afterSaleNumOnLineS"
             />
+            <el-table-column label="线上售后成功率" width="120" align="center">
+              <template slot-scope="scope">
+                <span>{{
+                  scope.row.afterSaleNumOnLine == 0
+                    ? '-'
+                    : (
+                        (scope.row.afterSaleNumOnLineS * 100) /
+                        scope.row.afterSaleNumOnLine
+                      ).toFixed(2) + '%'
+                }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="评论处理" align="center" prop="handleCommentNum" />
             <el-table-column
               label="评论处理成功"
@@ -126,6 +138,17 @@
               align="center"
               prop="handleCommentNumS"
             />
+            <el-table-column label="评论处理成功率" width="120" align="center">
+              <template slot-scope="scope">
+                <span>{{
+                  scope.row.handleCommentNum == 0
+                    ? '-'
+                    : ((scope.row.handleCommentNumS * 100) / scope.row.handleCommentNum).toFixed(
+                        2
+                      ) + '%'
+                }}</span>
+              </template>
+            </el-table-column>
           </el-table>
           <Pagination
             :total="total"
@@ -170,7 +193,8 @@ export default {
       userDatas: [],
       currentPage: 1,
       perpageNumber: 20,
-      total: 0
+      total: 0,
+      sums: []
     }
   },
   methods: {
@@ -205,7 +229,50 @@ export default {
       getCustomerStatistics(param).then(res => {
         this.userDatas = res.data.result.recordList
         this.total = res.data.result.totalCount
+
+        this.sums.offLineNum = res.data.total.offLineNum
+        this.sums.offLineNumS = res.data.total.offLineNumS
+        this.sums.offLineNumW = res.data.total.offLineNumW
+        this.sums.serviceNum = res.data.total.serviceNum
+        this.sums.afterSaleNum = res.data.total.afterSaleNum
+        this.sums.afterSaleNumS = res.data.total.afterSaleNumS
+        this.sums.afterSaleNumOnLine = res.data.total.afterSaleNumOnLine
+        this.sums.afterSaleNumOnLineS = res.data.total.afterSaleNumOnLineS
+        this.sums.handleCommentNum = res.data.total.handleCommentNum
+        this.sums.handleCommentNumS = res.data.total.handleCommentNumS
       })
+    },
+    getSummaries(param) {
+      const { columns } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+
+        sums[2] = this.sums.offLineNum
+        sums[3] = this.sums.offLineNumS
+        sums[4] = this.sums.offLineNumW
+        sums[5] = this.sums.serviceNum
+        sums[6] = this.sums.afterSaleNum
+        sums[7] = this.sums.afterSaleNumS
+        sums[8] = this.sums.afterSaleNumOnLine
+        sums[9] = this.sums.afterSaleNumOnLineS
+        sums[10] =
+          this.sums.afterSaleNumOnLine == 0
+            ? '-'
+            : ((this.sums.afterSaleNumOnLineS * 100) / this.sums.afterSaleNumOnLine).toFixed(2) +
+              '%'
+        sums[11] = this.sums.handleCommentNum
+        sums[12] = this.sums.handleCommentNumS
+        sums[13] =
+          this.sums.handleCommentNum == 0
+            ? '-'
+            : ((this.sums.handleCommentNumS * 100) / this.sums.handleCommentNum).toFixed(2) + '%'
+      })
+
+      return sums
     }
   },
   create() {},
