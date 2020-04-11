@@ -105,7 +105,9 @@
         <el-table-column prop="option" fixed="right" align="center" width="100" label="操作">
           <template slot-scope="scope">
             <el-button
-              v-if="['6'].indexOf(scope.row.applyStatus) > -1 && scope.row.operateStatus != '1'"
+              v-if="
+                ['6', '30'].indexOf(scope.row.applyStatus) > -1 && scope.row.operateStatus != '1'
+              "
               @click="handleBtnHandle(scope.row)"
               type="text"
               size="small"

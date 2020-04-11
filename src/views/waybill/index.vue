@@ -137,6 +137,13 @@
       >
         <el-table-column prop="wayBillNo" label="运单号" width="100" align="center">
         </el-table-column>
+        <el-table-column
+          prop="expressType"
+          label="快递类型"
+          align="center"
+          :formatter="expressTypeFormatter"
+        >
+        </el-table-column>
         <el-table-column prop="hangReason" label="挂起原因" width="250" align="center">
           <template slot-scope="scope">
             <ol v-if="scope.row.hangReason">
@@ -754,6 +761,24 @@ export default {
           })
         }
       )
+    },
+    expressTypeFormatter(row) {
+      switch (row.expressType) {
+        case '1':
+          return '京东快递'
+        case '2':
+          return '德邦快递'
+        case '3':
+          return '韵达快递'
+        case '4':
+          return '中通快递'
+        case '5':
+          return '圆通快递'
+        case '6':
+          return '顺丰快递'
+        default:
+          return row.expressType
+      }
     },
     wayBillUploadHandle() {
       this.waybillUploadVisible = true

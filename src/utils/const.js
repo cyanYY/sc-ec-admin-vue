@@ -51,6 +51,7 @@ export const applyStatusArray = [
   { label: '取消退货申请', value: '15' },
   { label: '退货中-商家拒绝退货', value: '27' },
   { label: '退货失败', value: '28' },
+  { label: '退款中-退款申请', value: '30' },
   { label: '已关闭-退款失败', value: '37' }
 ]
 
