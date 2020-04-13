@@ -153,3 +153,8 @@ export function orderSuccRate(params) {
   const url = '/order/orderSuccRate'
   return axios.post(url, params).then(res => res.data)
 }
+
+export function selectDateFinish(params) {
+  const url = '/order/selectDateFinish'
+  return axios.post(url, params).then(res => res.data)
+}

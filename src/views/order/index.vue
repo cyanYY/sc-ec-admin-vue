@@ -396,12 +396,12 @@
         </el-form-item>
         <el-form-item label="选择快递">
           <el-select v-model="exportInvoiceForm.expressType" placeholder="">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="下单时间">
@@ -526,7 +526,7 @@ import {
   remarkOrder
 } from '@/api/order.js'
 import axios from 'axios'
-import { merchantArray } from '@/utils/const'
+import { merchantArray, expressArray } from '@/utils/const'
 
 export default {
   name: 'Waybill',
@@ -565,6 +565,7 @@ export default {
       exrOrderUploadLoading: false,
       exrOrderUploadForm: {},
       merchantList: merchantArray,
+      expressArray: expressArray,
       exportInvoiceVisible: false,
       exportInvoiceLoading: false,
       exportInvoiceForm: {

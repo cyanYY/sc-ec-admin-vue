@@ -563,7 +563,6 @@ export default {
   },
   data() {
     const date = new Date()
-    date.setDate(date.getDate() - 1)
     const currentDate = parseTime(date, '{y}-{m}-{d}')
 
     return {

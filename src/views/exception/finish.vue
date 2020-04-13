@@ -215,6 +215,7 @@ import Pagination from '@/components/Pagination/index'
 import { listUserFinish, trace } from '@/api/waybill.js'
 import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils/index'
+import { expressArray } from '@/utils/const'
 
 export default {
   name: 'ExceptionFinish',
@@ -233,7 +234,8 @@ export default {
       },
       wayTraceVisible: false,
       traceHtml: '',
-      dropAgents: []
+      dropAgents: [],
+      expressArray: expressArray
     }
   },
   methods: {
@@ -329,22 +331,8 @@ export default {
       })
     },
     expressTypeFormatter(row) {
-      switch (row.expressType) {
-        case '1':
-          return '京东快递'
-        case '2':
-          return '德邦快递'
-        case '3':
-          return '韵达快递'
-        case '4':
-          return '中通快递'
-        case '5':
-          return '圆通快递'
-        case '6':
-          return '顺丰快递'
-        default:
-          return row.expressType
-      }
+      const item = this.expressArray.find(item => item.value === row.expressType)
+      return item ? item.label : row.expressType
     }
   },
   create() {},

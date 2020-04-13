@@ -7,12 +7,12 @@
         </el-form-item>
         <el-form-item label="">
           <el-select v-model="queryForm.expressType" clearable placeholder="快递类型">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -103,12 +103,12 @@
       <el-form>
         <el-form-item label="快递类型：">
           <el-select v-model="waybillUploadForm.expressType" placeholder="">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -139,6 +139,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
 import { listPage, upload } from '@/api/wayBillCheck.js'
+import { expressArray } from '@/utils/const'
 
 export default {
   components: {
@@ -159,7 +160,8 @@ export default {
       waybillUploadLoading: false,
       waybillUploadForm: {
         expressType: ''
-      }
+      },
+      expressArray: expressArray
     }
   },
   methods: {

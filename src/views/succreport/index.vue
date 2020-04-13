@@ -20,13 +20,12 @@
         </el-form-item>
         <el-form-item label="">
           <el-select v-model="queryForm.expressType" placeholder="快递类型">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -59,6 +58,11 @@
         <el-table-column prop="orderDate" label="日期" align="center"> </el-table-column>
         <el-table-column prop="merchantName" label="商户名称" align="center"> </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" width="200" align="center">
+          <template slot-scope="scope">
+            <el-button @click="showLineChart(scope.row)" type="text" size="small">{{
+              scope.row.goodsName
+            }}</el-button>
+          </template>
         </el-table-column>
         <el-table-column prop="total" label="总数" align="center"> </el-table-column>
         <el-table-column prop="totalNotExceed" label="总数(除超区)" align="center">
@@ -116,19 +120,31 @@
         @currentPage="getCurrentPage"
       ></Pagination>
     </div>
+
+    <el-dialog
+      size="small"
+      title="妥投数图表"
+      :close-on-click-modal="false"
+      :visible.sync="lineChartVisible"
+    >
+      <line-chart :chart-data="lineChartData" />
+    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import { successRate } from '@/api/order.js'
+import LineChart from './LineChart'
+import { successRate, selectDateFinish } from '@/api/order.js'
 import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils'
+import { expressArray } from '@/utils/const'
 
 export default {
   name: 'SuccReport',
   components: {
-    Pagination
+    Pagination,
+    LineChart
   },
   data() {
     const date = new Date()
@@ -150,7 +166,10 @@ export default {
         totalSuc: 0,
         totalExc: 0
       },
-      dropAgents: []
+      dropAgents: [],
+      expressArray: expressArray,
+      lineChartVisible: false,
+      lineChartData: {}
     }
   },
   methods: {
@@ -235,6 +254,33 @@ export default {
     listUserAgents() {
       listUserAgents().then(res => {
         this.dropAgents = res.data
+      })
+    },
+    showLineChart(row) {
+      this.lineChartVisible = true
+
+      let orderTimeStart = ''
+      let orderTimeEnd = ''
+      if (this.queryForm.orderTimeRange) {
+        orderTimeStart = this.queryForm.orderTimeRange[0]
+        orderTimeEnd = this.queryForm.orderTimeRange[1]
+      }
+      const param = {
+        goodsName: row.goodsName,
+        orderTimeStart: orderTimeStart,
+        orderTimeEnd: orderTimeEnd
+      }
+      selectDateFinish(param).then(res => {
+        const xData = []
+        const yData = []
+        res.data.forEach (item => {
+          xData.push(item.finishDate)
+          yData.push(item.finishNum)
+        })
+        this.lineChartData = {
+          xData: xData,
+          yData: yData
+        }
       })
     }
   },

@@ -9,14 +9,13 @@
           <el-input v-model="queryForm.wayBillNo" placeholder="运单号" :editable="false"></el-input>
         </el-form-item>
         <el-form-item label="">
-          <el-select v-model="queryForm.expressType" placeholder="快递类型">
-            <el-option label="全部" value="-1"></el-option>
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+          <el-select v-model="queryForm.expressType" clearable placeholder="快递类型">
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="">
@@ -232,13 +231,13 @@
         </el-form-item>
         <el-form-item label="快递类型：">
           <el-select v-model="waybillUploadForm.expressType" placeholder="">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
             <el-option label="韵达在线支付" value="31"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -274,12 +273,12 @@
       <el-form>
         <el-form-item label="快递类型：">
           <el-select v-model="batchUpdateStatusForm.expressType" placeholder="">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -325,12 +324,12 @@
         </el-form-item>
         <el-form-item label="快递类型：">
           <el-select v-model="waybillExceptionUploadForm.expressType" placeholder="">
-            <el-option label="京东快递" value="1"></el-option>
-            <el-option label="德邦快递" value="2"></el-option>
-            <el-option label="韵达快递" value="3"></el-option>
-            <el-option label="中通快递" value="4"></el-option>
-            <el-option label="圆通快递" value="5"></el-option>
-            <el-option label="顺丰快递" value="6"></el-option>
+            <el-option
+              v-for="item in expressArray"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="选择文件">
@@ -601,6 +600,7 @@ import {
 } from '@/api/waybill.js'
 import { listUserAgents } from '@/api/user.js'
 import axios from 'axios'
+import { expressArray } from '@/utils/const'
 
 export default {
   name: 'Waybill',
@@ -677,7 +677,8 @@ export default {
         '站点再投',
         '已取消',
         '再投后退回'
-      ]
+      ],
+      expressArray: expressArray
     }
   },
   methods: {
@@ -763,22 +764,8 @@ export default {
       )
     },
     expressTypeFormatter(row) {
-      switch (row.expressType) {
-        case '1':
-          return '京东快递'
-        case '2':
-          return '德邦快递'
-        case '3':
-          return '韵达快递'
-        case '4':
-          return '中通快递'
-        case '5':
-          return '圆通快递'
-        case '6':
-          return '顺丰快递'
-        default:
-          return row.expressType
-      }
+      const item = this.expressArray.find(item => item.value === row.expressType)
+      return item ? item.label : row.expressType
     },
     wayBillUploadHandle() {
       this.waybillUploadVisible = true
