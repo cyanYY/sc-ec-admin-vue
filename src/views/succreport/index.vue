@@ -127,24 +127,24 @@
       :close-on-click-modal="false"
       :visible.sync="lineChartVisible"
     >
-      <line-chart :chart-data="lineChartData" />
+      <div id="finishChart" :style="{ width: '100%', height: '350px' }"></div>
     </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pagination/index'
-import LineChart from './LineChart'
 import { successRate, selectDateFinish } from '@/api/order.js'
 import { listUserAgents } from '@/api/user.js'
 import { parseTime } from '@/utils'
 import { expressArray } from '@/utils/const'
+import echarts from 'echarts'
+require('echarts/theme/macarons') // echarts theme
 
 export default {
   name: 'SuccReport',
   components: {
-    Pagination,
-    LineChart
+    Pagination
   },
   data() {
     const date = new Date()
@@ -273,14 +273,53 @@ export default {
       selectDateFinish(param).then(res => {
         const xData = []
         const yData = []
-        res.data.forEach (item => {
+        res.data.forEach(item => {
           xData.push(item.finishDate)
           yData.push(item.finishNum)
         })
-        this.lineChartData = {
-          xData: xData,
-          yData: yData
-        }
+
+        let chart = echarts.init(document.getElementById('finishChart'))
+        chart.setOption({
+          xAxis: {
+            data: xData
+          },
+          grid: {
+            left: 10,
+            right: 10,
+            bottom: 20,
+            top: 30,
+            containLabel: true
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross'
+            },
+            padding: [5, 10]
+          },
+          yAxis: {
+            axisTick: {
+              show: false
+            }
+          },
+          series: [
+            {
+              name: '妥投数',
+              itemStyle: {
+                normal: {
+                  color: '#FF005A',
+                  lineStyle: {
+                    color: '#FF005A',
+                    width: 2
+                  }
+                }
+              },
+              smooth: false,
+              type: 'line',
+              data: yData
+            }
+          ]
+        })
       })
     }
   },
